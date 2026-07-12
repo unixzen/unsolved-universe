@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Три самых глубоких вопроса</title>
+<style>
+  :root{
+    --bg:#06070d; --bg2:#0a0d18;
+    --panel:#111629; --panel2:#151b31;
+    --line:#242c49; --line2:#2f3960;
+    --text:#dce3f7; --muted:#8a93b6; --faint:#5b6488;
+    --gold:#ffd27d; --golddim:#5f5230;
+    --hot:#ff7a4d; --hotdeep:#ff5c72; --hotdim:#7d3140;
+    --cold:#5bc8e6; --colddim:#2c4a55;
+    --violet:#b48cff; --violetdim:#4a3a72;
+    --green:#7fe0a8; --greendim:#2f5c42;
+    --maxw:960px;
+    --mono:ui-monospace,"SF Mono","JetBrains Mono","Cascadia Code",Menlo,Consolas,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{ box-sizing:border-box; }
+  body{ background:var(--bg); color:var(--text); font-family:var(--sans);
+    line-height:1.55; -webkit-font-smoothing:antialiased; margin:0; }
+
+  .stars{ position:fixed; inset:0; z-index:0; pointer-events:none; background-color:var(--bg);
+    background-image:
+      radial-gradient(1.1px 1.1px at 24px 32px, rgba(255,255,255,.7), transparent),
+      radial-gradient(1px 1px at 96px 128px, rgba(214,226,255,.5), transparent),
+      radial-gradient(1.3px 1.3px at 160px 64px, rgba(255,255,255,.55), transparent),
+      radial-gradient(1px 1px at 56px 176px, rgba(190,205,255,.45), transparent);
+    background-repeat:repeat; background-size:230px 230px; animation:tw 10s ease-in-out infinite; }
+  .stars::after{ content:""; position:absolute; inset:0;
+    background:
+      radial-gradient(50% 40% at 18% 8%, rgba(255,210,125,.07), transparent 70%),
+      radial-gradient(52% 45% at 84% 42%, rgba(91,200,230,.07), transparent 70%),
+      radial-gradient(58% 42% at 30% 90%, rgba(255,92,114,.08), transparent 70%); }
+  @keyframes tw{ 0%,100%{opacity:.85} 50%{opacity:1} }
+  @media (prefers-reduced-motion:reduce){ .stars{animation:none} }
+
+  .wrap{ position:relative; z-index:1; max-width:var(--maxw); margin:0 auto; padding:56px 24px 80px; }
+
+  .eyebrow{ font-family:var(--mono); font-size:12px; letter-spacing:.26em; text-transform:uppercase;
+    margin:0 0 14px; background:linear-gradient(90deg,var(--gold),var(--cold),var(--hotdeep));
+    -webkit-background-clip:text; background-clip:text; color:transparent; }
+  h1{ font-size:clamp(29px,5.6vw,52px); line-height:1.04; letter-spacing:-.025em; font-weight:800;
+    margin:0 0 16px; text-wrap:balance; }
+  .lede{ font-size:clamp(15px,2.2vw,18px); color:var(--muted); max-width:66ch; margin:0; }
+  .lede b{ color:var(--text); }
+
+  .sec{ margin-top:52px; padding-top:8px; }
+  .kick{ font-family:var(--mono); font-size:12px; letter-spacing:.16em; text-transform:uppercase;
+    margin:0 0 5px; display:flex; align-items:center; gap:10px; }
+  .kick .badge{ font-size:9.5px; letter-spacing:.05em; padding:2px 8px; border-radius:20px; }
+  .sec h2{ font-size:27px; letter-spacing:-.02em; margin:0 0 8px; }
+  .sec .q{ font-size:15px; color:var(--muted); font-style:italic; margin:0 0 18px; }
+
+  .card{ padding:22px 24px; border-radius:16px; border:1px solid var(--line);
+    background:linear-gradient(180deg,var(--panel),var(--bg2)); }
+
+  /* matter survivor */
+  .surv{ text-align:center; }
+  .surv .big{ font-family:var(--mono); font-size:clamp(18px,4vw,30px); font-weight:800;
+    letter-spacing:-.02em; line-height:1.3; }
+  .surv .big .m{ color:var(--gold); } .surv .big .a{ color:var(--cold); }
+  .surv .arrow{ font-family:var(--mono); color:var(--faint); font-size:13px; margin:12px 0; }
+  .surv .res{ font-size:15px; color:var(--muted); }
+  .surv .res b{ color:var(--hotdeep); }
+  .surv .tag{ display:inline-block; margin-top:10px; font-family:var(--mono); font-size:12px;
+    color:var(--gold); border:1px solid var(--golddim); background:rgba(255,210,125,.08);
+    padding:4px 12px; border-radius:20px; }
+
+  .sak{ display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:16px; }
+  .sk{ padding:14px 15px; border-radius:12px; border:1px solid var(--line); background:var(--panel); }
+  .sk .n{ font-family:var(--mono); font-size:11px; color:var(--gold); }
+  .sk .t{ font-weight:700; font-size:13.5px; margin:4px 0 5px; }
+  .sk p{ margin:0; font-size:12px; color:var(--muted); }
+  .sk .chk{ font-family:var(--mono); font-size:10.5px; color:var(--hot); margin-top:7px; }
+  .lead{ margin-top:14px; padding:14px 16px; border-radius:12px; border:1px solid var(--greendim);
+    background:rgba(127,224,168,.06); font-size:13.5px; } .lead b{ color:var(--green); }
+
+  /* inflation curve */
+  .infwrap{ overflow-x:auto; } svg.inf{ display:block; width:100%; min-width:520px; height:auto; }
+  .solves{ display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:16px; }
+  .sv{ padding:13px 15px; border-radius:12px; border:1px solid var(--line); background:var(--panel); }
+  .sv .t{ font-weight:700; font-size:13.5px; color:var(--cold); margin-bottom:4px; }
+  .sv p{ margin:0; font-size:12px; color:var(--muted); }
+  .seed{ margin-top:14px; padding:16px 18px; border-radius:12px; border:1px solid var(--violetdim);
+    background:rgba(180,140,255,.06); font-size:14px; } .seed b{ color:var(--text); }
+  .seed .chain{ font-family:var(--mono); font-size:12.5px; color:var(--violet); margin-top:8px; }
+  .smoke{ margin-top:12px; font-size:13px; color:var(--muted); } .smoke b{ color:var(--gold); }
+
+  /* quantum gravity pillars */
+  .pillars{ display:grid; grid-template-columns:1fr auto 1fr; gap:0; align-items:stretch; }
+  .pil{ padding:18px 18px; border-radius:14px; }
+  .pil.gr{ border:1px solid var(--colddim); background:rgba(91,200,230,.05); }
+  .pil.qm{ border:1px solid var(--violetdim); background:rgba(180,140,255,.05); }
+  .pil .t{ font-weight:800; font-size:16px; margin-bottom:2px; }
+  .pil.gr .t{ color:var(--cold); } .pil.qm .t{ color:var(--violet); }
+  .pil .s{ font-family:var(--mono); font-size:11px; color:var(--faint); margin-bottom:10px; }
+  .pil ul{ margin:0; padding-left:16px; } .pil li{ font-size:12.5px; color:var(--muted); margin-bottom:4px; }
+  .clash{ display:flex; flex-direction:column; align-items:center; justify-content:center; padding:0 8px;
+    font-family:var(--mono); color:var(--hotdeep); }
+  .clash .bolt{ font-size:26px; } .clash .w{ font-size:10px; writing-mode:vertical-rl; margin-top:6px;
+    letter-spacing:.1em; }
+  .meet{ margin-top:14px; padding:14px 16px; border-radius:12px; border:1px solid var(--hotdim);
+    background:rgba(255,92,114,.06); font-size:13.5px; } .meet b{ color:var(--hotdeep); }
+  .cands{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:12px; }
+  .cd{ padding:14px 16px; border-radius:12px; border:1px solid var(--line); background:var(--panel); }
+  .cd .t{ font-weight:700; font-size:14px; margin-bottom:5px; }
+  .cd.str .t{ color:var(--gold); } .cd.loop .t{ color:var(--cold); }
+  .cd p{ margin:0; font-size:12.3px; color:var(--muted); }
+
+  .b-open{ color:var(--gold); background:rgba(255,210,125,.1); border:1px solid var(--golddim); }
+  .b-lead{ color:var(--cold); background:rgba(91,200,230,.1); border:1px solid var(--colddim); }
+  .b-summit{ color:var(--hotdeep); background:rgba(255,92,114,.1); border:1px solid var(--hotdim); }
+
+  .close{ margin-top:44px; padding:24px 26px; border-radius:18px; border:1px solid var(--line2);
+    background:linear-gradient(180deg,var(--panel2),var(--bg2)); }
+  .close .k{ font-family:var(--mono); font-size:11px; letter-spacing:.16em; text-transform:uppercase;
+    color:var(--gold); display:block; margin-bottom:10px; }
+  .close h3{ margin:0 0 10px; font-size:20px; }
+  .close p{ margin:0 0 10px; font-size:14.5px; color:var(--muted); } .close p:last-child{ margin:0; }
+  .close b{ color:var(--text); }
+
+  footer{ margin-top:34px; color:var(--faint); font-size:12.5px; font-family:var(--mono);
+    line-height:1.7; text-align:center; }
+
+  @media (max-width:680px){
+    .sak,.solves{ grid-template-columns:1fr; }
+    .pillars{ grid-template-columns:1fr; } .clash{ flex-direction:row; padding:8px 0; }
+    .clash .w{ writing-mode:horizontal-tb; margin:0 0 0 8px; } .cands{ grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="stars"></div>
+
+<div class="wrap">
+  <p class="eyebrow">Финал · происхождение и вершина</p>
+  <h1>Три самых глубоких вопроса</h1>
+  <p class="lede">Мы добрались до края карты. Здесь физика спрашивает не «как устроено?», а
+    <b>почему вообще есть вещество</b>, <b>что подожгло Вселенную</b> и <b>из чего сделано само
+    пространство-время</b>. Ответ на любой — новая эпоха науки.</p>
+
+  <!-- MATTER vs ANTIMATTER -->
+  <div class="sec">
+    <p class="kick" style="color:var(--gold)">01 · почему есть хоть что-то<span class="badge b-open">загадка · лидер: лептогенез</span></p>
+    <h2>Материя против антиматерии</h2>
+    <p class="q">Большой взрыв должен был родить их поровну — а они аннигилируют дочиста. Почему мир не пуст?</p>
+    <div class="card surv">
+      <div class="big"><span class="m">1 000 000 001</span> частица<br>против <span class="a">1 000 000 000</span> античастиц</div>
+      <div class="arrow">▼ почти всё аннигилировало в свет ▼</div>
+      <div class="res">осталось: <b>2 млрд фотонов + 1 уцелевшая частица</b></div>
+      <div class="tag">эта «единичка на миллиард» — все звёзды, планеты и мы</div>
+    </div>
+    <div class="sak">
+      <div class="sk"><div class="n">условие 1</div><div class="t">Нарушение барионного числа</div>
+        <p>Нужны процессы, меняющие число кварков.</p><div class="chk">✓ есть (сфалероны), но слабо</div></div>
+      <div class="sk"><div class="n">условие 2</div><div class="t">Нарушение C и CP</div>
+        <p>Законы должны различать материю и антиматерию.</p><div class="chk">✓ есть (1964), но в ~10¹⁰ раз слабо</div></div>
+      <div class="sk"><div class="n">условие 3</div><div class="t">Выход из равновесия</div>
+        <p>Иначе прямой и обратный процессы всё сотрут.</p><div class="chk">✓ даёт расширение, но Хиггс-переход гладкий</div></div>
+    </div>
+    <div class="lead"><b>Три условия Сахарова (1967)</b> — все они в Стандартной модели <b>есть</b>, но
+      слишком слабы, чтобы дать нужный перекос. Значит, нужна новая физика. Фаворит — <b>лептогенез</b>:
+      тяжёлые майорановские нейтрино распадаются с нарушением CP, создают перекос лептонов, а сфалероны
+      переводят его в перекос барионов. Так загадка вещества цепляется за массу нейтрино.</div>
+  </div>
+
+  <!-- INFLATION -->
+  <div class="sec">
+    <p class="kick" style="color:var(--cold)">02 · что подожгло фитиль<span class="badge b-lead">ведущая теория · ключ не найден</span></p>
+    <h2>Инфляция</h2>
+    <p class="q">За 10⁻³² секунды Вселенная раздулась в ~10²⁶ раз. Дикая идея — но она объясняет слишком многое.</p>
+    <div class="card infwrap">
+      <svg class="inf" viewBox="0 0 620 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <line x1="56" y1="206" x2="600" y2="206" stroke="#242c49"/>
+        <line x1="56" y1="206" x2="56" y2="24" stroke="#242c49"/>
+        <!-- pre -->
+        <path d="M56,196 L150,188" stroke="#5b6488" stroke-width="2.5" fill="none"/>
+        <!-- inflation blow-up -->
+        <path d="M150,188 C168,186 178,120 190,60" stroke="#5bc8e6" stroke-width="3.5" fill="none"/>
+        <!-- after: gentle -->
+        <path d="M190,60 C320,50 460,44 600,38" stroke="#b48cff" stroke-width="3" fill="none"/>
+        <rect x="150" y="26" width="40" height="180" fill="#5bc8e6" opacity="0.08"/>
+        <text x="170" y="20" fill="#5bc8e6" font-family="ui-monospace,monospace" font-size="10" text-anchor="middle">инфляция</text>
+        <text x="170" y="224" fill="#5b6488" font-family="ui-monospace,monospace" font-size="9" text-anchor="middle">10⁻³⁶…10⁻³² с</text>
+        <text x="120" y="182" fill="#8a93b6" font-family="var(--sans)" font-size="11" text-anchor="end">до</text>
+        <text x="300" y="40" fill="#b48cff" font-family="var(--sans)" font-size="11">обычное расширение</text>
+        <text x="205" y="120" fill="#5bc8e6" font-family="ui-monospace,monospace" font-size="11">×10²⁶</text>
+        <text x="14" y="128" fill="#5b6488" font-family="ui-monospace,monospace" font-size="10" transform="rotate(-90 14 128)">размер</text>
+        <text x="560" y="224" fill="#5b6488" font-family="ui-monospace,monospace" font-size="10">время →</text>
+      </svg>
+    </div>
+    <div class="solves">
+      <div class="sv"><div class="t">Горизонт</div><p>Почему небо всюду одной температуры, даже там, где области «не встречались»? Раньше — встречались.</p></div>
+      <div class="sv"><div class="t">Плоскостность</div><p>Почему пространство идеально плоское? Раздувание разглаживает любую кривизну.</p></div>
+      <div class="sv"><div class="t">Монополи</div><p>Куда делись предсказанные GUT монополи? Инфляция разбавила их почти до нуля.</p></div>
+    </div>
+    <div class="seed"><b>Главный триумф — происхождение структуры.</b> Квантовые дрожания поля во время
+      инфляции растянулись до космических масштабов и застыли как крохотные сгустки плотности — зёрна,
+      из которых гравитация вырастила все галактики.
+      <div class="chain">квантовая флуктуация → пятна реликта → галактики (спектр n_s≈0.965 ✓ совпал)</div></div>
+    <div class="smoke">🔭 <b>Недостающая улика:</b> первичные гравитационные волны — их «завиток» (B-моды) в
+      поляризации реликта. BICEP2 объявил находку в 2014-м — оказалась пылью. Ищут дальше (LiteBIRD, CMB-S4).</div>
+  </div>
+
+  <!-- QUANTUM GRAVITY -->
+  <div class="sec">
+    <p class="kick" style="color:var(--hotdeep)">03 · из чего сделано пространство<span class="badge b-summit">не построена · вершина</span></p>
+    <h2>Квантовая гравитация</h2>
+    <p class="q">Две наши лучшие теории блестяще работают — и категорически несовместимы друг с другом.</p>
+    <div class="card">
+      <div class="pillars">
+        <div class="pil gr"><div class="t">Общая теория относительности</div><div class="s">большое · гладкое</div>
+          <ul><li>гравитация = кривизна пространства-времени</li><li>планеты, звёзды, космос</li><li>непрерывно, детерминированно</li></ul></div>
+        <div class="clash"><span class="bolt">⚡</span><span class="w">не стыкуются</span></div>
+        <div class="pil qm"><div class="t">Квантовая механика</div><div class="s">малое · дискретное</div>
+          <ul><li>частицы, три другие силы</li><li>атомы, поля</li><li>вероятностно, квантованно</li></ul></div>
+      </div>
+      <div class="meet"><b>Где они сталкиваются лоб в лоб:</b> сингулярность чёрной дыры и сам Большой
+        взрыв — там и огромная гравитация, и крошечный масштаб разом. Наивно «квантуешь» гравитацию — и
+        математика выдаёт бесконечности. А планковский масштаб (10⁻³⁵ м) недостижим для экспериментов.</div>
+      <div class="cands">
+        <div class="cd str"><div class="t">Теория струн</div>
+          <p>Частицы — вибрирующие струны; гравитон возникает сам собой. Но требует лишних измерений, суперсимметрии и даёт «ландшафт» из 10⁵⁰⁰ вселенных.</p></div>
+        <div class="cd loop"><div class="t">Петлевая гравитация</div>
+          <p>Квантуется само пространство — оно зернистое, из планковских «ячеек». Вместо сингулярности — «Большой отскок».</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CLOSE -->
+  <div class="close">
+    <span class="k">★ почему это вершина</span>
+    <h3>Всё остальное стоит на пространстве-времени. А это — вопрос, из чего сделано оно само.</h3>
+    <p>Квантовая гравитация — и есть <b>«теория всего»</b>: она добавила бы к трём объединённым силам
+      (Великое объединение) последнюю, гравитацию. Самая радикальная догадка фронтира: пространство-время,
+      возможно, <b>не фундаментально</b>, а «соткано» из квантовой запутанности — «пространство из кубитов».</p>
+    <p>И всё переплетено: <b>инфляция</b> не может стартовать без квантовой гравитации; перекос
+      <b>материи</b> цепляется за нейтрино и, может, за Великое объединение. Одна верная идея на вершине —
+      и половина всей карты проблем способна осыпаться следом.</p>
+  </div>
+
+  <footer>
+    Условия Сахарова 1967 · CP-нарушение открыто 1964 (каоны) · инфляция: Гут 1980, Линде/Альбрехт–Стайнхардт 1982.<br>
+    Кривые и цифры — схематические и порядковые. На этом карта фронтира собрана целиком. Тёмная тема — намеренно.
+  </footer>
+</div>
+</body>
+</html>

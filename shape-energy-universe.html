@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Форма и энергия Вселенной</title>
+<style>
+  :root{
+    --bg:#06070d; --bg2:#0a0d18;
+    --panel:#111629; --panel2:#151b31;
+    --line:#242c49; --line2:#2f3960;
+    --text:#dce3f7; --muted:#8a93b6; --faint:#5b6488;
+    --gold:#ffd27d; --golddim:#5f5230;
+    --hot:#ff7a4d; --hotdeep:#ff5c72; --hotdim:#7d3140;
+    --cold:#5bc8e6; --colddim:#2c4a55;
+    --violet:#b48cff; --violetdim:#4a3a72;
+    --green:#7fe0a8; --greendim:#2f5c42;
+    --maxw:960px;
+    --mono:ui-monospace,"SF Mono","JetBrains Mono","Cascadia Code",Menlo,Consolas,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{ box-sizing:border-box; }
+  body{ background:var(--bg); color:var(--text); font-family:var(--sans);
+    line-height:1.55; -webkit-font-smoothing:antialiased; margin:0; }
+  .stars{ position:fixed; inset:0; z-index:0; pointer-events:none; background-color:var(--bg);
+    background-image:
+      radial-gradient(1.1px 1.1px at 24px 32px, rgba(255,255,255,.7), transparent),
+      radial-gradient(1px 1px at 96px 128px, rgba(214,226,255,.5), transparent),
+      radial-gradient(1.3px 1.3px at 160px 64px, rgba(255,255,255,.55), transparent),
+      radial-gradient(1px 1px at 56px 176px, rgba(190,205,255,.45), transparent);
+    background-repeat:repeat; background-size:230px 230px; animation:tw 10s ease-in-out infinite; }
+  .stars::after{ content:""; position:absolute; inset:0;
+    background:
+      radial-gradient(52% 42% at 20% 8%, rgba(91,200,230,.07), transparent 70%),
+      radial-gradient(52% 45% at 84% 55%, rgba(127,224,168,.06), transparent 70%); }
+  @keyframes tw{ 0%,100%{opacity:.85} 50%{opacity:1} }
+  @media (prefers-reduced-motion:reduce){ .stars{animation:none} }
+  .wrap{ position:relative; z-index:1; max-width:var(--maxw); margin:0 auto; padding:56px 24px 80px; }
+
+  .eyebrow{ font-family:var(--mono); font-size:12px; letter-spacing:.26em; text-transform:uppercase; color:var(--cold); margin:0 0 14px; }
+  h1{ font-size:clamp(28px,5.6vw,50px); line-height:1.05; letter-spacing:-.025em; font-weight:800; margin:0 0 16px; text-wrap:balance; }
+  .lede{ font-size:clamp(15px,2.2vw,18px); color:var(--muted); max-width:64ch; margin:0; } .lede b{ color:var(--text); }
+
+  .h2{ font-family:var(--mono); font-size:13px; letter-spacing:.18em; text-transform:uppercase; color:var(--muted); margin:46px 0 6px; }
+  .h2.cy{ color:var(--cold); } .h2.gr{ color:var(--green); }
+  .h2 + .sub{ color:var(--muted); font-size:14.5px; margin:0 0 20px; max-width:64ch; } .h2 + .sub b{ color:var(--text); }
+  .card{ padding:22px 24px; border-radius:16px; border:1px solid var(--line); background:linear-gradient(180deg,var(--panel),var(--bg2)); }
+
+  /* geometry vs topology */
+  .gt{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  .gtc{ padding:18px 20px; border-radius:14px; border:1px solid var(--line); background:var(--panel); }
+  .gtc .lab{ font-family:var(--mono); font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--cold); margin-bottom:10px; }
+  .gtc h3{ margin:0 0 8px; font-size:17px; } .gtc p{ margin:0; font-size:13px; color:var(--muted); } .gtc p b{ color:var(--text); }
+  .gtc svg{ display:block; margin:6px auto 12px; }
+
+  .tests{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:16px; }
+  .test{ padding:15px 17px; border-radius:12px; border:1px solid var(--line); background:var(--panel); }
+  .test .t{ font-weight:700; font-size:14px; margin-bottom:5px; } .test p{ margin:0; font-size:12.5px; color:var(--muted); }
+  .test .r{ font-family:var(--mono); font-size:11px; color:var(--cold); margin-top:8px; }
+  .verdict1{ margin-top:14px; padding:14px 16px; border-radius:12px; border:1px solid var(--colddim);
+    background:rgba(91,200,230,.05); font-size:13.5px; } .verdict1 b{ color:var(--text); }
+
+  /* energy balance */
+  .bal{ display:grid; grid-template-columns:1fr auto 1fr auto; gap:12px; align-items:center; text-align:center; }
+  .bcell{ padding:18px 12px; border-radius:14px; }
+  .bcell.pos{ border:1px solid var(--golddim); background:rgba(255,210,125,.06); }
+  .bcell.neg{ border:1px solid var(--violetdim); background:rgba(180,140,255,.06); }
+  .bcell .big{ font-family:var(--mono); font-size:22px; font-weight:800; }
+  .bcell.pos .big{ color:var(--gold); } .bcell.neg .big{ color:var(--violet); }
+  .bcell .l{ font-size:12px; color:var(--muted); margin-top:4px; }
+  .bal .op{ font-family:var(--mono); font-size:22px; color:var(--faint); }
+  .bal .zero{ font-family:var(--mono); font-size:26px; font-weight:800; color:var(--green); }
+  .bal .zl{ font-size:11px; color:var(--muted); }
+  .freelunch{ margin-top:12px; font-size:13.5px; color:var(--muted); text-align:center; } .freelunch b{ color:var(--text); }
+
+  /* not conserved */
+  .nc{ margin-top:16px; padding:20px 22px; border-radius:16px; border:1px solid var(--hotdim);
+    background:linear-gradient(180deg,rgba(60,22,30,.35),var(--bg2)); }
+  .nc .k{ font-family:var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--hotdeep); display:block; margin-bottom:10px; }
+  .nc h3{ margin:0 0 10px; font-size:19px; } .nc p{ margin:0 0 12px; font-size:14px; color:var(--muted); } .nc p:last-child{ margin:0; } .nc b{ color:var(--text); }
+  .ncex{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:12px 0; }
+  .ncx{ padding:13px 15px; border-radius:10px; border:1px solid var(--line); background:var(--panel); font-size:12.7px; color:var(--muted); }
+  .ncx b{ color:var(--text); } .ncx .h{ font-weight:700; color:var(--hotdeep); font-size:13px; margin-bottom:4px; }
+
+  footer{ margin-top:32px; color:var(--faint); font-size:12.5px; font-family:var(--mono); line-height:1.7; text-align:center; }
+  @media (max-width:680px){ .gt,.tests,.ncex{ grid-template-columns:1fr; } .bal{ grid-template-columns:1fr; } .bal .op,.bal .zero{ transform:rotate(90deg); } }
+</style>
+</head>
+<body>
+<div class="stars"></div>
+<div class="wrap">
+  <p class="eyebrow">Вселенная целиком · форма и энергия</p>
+  <h1>Какой Вселенная формы —<br>и сколько в ней энергии?</h1>
+  <p class="lede">Два вопроса о Вселенной как о едином объекте. <b>Конечна она или бесконечна?</b>
+    (мы честно не знаем). И <b>какова её полная энергия?</b> — возможно, ровно ноль, а «сохранение
+    энергии» в расширяющейся Вселенной вообще не работает.</p>
+
+  <!-- GEOMETRY vs TOPOLOGY -->
+  <p class="h2 cy">Форма: геометрия ≠ топология</p>
+  <p class="sub">Это два разных вопроса. <b>Геометрия</b> — локальная кривизна (её мерили: Вселенная почти
+    плоская). <b>Топология</b> — как пространство устроено <b>глобально</b>, «замкнуто» ли оно на себя.</p>
+  <div class="gt">
+    <div class="gtc">
+      <div class="lab">геометрия · локально</div>
+      <svg width="120" height="70" viewBox="0 0 120 70" xmlns="http://www.w3.org/2000/svg">
+        <g stroke="#3a4266" stroke-width="1"><line x1="20" y1="20" x2="100" y2="20"/><line x1="20" y1="35" x2="100" y2="35"/><line x1="20" y1="50" x2="100" y2="50"/><line x1="35" y1="10" x2="35" y2="60"/><line x1="60" y1="10" x2="60" y2="60"/><line x1="85" y1="10" x2="85" y2="60"/></g>
+        <text x="60" y="68" fill="#5bc8e6" font-family="ui-monospace,monospace" font-size="9" text-anchor="middle">≈ плоская (измерено)</text>
+      </svg>
+      <h3>Кривизна</h3>
+      <p>Сумма углов треугольника, судьба параллельных линий. Реликт показывает: пространство <b>почти идеально плоское</b>.</p>
+    </div>
+    <div class="gtc">
+      <div class="lab">топология · глобально</div>
+      <svg width="120" height="70" viewBox="0 0 120 70" xmlns="http://www.w3.org/2000/svg">
+        <rect x="30" y="12" width="60" height="46" fill="none" stroke="#b48cff" stroke-width="1.5"/>
+        <path d="M90,24 h8 M90,36 h8 M90,48 h8" stroke="#b48cff" stroke-width="1.5"/>
+        <path d="M22,24 h8 M22,36 h8 M22,48 h8" stroke="#b48cff" stroke-width="1.5"/>
+        <text x="103" y="14" fill="#7fe0a8" font-family="ui-monospace,monospace" font-size="12">↺</text>
+        <text x="60" y="68" fill="#b48cff" font-family="ui-monospace,monospace" font-size="9" text-anchor="middle">тор: край = другой край</text>
+      </svg>
+      <h3>Связность</h3>
+      <p>Как в «Астероидах»: улетаешь за край — возвращаешься с другого. <b>Плоское, но конечное</b> и замкнутое на себя. Та же геометрия — другая форма.</p>
+    </div>
+  </div>
+  <div class="tests">
+    <div class="test"><div class="t">Круги на небе</div><p>Если пространство мало и замкнуто, реликтовая сфера пересекла бы себя — на небе нашлись бы <b>парные совпадающие круги</b>.</p><div class="r">искали в WMAP и Planck → не нашли</div></div>
+    <div class="test"><div class="t">Слабые крупные волны</div><p>В конечной Вселенной не помещаются волны больше её размера — крупный масштаб реликта «подрезан».</p><div class="r">слабый квадруполь есть — но неубедительно</div></div>
+  </div>
+  <div class="verdict1"><b>Вердикт:</b> следов «замкнутости» не нашли. Значит, если Вселенная и заворачивается
+    на себя, то на масштабе <b>не меньше видимой Вселенной</b>. <b>Конечна она или бесконечна — открытый вопрос.</b>
+    Плоская и односвязная = бесконечная; но конечные «завёрнутые» формы не исключены.</div>
+
+  <!-- ENERGY -->
+  <p class="h2 gr">Энергия: а вдруг её всего ноль?</p>
+  <p class="sub">Поразительная идея: <b>вся положительная энергия материи</b> может <b>точно
+    гаситься отрицательной энергией гравитации</b> (связанные системы имеют отрицательную энергию).</p>
+  <div class="card">
+    <div class="bal">
+      <div class="bcell pos"><div class="big">+E</div><div class="l">материя, излучение (E=mc²)</div></div>
+      <div class="op">+</div>
+      <div class="bcell neg"><div class="big">−E</div><div class="l">гравитационное поле</div></div>
+      <div class="op"><span class="zero">= 0?</span></div>
+    </div>
+    <div class="freelunch"><b>«Абсолютно бесплатный обед»</b> (Гут): если сумма — ноль, Вселенную можно
+      «создать из ничего» как квантовую флуктуацию, ничего не потратив. Идею предложил Трайон, 1973.</div>
+  </div>
+
+  <!-- NOT CONSERVED -->
+  <div class="nc">
+    <span class="k">и главный сюрприз</span>
+    <h3>В расширяющейся Вселенной энергия не сохраняется</h3>
+    <p>Закон сохранения энергии следует (теорема Нётер) из <b>симметрии по времени</b> — «сегодня те же
+      законы, что вчера». Но расширяющаяся Вселенная <b>выглядит иначе в разные эпохи</b> — этой симметрии
+      нет. Значит, <b>и глобального сохранения энергии нет</b>. Два наглядных примера:</p>
+    <div class="ncex">
+      <div class="ncx"><div class="h">Фотоны краснеют</div>Свет реликта остыл с тысяч кельвинов до 2,7 K. Энергия фотонов <b>просто уменьшилась</b> — и никуда не «перешла».</div>
+      <div class="ncx"><div class="h">Тёмная энергия растёт</div>Пространство расширяется, плотность тёмной энергии та же → её <b>суммарно становится больше</b>. Энергия «появляется» из ничего.</div>
+    </div>
+    <p>Локально энергия сохраняется, а вот единой сохраняющейся «энергии всей Вселенной» в привычном
+      смысле <b>просто не существует</b>. Это не парадокс — это честное свойство общей теории относительности.</p>
+  </div>
+
+  <footer>
+    Диаграммы схематические. Кривизна ≈ 0 по Planck. «Круги на небе»: не обнаружены. «Ноль энергии»: Трайон 1973, «free lunch» — Гут.<br>
+    «Энергия не сохраняется» — корректное утверждение для расширяющейся Вселенной (нет временно́й симметрии). Тёмная тема — намеренно.
+  </footer>
+</div>
+</body>
+</html>

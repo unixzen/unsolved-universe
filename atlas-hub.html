@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Атлас: нерешённые проблемы физики</title>
+<style>
+  :root{
+    --bg:#06070d; --bg2:#0a0d18;
+    --panel:#111629; --panel2:#151b31;
+    --line:#242c49; --line2:#2f3960;
+    --text:#dce3f7; --muted:#8a93b6; --faint:#5b6488;
+    --gold:#ffd27d; --golddim:#5f5230;
+    --hot:#ff7a4d; --hotdeep:#ff5c72; --hotdim:#7d3140;
+    --cold:#5bc8e6; --colddim:#2c4a55;
+    --violet:#b48cff; --violetdim:#4a3a72;
+    --green:#7fe0a8; --greendim:#2f5c42;
+    --maxw:1000px;
+    --mono:ui-monospace,"SF Mono","JetBrains Mono","Cascadia Code",Menlo,Consolas,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{ box-sizing:border-box; }
+  body{ background:var(--bg); color:var(--text); font-family:var(--sans);
+    line-height:1.55; -webkit-font-smoothing:antialiased; margin:0; }
+  .stars{ position:fixed; inset:0; z-index:0; pointer-events:none; background-color:var(--bg);
+    background-image:
+      radial-gradient(1.1px 1.1px at 24px 32px, rgba(255,255,255,.7), transparent),
+      radial-gradient(1px 1px at 96px 128px, rgba(214,226,255,.5), transparent),
+      radial-gradient(1.3px 1.3px at 160px 64px, rgba(255,255,255,.55), transparent),
+      radial-gradient(1px 1px at 56px 176px, rgba(190,205,255,.45), transparent);
+    background-repeat:repeat; background-size:230px 230px; animation:tw 11s ease-in-out infinite; }
+  .stars::after{ content:""; position:absolute; inset:0;
+    background:
+      radial-gradient(50% 40% at 15% 6%, rgba(91,200,230,.07), transparent 70%),
+      radial-gradient(52% 42% at 85% 30%, rgba(180,140,255,.08), transparent 70%),
+      radial-gradient(55% 40% at 30% 75%, rgba(255,122,77,.06), transparent 70%),
+      radial-gradient(50% 40% at 80% 95%, rgba(127,224,168,.05), transparent 70%); }
+  @keyframes tw{ 0%,100%{opacity:.85} 50%{opacity:1} }
+  @media (prefers-reduced-motion:reduce){ .stars{animation:none} }
+  .wrap{ position:relative; z-index:1; max-width:var(--maxw); margin:0 auto; padding:60px 24px 84px; }
+
+  .eyebrow{ font-family:var(--mono); font-size:12px; letter-spacing:.3em; text-transform:uppercase; margin:0 0 16px;
+    background:linear-gradient(90deg,var(--cold),var(--violet),var(--gold)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  h1{ font-size:clamp(32px,6.5vw,58px); line-height:1.02; letter-spacing:-.03em; font-weight:800; margin:0 0 18px; text-wrap:balance; }
+  .lede{ font-size:clamp(15px,2.2vw,18px); color:var(--muted); max-width:64ch; margin:0; } .lede b{ color:var(--text); }
+  .meta{ display:flex; gap:22px; flex-wrap:wrap; margin-top:22px; font-family:var(--mono); font-size:12px; color:var(--faint); }
+  .meta b{ color:var(--text); font-size:15px; }
+
+  /* map feature */
+  .feature{ display:block; text-decoration:none; color:inherit; margin-top:32px; padding:22px 24px; border-radius:18px;
+    border:1px solid var(--golddim); background:linear-gradient(120deg,rgba(60,50,20,.4),var(--bg2));
+    display:flex; gap:18px; align-items:center; transition:border-color .15s, transform .1s; }
+  .feature:hover{ border-color:var(--gold); transform:translateY(-1px); }
+  .feature .em{ font-size:36px; flex:0 0 auto; }
+  .feature .tx h3{ margin:0 0 4px; font-size:18px; } .feature .tx p{ margin:0; font-size:13.5px; color:var(--muted); }
+  .feature .go{ margin-left:auto; font-family:var(--mono); font-size:12px; color:var(--gold); white-space:nowrap; }
+  .feature.teen{ border-color:var(--colddim); background:linear-gradient(120deg,rgba(20,45,55,.4),var(--bg2)); }
+  .feature.teen:hover{ border-color:var(--cold); } .feature.teen .go{ color:var(--cold); }
+  .feature.read{ border-color:var(--violetdim); background:linear-gradient(120deg,rgba(35,25,55,.5),var(--bg2)); }
+  .feature.read:hover{ border-color:var(--violet); } .feature.read .go{ color:var(--violet); }
+  .feature.ask{ border-color:var(--greendim); background:linear-gradient(120deg,rgba(20,45,32,.5),var(--bg2)); }
+  .feature.ask:hover{ border-color:var(--green); } .feature.ask .go{ color:var(--green); }
+
+  .chapter{ margin-top:44px; }
+  .chapter .ct{ display:flex; align-items:baseline; gap:12px; margin-bottom:16px; }
+  .chapter .cn{ font-family:var(--mono); font-size:12px; color:var(--cacc,var(--cold)); letter-spacing:.14em; }
+  .chapter h2{ font-size:20px; letter-spacing:-.015em; margin:0; }
+  .chapter .cl{ height:1px; flex:1; background:linear-gradient(90deg,var(--line2),transparent); align-self:center; }
+
+  .cards{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .card{ display:flex; gap:15px; text-decoration:none; color:inherit; padding:18px 20px; border-radius:16px;
+    border:1px solid var(--line); background:linear-gradient(180deg,var(--panel),var(--bg2));
+    transition:border-color .15s, transform .1s, box-shadow .15s; }
+  .card:hover{ border-color:var(--cacc,var(--cold)); transform:translateY(-2px); box-shadow:0 10px 30px rgba(0,0,0,.35); }
+  .card .em{ font-size:28px; flex:0 0 auto; line-height:1.1; }
+  .card .tx{ min-width:0; }
+  .card h3{ margin:0 0 4px; font-size:16px; letter-spacing:-.01em; }
+  .card p{ margin:0; font-size:13px; color:var(--muted); }
+  .card .go{ font-family:var(--mono); font-size:11px; color:var(--cacc,var(--cold)); margin-top:9px; }
+
+  .c1{ --cacc:var(--gold); } .c2{ --cacc:var(--cold); } .c3{ --cacc:var(--violet); }
+  .c4{ --cacc:var(--green); } .c5{ --cacc:var(--hotdeep); } .c6{ --cacc:var(--gold); } .c7{ --cacc:var(--violet); }
+
+  .close{ margin-top:50px; padding:24px 26px; border-radius:18px; border:1px solid var(--line2); background:var(--panel2); text-align:center; }
+  .close p{ margin:0; font-size:14.5px; color:var(--muted); } .close b{ color:var(--text); }
+
+  footer{ margin-top:28px; color:var(--faint); font-size:12px; font-family:var(--mono); line-height:1.7; text-align:center; }
+  @media (max-width:680px){ .cards{ grid-template-columns:1fr; } .feature{ flex-wrap:wrap; } .feature .go{ margin-left:0; } }
+</style>
+</head>
+<body>
+<div class="stars"></div>
+<div class="wrap">
+  <p class="eyebrow">Атлас · путешествие по переднему краю физики</p>
+  <h1>Оглавление: 19 схем о том,<br>чего мы ещё не знаем</h1>
+  <p class="lede">Всё, что мы прошли в разговоре — <b>от того, куда нас тянет прямо сейчас, до мультивселенной</b> —
+    собрано здесь одной страницей. Порядок повторяет наш маршрут: от космоса вокруг нас вглубь, к самим
+    основаниям реальности. Нажми на любую карточку, чтобы открыть схему.</p>
+  <div class="meta"><span><b>19</b> подробных схем</span><span><b>7</b> глав</span><span><b>4</b> путеводителя</span></div>
+
+  <!-- FEATURED MAP -->
+  <a class="feature" href="map-of-problems.html" target="_blank" rel="noopener">
+    <span class="em">🧭</span>
+    <span class="tx"><h3>Карта нерешённых проблем</h3><p>Все загадки, упорядоченные по глубине — от почти-понятого до вершины. Начни отсюда, если нужен обзор целиком.</p></span>
+    <span class="go">открыть →</span>
+  </a>
+
+  <a class="feature teen" href="explain-to-teen.html" target="_blank" rel="noopener">
+    <span class="em">🎈</span>
+    <span class="tx"><h3>Шпаргалка рассказчика</h3><p>Весь атлас простыми словами — для 14-летнего: живая аналогия, три тезиса и главная мысль на каждую тему.</p></span>
+    <span class="go">открыть →</span>
+  </a>
+
+  <a class="feature read" href="mini-stories.html" target="_blank" rel="noopener">
+    <span class="em">📖</span>
+    <span class="tx"><h3>Читалка: мини-рассказы</h3><p>Каждая тема — маленьким рассказом на 2–3 абзаца, который можно читать вслух. «Развёрнутая» версия шпаргалки.</p></span>
+    <span class="go">открыть →</span>
+  </a>
+
+  <a class="feature ask" href="questions-for-teacher.html" target="_blank" rel="noopener">
+    <span class="em">🙋</span>
+    <span class="tx"><h3>Вопросы учителю физики</h3><p>15 вопросов, где школьная тема 8 класса связывается с нерешённой загадкой из атласа.</p></span>
+    <span class="go">открыть →</span>
+  </a>
+
+  <!-- CH 1 -->
+  <div class="chapter">
+    <div class="ct"><span class="cn c1" style="color:var(--gold)">ГЛАВА 1</span><h2>Космос вокруг нас</h2><span class="cl"></span></div>
+    <div class="cards">
+      <a class="card c1" href="cosmic-hierarchy.html" target="_blank" rel="noopener">
+        <span class="em">🌌</span><span class="tx"><h3>Где мы живём и куда нас тянет</h3><p>Иерархия структур от Солнечной системы до Ланиакеи и Великий аттрактор.</p><div class="go">открыть →</div></span></a>
+      <a class="card c1" href="fate-of-universe.html" target="_blank" rel="noopener">
+        <span class="em">🌌</span><span class="tx"><h3>Как всё закончится</h3><p>Судьба Вселенной: четыре эпохи до тепловой смерти и альтернативные финалы.</p><div class="go">открыть →</div></span></a>
+    </div>
+  </div>
+
+  <!-- CH 2 -->
+  <div class="chapter">
+    <div class="ct"><span class="cn c2">ГЛАВА 2</span><h2>Трещины в стандартной картине</h2><span class="cl"></span></div>
+    <div class="cards">
+      <a class="card c2" href="axis-of-evil.html" target="_blank" rel="noopener">
+        <span class="em">🌌</span><span class="tx"><h3>Ось Зла</h3><p>Аномалия реликта: почему у Вселенной будто есть «запретное» направление.</p><div class="go">открыть →</div></span></a>
+      <a class="card c2" href="hubble-tension.html" target="_blank" rel="noopener">
+        <span class="em">📏</span><span class="tx"><h3>Хаббловская напряжённость</h3><p>Два способа измерить расширение дают разные числа — на 5σ. И KBC-войд.</p><div class="go">открыть →</div></span></a>
+    </div>
+  </div>
+
+  <!-- CH 3 -->
+  <div class="chapter">
+    <div class="ct"><span class="cn c3">ГЛАВА 3</span><h2>Тёмный сектор — 95% Вселенной</h2><span class="cl"></span></div>
+    <div class="cards">
+      <a class="card c3" href="dark-energy-desi.html" target="_blank" rel="noopener">
+        <span class="em">🌑</span><span class="tx"><h3>Тёмная энергия и DESI</h3><p>68% Вселенной, параметр w и намёк, что она не константа, а слабеет.</p><div class="go">открыть →</div></span></a>
+      <a class="card c3" href="dark-matter.html" target="_blank" rel="noopener">
+        <span class="em">🌀</span><span class="tx"><h3>Тёмная материя</h3><p>Кривые вращения, Скопление Пуля, кандидаты и почему MOND проигрывает.</p><div class="go">открыть →</div></span></a>
+    </div>
+  </div>
+
+  <!-- CH 4 -->
+  <div class="chapter">
+    <div class="ct"><span class="cn c4">ГЛАВА 4</span><h2>Частицы и объединение сил</h2><span class="cl"></span></div>
+    <div class="cards">
+      <a class="card c4" href="beyond-standard-model.html" target="_blank" rel="noopener">
+        <span class="em">⚛️</span><span class="tx"><h3>Аксион, суперсимметрия, нейтрино</h3><p>Три окна за пределы Стандартной модели: ищут, не нашли, подтвердили.</p><div class="go">открыть →</div></span></a>
+      <a class="card c4" href="grand-unification.html" target="_blank" rel="noopener">
+        <span class="em">🔗</span><span class="tx"><h3>Великое объединение</h3><p>Как три силы становятся одной и ключевой тест — распад протона.</p><div class="go">открыть →</div></span></a>
+    </div>
+  </div>
+
+  <!-- CH 5 -->
+  <div class="chapter">
+    <div class="ct"><span class="cn c5">ГЛАВА 5</span><h2>Происхождение и глубины</h2><span class="cl"></span></div>
+    <div class="cards">
+      <a class="card c5" href="origin-and-summit.html" target="_blank" rel="noopener">
+        <span class="em">🎆</span><span class="tx"><h3>Три самых глубоких вопроса</h3><p>Почему есть материя, что раздуло Вселенную и что такое квантовая гравитация.</p><div class="go">открыть →</div></span></a>
+      <a class="card c5" href="holography-emergent-spacetime.html" target="_blank" rel="noopener">
+        <span class="em">🌐</span><span class="tx"><h3>Голография и AdS/CFT</h3><p>Как пространство-время «вырастает» из квантовой запутанности.</p><div class="go">открыть →</div></span></a>
+      <a class="card c5" href="black-hole-information.html" target="_blank" rel="noopener">
+        <span class="em">🕳️</span><span class="tx"><h3>Парадокс информации чёрных дыр</h3><p>Энтропия, голографический принцип, кривая Пейджа и «острова». Плюс dS/AdS.</p><div class="go">открыть →</div></span></a>
+      <a class="card c5" href="firewalls-hawking.html" target="_blank" rel="noopener">
+        <span class="em">🔥</span><span class="tx"><h3>Файрволы и излучение Хокинга</h3><p>Сгоришь ли на горизонте, ER=EPR и почему дыры испаряются.</p><div class="go">открыть →</div></span></a>
+    </div>
+  </div>
+
+  <!-- CH 6 -->
+  <div class="chapter">
+    <div class="ct"><span class="cn c6" style="color:var(--gold)">ГЛАВА 6</span><h2>Вселенная целиком</h2><span class="cl"></span></div>
+    <div class="cards">
+      <a class="card c6" href="shape-energy-universe.html" target="_blank" rel="noopener">
+        <span class="em">♾️</span><span class="tx"><h3>Форма и энергия Вселенной</h3><p>Конечна ли она, и почему энергия в ней вообще не сохраняется.</p><div class="go">открыть →</div></span></a>
+      <a class="card c6" href="multiverse.html" target="_blank" rel="noopener">
+        <span class="em">🫧</span><span class="tx"><h3>Мультивселенные</h3><p>Четыре разных типа — и где среди них многомировая Эверетта.</p><div class="go">открыть →</div></span></a>
+    </div>
+  </div>
+
+  <!-- CH 7 -->
+  <div class="chapter">
+    <div class="ct"><span class="cn c7" style="color:var(--violet)">ГЛАВА 7</span><h2>Глубокие погружения</h2><span class="cl"></span></div>
+    <div class="cards">
+      <a class="card c7" href="leptogenesis.html" target="_blank" rel="noopener">
+        <span class="em">⚖️</span><span class="tx"><h3>Лептогенез</h3><p>Как перекос материи родился из распада тяжёлых нейтрино.</p><div class="go">открыть →</div></span></a>
+      <a class="card c7" href="string-theory.html" target="_blank" rel="noopener">
+        <span class="em">🎻</span><span class="tx"><h3>Теория струн</h3><p>Частицы как моды струн, лишние измерения и ландшафт 10⁵⁰⁰.</p><div class="go">открыть →</div></span></a>
+      <a class="card c7" href="inflation-bmodes.html" target="_blank" rel="noopener">
+        <span class="em">🌊</span><span class="tx"><h3>Инфляционные B-моды</h3><p>«Дымящийся пистолет» инфляции в поляризации реликта.</p><div class="go">открыть →</div></span></a>
+      <a class="card c7" href="anthropic-principle.html" target="_blank" rel="noopener">
+        <span class="em">👁️</span><span class="tx"><h3>Антропный принцип</h3><p>Настроен ли мир под жизнь — или мы просто там, где могли возникнуть.</p><div class="go">открыть →</div></span></a>
+    </div>
+  </div>
+
+  <div class="close">
+    <p>От «куда нас тянет прямо сейчас» — через тёмный сектор, частицы и чёрные дыры — до вопроса,
+    <b>из чего сделано само пространство-время</b>. Один разговор, один маршрут по краю известного. 🌌</p>
+  </div>
+
+  <footer>
+    Ссылки ведут на соседние файлы в этом же каталоге и открываются в новой вкладке.<br>
+    Открывай atlas-hub.html из той папки, где лежат все схемы, — тогда все переходы работают.
+  </footer>
+</div>
+</body>
+</html>

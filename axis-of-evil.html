@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ось Зла</title>
+<style>
+  :root{
+    --bg:#06070d; --bg2:#0a0d18;
+    --panel:#111629; --panel2:#151b31;
+    --line:#242c49; --line2:#2f3960;
+    --text:#dce3f7; --muted:#8a93b6; --faint:#5b6488;
+    --gold:#ffd27d; --golddim:#5f5230;
+    --hot:#ff7a4d; --hotdeep:#ff5c72; --hotdim:#7d3140;
+    --cold:#5bc8e6; --colddim:#2c4a55;
+    --violet:#b48cff; --violetdim:#4a3a72;
+    --green:#7fe0a8; --greendim:#2f5c42;
+    --maxw:960px;
+    --mono:ui-monospace,"SF Mono","JetBrains Mono","Cascadia Code",Menlo,Consolas,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{ box-sizing:border-box; }
+  body{ background:var(--bg); color:var(--text); font-family:var(--sans);
+    line-height:1.55; -webkit-font-smoothing:antialiased; margin:0; }
+
+  .stars{ position:fixed; inset:0; z-index:0; pointer-events:none; background-color:var(--bg);
+    background-image:
+      radial-gradient(1.1px 1.1px at 24px 32px, rgba(255,255,255,.7), transparent),
+      radial-gradient(1px 1px at 96px 128px, rgba(214,226,255,.5), transparent),
+      radial-gradient(1.3px 1.3px at 160px 64px, rgba(255,255,255,.55), transparent),
+      radial-gradient(1px 1px at 56px 176px, rgba(190,205,255,.45), transparent),
+      radial-gradient(1px 1px at 182px 202px, rgba(255,244,220,.5), transparent);
+    background-repeat:repeat; background-size:230px 230px; animation:tw 10s ease-in-out infinite; }
+  .stars::after{ content:""; position:absolute; inset:0;
+    background:
+      radial-gradient(55% 40% at 78% 12%, rgba(255,92,114,.09), transparent 70%),
+      radial-gradient(50% 45% at 18% 60%, rgba(91,200,230,.07), transparent 70%); }
+  @keyframes tw{ 0%,100%{opacity:.85} 50%{opacity:1} }
+  @media (prefers-reduced-motion:reduce){ .stars{animation:none} }
+
+  .wrap{ position:relative; z-index:1; max-width:var(--maxw); margin:0 auto; padding:56px 24px 72px; }
+
+  .eyebrow{ font-family:var(--mono); font-size:12px; letter-spacing:.28em; text-transform:uppercase;
+    color:var(--hotdeep); margin:0 0 14px; }
+  h1{ font-size:clamp(30px,6vw,54px); line-height:1.03; letter-spacing:-.025em; font-weight:800;
+    margin:0 0 16px; text-wrap:balance; }
+  h1 .q{ color:var(--hotdeep); }
+  .lede{ font-size:clamp(15px,2.2vw,18px); color:var(--muted); max-width:64ch; margin:0; }
+  .lede b{ color:var(--text); }
+
+  .primer{ margin-top:26px; padding:16px 20px; border-radius:12px; border:1px solid var(--line);
+    background:var(--panel); color:var(--muted); font-size:14px; }
+  .primer b{ color:var(--text); }
+  .primer .lab{ font-family:var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--gold); display:block; margin-bottom:6px; }
+
+  .h2{ font-family:var(--mono); font-size:13px; letter-spacing:.18em; text-transform:uppercase;
+    color:var(--muted); margin:44px 0 6px; }
+  .h2.hot{ color:var(--hotdeep); }
+  .h2 + .sub{ color:var(--muted); font-size:14.5px; margin:0 0 22px; max-width:64ch; }
+  .h2 + .sub b{ color:var(--text); }
+
+  /* multipole ladder */
+  .ladder{ display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
+  .mp{ padding:18px 14px 16px; border-radius:16px; border:1px solid var(--line); text-align:center;
+    background:linear-gradient(180deg,var(--panel),var(--bg2)); }
+  .mp .l{ font-family:var(--mono); font-size:12px; color:var(--faint); letter-spacing:.05em; }
+  .mp .l b{ color:var(--gold); }
+  .orb{ position:relative; width:112px; height:112px; margin:12px auto 14px; }
+  .disk{ position:absolute; inset:0; border-radius:50%; border:1px solid rgba(255,255,255,.14);
+    box-shadow:inset 0 0 30px rgba(0,0,0,.5), 0 8px 26px rgba(0,0,0,.4); }
+  .disk::after{ content:""; position:absolute; inset:0; border-radius:50%;
+    background:radial-gradient(58% 52% at 32% 26%, rgba(255,255,255,.22), transparent 60%); }
+  .d-mono{ background:radial-gradient(circle,#c7a35f,#a9853f); }
+  .d-dip{ background:linear-gradient(118deg,var(--hot) 8%,#caa 50%,var(--cold) 92%); }
+  .d-quad{ background:conic-gradient(from 22deg,var(--hot),var(--cold) 90deg,var(--hot) 180deg,var(--cold) 270deg,var(--hot) 360deg); }
+  .d-oct{ background:conic-gradient(from 22deg,var(--hot),var(--cold) 60deg,var(--hot) 120deg,var(--cold) 180deg,var(--hot) 240deg,var(--cold) 300deg,var(--hot) 360deg); }
+  .mp h4{ margin:0 0 5px; font-size:16px; font-weight:700; }
+  .mp p{ margin:0; font-size:12.5px; color:var(--muted); line-height:1.45; }
+
+  /* alignment showcase */
+  .align{ padding:26px; border-radius:18px; border:1px solid var(--hotdim);
+    background:linear-gradient(180deg,rgba(60,22,30,.4),var(--bg2));
+    display:flex; gap:30px; align-items:center; flex-wrap:wrap; justify-content:center; }
+  .bigorb{ position:relative; width:172px; height:172px; }
+  .bigorb .lbl{ position:absolute; bottom:-26px; left:0; right:0; text-align:center;
+    font-family:var(--mono); font-size:12px; color:var(--muted); }
+  .axis{ position:absolute; left:-8%; right:-8%; top:50%; height:0; z-index:3;
+    border-top:2px dashed rgba(255,255,255,.85); transform:rotate(var(--ang,-28deg));
+    box-shadow:0 0 10px rgba(255,255,255,.5); }
+  .axis::before,.axis::after{ content:""; position:absolute; top:50%; width:9px; height:9px;
+    border-radius:50%; background:#fff; transform:translateY(-50%); box-shadow:0 0 10px #fff; }
+  .axis::before{ left:-4px; } .axis::after{ right:-4px; }
+  .align .vs{ font-family:var(--mono); font-size:13px; color:var(--hotdeep); text-align:center;
+    max-width:190px; }
+  .align .vs b{ color:#fff; display:block; font-size:15px; margin-bottom:6px; }
+
+  /* anomaly chips */
+  .anoms{ display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px; }
+  .anom{ padding:14px 16px; border-radius:12px; border:1px solid var(--line);
+    background:var(--panel); }
+  .anom .t{ font-weight:700; font-size:14.5px; margin-bottom:3px; }
+  .anom p{ margin:0; font-size:13px; color:var(--muted); }
+  .anom.rel{ border-style:dashed; opacity:.92; }
+  .anom.rel .t{ color:var(--violet); }
+
+  /* explanations */
+  .exps{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; }
+  .exp{ padding:20px 20px; border-radius:16px; border:1px solid var(--line);
+    background:linear-gradient(180deg,var(--panel),var(--bg2)); }
+  .exp .flag{ font-family:var(--mono); font-size:10.5px; letter-spacing:.12em; text-transform:uppercase;
+    padding:3px 9px; border-radius:20px; display:inline-block; margin-bottom:11px; }
+  .exp h3{ margin:0 0 8px; font-size:17px; letter-spacing:-.01em; }
+  .exp p{ margin:0; font-size:13.5px; color:var(--muted); }
+  .exp p b{ color:var(--text); }
+  .e1{ border-color:var(--greendim); } .e1 .flag{ color:var(--green);
+    background:rgba(127,224,168,.09); border:1px solid var(--greendim); }
+  .e2 .flag{ color:var(--gold); background:rgba(255,210,125,.09); border:1px solid var(--golddim); }
+  .e3{ border-color:var(--violetdim); } .e3 .flag{ color:var(--violet);
+    background:rgba(180,140,255,.09); border:1px solid var(--violetdim); }
+
+  /* resolve panel */
+  .panel{ margin-top:26px; padding:24px 26px; border-radius:16px; border:1px solid var(--line2);
+    background:linear-gradient(180deg,var(--panel2),var(--bg2)); }
+  .panel .k{ font-family:var(--mono); font-size:11px; letter-spacing:.16em; text-transform:uppercase;
+    color:var(--cold); border:1px solid var(--colddim); background:rgba(91,200,230,.08);
+    padding:3px 10px; border-radius:20px; display:inline-block; margin-bottom:13px; }
+  .panel h3{ margin:0 0 12px; font-size:20px; letter-spacing:-.01em; }
+  ul.pts{ margin:0; padding:0; list-style:none; display:grid; gap:11px; }
+  ul.pts li{ padding-left:24px; position:relative; font-size:14.5px; color:var(--text); }
+  ul.pts li::before{ content:"→"; position:absolute; left:0; color:var(--cold); font-family:var(--mono); }
+  ul.pts li b{ color:#fff; }
+  .verdict{ margin-top:18px; padding:16px 18px; border-radius:12px; border:1px solid var(--hotdim);
+    background:rgba(255,92,114,.07); font-size:14.5px; }
+  .verdict b{ color:var(--hotdeep); }
+
+  footer{ margin-top:36px; color:var(--faint); font-size:12.5px; font-family:var(--mono);
+    line-height:1.7; text-align:center; }
+
+  @media (max-width:720px){
+    .ladder{ grid-template-columns:repeat(2,1fr); }
+    .exps{ grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="stars"></div>
+
+<div class="wrap">
+  <p class="eyebrow">Аномалия реликтового излучения · открытая проблема</p>
+  <h1><span class="q">«Ось Зла»</span>: направление,<br>которого не должно быть</h1>
+  <p class="lede">У Большого взрыва осталось эхо — <b>реликтовое излучение</b>, ровным светом
+    заполняющее всё небо. По теории у него не может быть выделенного направления: Вселенная должна
+    выглядеть одинаково во все стороны. А оно, похоже, есть — и указывает, необъяснимо,
+    <b>вдоль плоскости нашей Солнечной системы</b>.</p>
+
+  <div class="primer">
+    <span class="lab">на всякий случай — что это за свет</span>
+    Реликтовое излучение (CMB) отпущено на волю через ~380 000 лет после Большого взрыва, когда
+    Вселенная остыла и впервые стала прозрачной. Сегодня это микроволновый фон с температурой
+    <b>2,725 K</b>. Его пятнышки чуть теплее и холоднее (разница ~1 часть на 100 000) — это семена,
+    из которых выросли все галактики.
+  </div>
+
+  <!-- MULTIPOLES -->
+  <p class="h2">Шаг 1 · как вообще «раскладывают» небо</p>
+  <p class="sub">Карту фона разбирают на узоры от самых крупных к мелким. Номер <b>ℓ</b> — сколько раз
+    узор укладывается вокруг неба. Диски ниже — схема, не настоящая карта; цвет усилен
+    (<span style="color:var(--hot)">тепло</span> / <span style="color:var(--cold)">холод</span>).</p>
+
+  <div class="ladder">
+    <div class="mp">
+      <div class="l">ℓ = <b>0</b></div>
+      <div class="orb"><div class="disk d-mono"></div></div>
+      <h4>Монополь</h4>
+      <p>Просто средняя температура, 2,725 K. Фон целиком.</p>
+    </div>
+    <div class="mp">
+      <div class="l">ℓ = <b>1</b></div>
+      <div class="orb"><div class="disk d-dip"></div></div>
+      <h4>Диполь</h4>
+      <p>Полнеба теплее. Это эффект нашего движения (~370 км/с) — его вычитают, он не «космический».</p>
+    </div>
+    <div class="mp">
+      <div class="l">ℓ = <b>2</b></div>
+      <div class="orb"><div class="disk d-quad"></div></div>
+      <h4>Квадруполь</h4>
+      <p>Самый крупный настоящий узор ранней Вселенной. И он загадочно <b>слабый</b>.</p>
+    </div>
+    <div class="mp">
+      <div class="l">ℓ = <b>3</b></div>
+      <div class="orb"><div class="disk d-oct"></div></div>
+      <h4>Октуполь</h4>
+      <p>Следующий по величине. Необычно <b>плоский</b> — пятна жмутся к одной плоскости.</p>
+    </div>
+  </div>
+
+  <!-- ALIGNMENT -->
+  <p class="h2 hot">Шаг 2 · собственно, в чём «зло»</p>
+  <p class="sub">Ориентации квадруполя и октуполя должны быть <b>независимы</b> — как два отдельных
+    броска кубика. Но их оси совпадают с точностью до нескольких градусов. И эта общая ось смотрит
+    вдоль эклиптики и почти туда же, куда наше движение.</p>
+
+  <div class="align">
+    <div class="bigorb">
+      <div class="disk d-quad"></div>
+      <div class="axis" style="--ang:-27deg"></div>
+      <div class="lbl">квадруполь ℓ=2</div>
+    </div>
+    <div class="vs">
+      <b>оси совпали</b>
+      должны были смотреть «кто куда» — а смотрят в одну сторону
+    </div>
+    <div class="bigorb">
+      <div class="disk d-oct"></div>
+      <div class="axis" style="--ang:-27deg"></div>
+      <div class="lbl">октуполь ℓ=3</div>
+    </div>
+  </div>
+
+  <p class="sub" style="margin-top:34px">Первичному узору Вселенной <b>неоткуда «знать»</b> про
+    ориентацию нашей крошечной Солнечной системы. Именно эта нелепость — совпадение космического
+    рисунка с нашей локальной плоскостью — и дала имя. Термин ввели Кейт Лэнд и Жоао Магейжу в
+    2005 году, обыграв политический лозунг: ось, которой «не положено существовать».</p>
+
+  <!-- ANOMALY STACK -->
+  <p class="h2">Весь «букет» больших аномалий</p>
+  <p class="sub">«Ось Зла» — не одна странность, а связка. Плюс рядом живут ещё две родственные загадки.</p>
+  <div class="anoms">
+    <div class="anom"><div class="t">Слабый квадруполь</div>
+      <p>ℓ=2 заметно тише, чем предсказывает стандартная модель. Замечено ещё COBE в 1992-м.</p></div>
+    <div class="anom"><div class="t">Плоский октуполь</div>
+      <p>Горячие и холодные области ℓ=3 неожиданно собраны в одной плоскости.</p></div>
+    <div class="anom"><div class="t">Совпадение осей ℓ=2 и ℓ=3</div>
+      <p>Две независимые величины смотрят в одну сторону. Вероятность случайно — порядка процента.</p></div>
+    <div class="anom"><div class="t">Привязка к эклиптике</div>
+      <p>Общая ось лежит вдоль плоскости Солнечной системы и близко к диполю. Это и есть «зло».</p></div>
+    <div class="anom rel"><div class="t">Холодное пятно ⟶ родственник</div>
+      <p>Аномально большая и холодная область в созвездии Эридана. Своя отдельная загадка.</p></div>
+    <div class="anom rel"><div class="t">Асимметрия полушарий ⟶ родственник</div>
+      <p>С одной стороны неба «ряби» стабильно чуть больше, чем с другой. Тоже задаёт направление.</p></div>
+  </div>
+
+  <!-- EXPLANATIONS -->
+  <p class="h2">Три версии — почему так</p>
+  <p class="sub">Здесь и живёт спор. Что аномалии <b>есть в данных</b> — не оспаривается. Спорят об их
+    значимости и причине.</p>
+  <div class="exps">
+    <div class="exp e1">
+      <span class="flag">ведущая · «скучная»</span>
+      <h3>Систематика и передний план</h3>
+      <p>Из карты вычитают свечение нашей Галактики; ошибка вычитания могла впечатать ложный узор.
+        А <b>зодиакальная пыль</b> Солнечной системы и стратегия сканирования спутника сами привязаны
+        к эклиптике — что естественно объясняет ту самую «злую» привязку.</p>
+    </div>
+    <div class="exp e2">
+      <span class="flag">тоже весомая</span>
+      <h3>Статистическая случайность</h3>
+      <p>Небо у нас <b>одно</b>, а на самых крупных масштабах узоров мало (квадруполь — всего 5 чисел).
+        Это «космическая дисперсия» — неустранимый разброс. Плюс аномалии заметили <i>задним числом</i>.
+        Значимость каждой — ~2–3σ, а не золотой стандарт 5σ.</p>
+    </div>
+    <div class="exp e3">
+      <span class="flag">заманчивая · маловероятная</span>
+      <h3>Новая физика</h3>
+      <p>Если аномалия реальна и космологична — нарушен <b>Космологический принцип</b> (у Вселенной нет
+        выделенного направления). Кандидаты: анизотропное расширение (модели Бианки), конечная
+        «зациклённая» топология, первичные поля. Planck искал — убедительного не нашёл, но и не закрыл.</p>
+    </div>
+  </div>
+
+  <!-- RESOLVE -->
+  <div class="panel">
+    <span class="k">почему до сих пор не решено · и как решат</span>
+    <h3>Проблема в том, что небо у нас всего одно</h3>
+    <ul class="pts">
+      <li><b>Два разных прибора видят одно и то же.</b> WMAP (2003) и Planck (2013–2018) — разная
+        техника, разные помехи — оба показывают аномалии. Значит, это вряд ли глюк одного телескопа.</li>
+      <li><b>Но CMB почти исчерпан.</b> На больших углах мы уперлись в космическую дисперсию: точнее
+        измерить температурный фон уже физически нельзя — второго неба нет.</li>
+      <li><b>Решающий тест — поляризация.</b> Реликтовый свет ещё и поляризован, и на больших углах это
+        <i>частично независимый</i> зонд тех же первичных флуктуаций. Повторится аномалия в поляризации —
+        сильный довод за реальную космологию; нет — за случайность и систематику. На это нацелены будущие
+        миссии (напр. LiteBIRD).</li>
+      <li><b>И проверки «на стороне».</b> Изотропию тестируют по распределению квазаров и радиогалактик —
+        там, кстати, всплыла своя «дипольная» напряжённость, тоже намекающая на выделенное направление.</li>
+    </ul>
+    <div class="verdict"><b>Честный итог:</b> скорее всего — смесь космической дисперсии и остаточной
+      систематики. Но убедительного объяснения нет уже 20 лет, а полностью исключить нарушение изотропии
+      нельзя. Поэтому «Ось Зла» и остаётся настоящей открытой проблемой, а не закрытым делом.</div>
+  </div>
+
+  <footer>
+    Диски — схематические, не карты неба; амплитуды цвета усилены ради наглядности.<br>
+    Значимость аномалий — на уровне 2–3σ; название ввели K. Land &amp; J. Magueijo, 2005. Тёмная тема — намеренно.
+  </footer>
+</div>
+</body>
+</html>

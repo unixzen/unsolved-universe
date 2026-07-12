@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Мультивселенные</title>
+<style>
+  :root{
+    --bg:#06070d; --bg2:#0a0d18;
+    --panel:#111629; --panel2:#151b31;
+    --line:#242c49; --line2:#2f3960;
+    --text:#dce3f7; --muted:#8a93b6; --faint:#5b6488;
+    --gold:#ffd27d; --golddim:#5f5230;
+    --hot:#ff7a4d; --hotdeep:#ff5c72; --hotdim:#7d3140;
+    --cold:#5bc8e6; --colddim:#2c4a55;
+    --violet:#b48cff; --violetdim:#4a3a72;
+    --green:#7fe0a8; --greendim:#2f5c42;
+    --maxw:960px;
+    --mono:ui-monospace,"SF Mono","JetBrains Mono","Cascadia Code",Menlo,Consolas,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{ box-sizing:border-box; }
+  body{ background:var(--bg); color:var(--text); font-family:var(--sans);
+    line-height:1.55; -webkit-font-smoothing:antialiased; margin:0; }
+  .stars{ position:fixed; inset:0; z-index:0; pointer-events:none; background-color:var(--bg);
+    background-image:
+      radial-gradient(1.1px 1.1px at 24px 32px, rgba(255,255,255,.7), transparent),
+      radial-gradient(1px 1px at 96px 128px, rgba(214,226,255,.5), transparent),
+      radial-gradient(1.3px 1.3px at 160px 64px, rgba(255,255,255,.55), transparent),
+      radial-gradient(1px 1px at 56px 176px, rgba(190,205,255,.45), transparent);
+    background-repeat:repeat; background-size:230px 230px; animation:tw 10s ease-in-out infinite; }
+  .stars::after{ content:""; position:absolute; inset:0;
+    background:
+      radial-gradient(52% 42% at 82% 8%, rgba(180,140,255,.10), transparent 70%),
+      radial-gradient(50% 45% at 16% 55%, rgba(91,200,230,.06), transparent 70%),
+      radial-gradient(55% 42% at 40% 95%, rgba(127,224,168,.05), transparent 70%); }
+  @keyframes tw{ 0%,100%{opacity:.85} 50%{opacity:1} }
+  @media (prefers-reduced-motion:reduce){ .stars{animation:none} }
+  .wrap{ position:relative; z-index:1; max-width:var(--maxw); margin:0 auto; padding:56px 24px 80px; }
+
+  .eyebrow{ font-family:var(--mono); font-size:12px; letter-spacing:.26em; text-transform:uppercase; color:var(--violet); margin:0 0 14px; }
+  h1{ font-size:clamp(28px,5.6vw,50px); line-height:1.05; letter-spacing:-.025em; font-weight:800; margin:0 0 16px; text-wrap:balance; }
+  .lede{ font-size:clamp(15px,2.2vw,18px); color:var(--muted); max-width:64ch; margin:0; } .lede b{ color:var(--text); }
+
+  .keynote{ margin-top:24px; padding:16px 20px; border-radius:12px; border:1px solid var(--violetdim);
+    background:rgba(180,140,255,.06); font-size:14.5px; } .keynote b{ color:var(--text); }
+
+  .h2{ font-family:var(--mono); font-size:13px; letter-spacing:.18em; text-transform:uppercase; color:var(--muted); margin:44px 0 6px; }
+  .h2.vi{ color:var(--violet); }
+  .h2 + .sub{ color:var(--muted); font-size:14.5px; margin:0 0 20px; max-width:64ch; } .h2 + .sub b{ color:var(--text); }
+
+  /* levels ladder */
+  .lvl{ border-radius:16px; border:1px solid var(--lc,var(--line)); background:linear-gradient(180deg,var(--panel),var(--bg2));
+    padding:20px 22px; margin-bottom:14px; }
+  .lvl.l1{ --lc:var(--greendim); } .lvl.l2{ --lc:var(--golddim); }
+  .lvl.l3{ --lc:var(--violet); box-shadow:0 0 0 1px rgba(180,140,255,.15); }
+  .lvl.l4{ --lc:var(--line2); }
+  .lvl .head{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:12px; }
+  .lvl .tag{ font-family:var(--mono); font-size:11px; color:var(--lc2,var(--muted)); letter-spacing:.08em; }
+  .lvl.l1 .head .tag{ color:var(--green); } .lvl.l2 .head .tag{ color:var(--gold); }
+  .lvl.l3 .head .tag{ color:var(--violet); } .lvl.l4 .head .tag{ color:var(--faint); }
+  .lvl h3{ margin:0; font-size:20px; letter-spacing:-.01em; }
+  .lvl .you{ font-family:var(--mono); font-size:10px; letter-spacing:.06em; padding:3px 9px; border-radius:20px;
+    color:var(--violet); background:rgba(180,140,255,.12); border:1px solid var(--violet); }
+  .lvl .test{ margin-left:auto; font-family:var(--mono); font-size:10px; letter-spacing:.05em; padding:3px 9px; border-radius:20px; white-space:nowrap; }
+  .lvl.l1 .test{ color:var(--green); background:rgba(127,224,168,.1); border:1px solid var(--greendim); }
+  .lvl.l2 .test{ color:var(--gold); background:rgba(255,210,125,.1); border:1px solid var(--golddim); }
+  .lvl.l3 .test{ color:var(--violet); background:rgba(180,140,255,.1); border:1px solid var(--violetdim); }
+  .lvl.l4 .test{ color:var(--faint); background:rgba(130,140,180,.08); border:1px solid var(--line2); }
+  .lvl .grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+  .lvl .f{ } .lvl .f .k{ font-family:var(--mono); font-size:10.5px; color:var(--faint); text-transform:uppercase; letter-spacing:.06em; margin-bottom:3px; }
+  .lvl .f .val{ font-size:13px; color:var(--text); } .lvl .f .val b{ color:#fff; }
+  .lvl .note{ margin-top:12px; font-size:12.5px; color:var(--muted); } .lvl .note b{ color:var(--text); }
+
+  /* everett box */
+  .ev{ padding:24px 26px; border-radius:18px; border:1px solid var(--violetdim);
+    background:linear-gradient(180deg,rgba(30,22,50,.5),var(--bg2)); }
+  .ev h3{ margin:0 0 12px; font-size:20px; }
+  .evrow{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  .evc .t{ font-weight:700; font-size:13.5px; margin-bottom:5px; } .evc.a .t{ color:var(--hotdeep); } .evc.b .t{ color:var(--green); }
+  .evc p{ margin:0; font-size:13px; color:var(--muted); } .evc p b{ color:var(--text); }
+  .evbranch{ margin-top:16px; }
+  .evbranch svg{ display:block; width:100%; max-width:420px; margin:0 auto; height:auto; }
+  .evkey{ margin-top:14px; padding:13px 15px; border-radius:10px; border:1px dashed var(--line2); background:rgba(17,22,41,.5); font-size:13px; color:var(--muted); } .evkey b{ color:var(--violet); }
+
+  /* sources */
+  .src{ display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+  .sc{ padding:16px 18px; border-radius:14px; border:1px solid var(--line); background:var(--panel); }
+  .sc .t{ font-weight:700; font-size:14px; margin-bottom:6px; } .sc p{ margin:0; font-size:12.5px; color:var(--muted); }
+  .sc .arw{ font-family:var(--mono); font-size:11px; color:var(--violet); margin-top:8px; }
+
+  .science{ margin-top:24px; padding:22px 24px; border-radius:16px; border:1px solid var(--line2); background:var(--panel2); }
+  .science .k{ font-family:var(--mono); font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--gold); display:block; margin-bottom:10px; }
+  .science p{ margin:0 0 10px; font-size:14px; color:var(--muted); } .science p:last-child{ margin:0; } .science b{ color:var(--text); }
+
+  footer{ margin-top:32px; color:var(--faint); font-size:12.5px; font-family:var(--mono); line-height:1.7; text-align:center; }
+  @media (max-width:680px){ .lvl .grid,.src,.evrow{ grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<div class="stars"></div>
+<div class="wrap">
+  <p class="eyebrow">Мультивселенные · их несколько, и они разные</p>
+  <h1>«Мультивселенная» — это не одна идея, а четыре</h1>
+  <p class="lede">Их путают в одну кучу, а на деле это <b>разные, не связанные</b> гипотезы из разных
+    областей физики. Многомировая интерпретация Эверетта, о которой ты слышал, — лишь <b>одна</b> из них,
+    и, что удивительно, <b>вообще не про далёкие галактики</b>, а про квантовую механику.</p>
+
+  <div class="keynote">🔑 <b>Главное отличие сразу:</b> одни мультивселенные — это места <i>в пространстве</i>
+    (просто очень далеко), а Эверетт — это параллельные <i>ветви</i> одной волновой функции. Совсем разная природа.</div>
+
+  <!-- LEVELS -->
+  <p class="h2 vi">Четыре уровня — от скучного к безумному</p>
+  <p class="sub">Классификация Макса Тегмарка: чем выше уровень, тем радикальнее и тем труднее проверить.</p>
+
+  <div class="lvl l1">
+    <div class="head"><span class="tag">УРОВЕНЬ I</span><h3>За горизонтом</h3><span class="test">почти наверняка есть</span></div>
+    <div class="grid">
+      <div class="f"><div class="k">источник</div><div class="val">Пространство просто больше видимого (инфляция → возможно, бесконечно)</div></div>
+      <div class="f"><div class="k">что отличается</div><div class="val"><b>ничего</b> — те же законы и константы</div></div>
+      <div class="f"><div class="k">как отделены</div><div class="val">слишком далеко, свет не долетит</div></div>
+    </div>
+    <div class="note">Самый скромный вариант: если пространство бесконечно, то где-то, невообразимо далеко, есть <b>ваша точная копия</b>. Нужна лишь «большая Вселенная» — почти никто не спорит.</div>
+  </div>
+
+  <div class="lvl l2">
+    <div class="head"><span class="tag">УРОВЕНЬ II</span><h3>Пузыри</h3><span class="test">серьёзно · спорно</span></div>
+    <div class="grid">
+      <div class="f"><div class="k">источник</div><div class="val">Вечная инфляция + струнный «ландшафт»</div></div>
+      <div class="f"><div class="k">что отличается</div><div class="val"><b>константы</b>: массы частиц, силы, тёмная энергия, даже число измерений</div></div>
+      <div class="f"><div class="k">как отделены</div><div class="val">пространство между пузырями раздувается быстрее света</div></div>
+    </div>
+    <div class="note">Инфляция, раз начавшись, не останавливается везде — в «вечном» фоне вспухают пузыри-вселенные, каждый со своими законами. Здесь живёт <b>антропный принцип</b>: тёмная энергия мала <i>у нас</i>, потому что в пузырях, где она велика, не рождаются галактики и наблюдатели.</div>
+  </div>
+
+  <div class="lvl l3">
+    <div class="head"><span class="tag">УРОВЕНЬ III</span><h3>Ветви Эверетта</h3><span class="you">★ та, что ты знаешь</span><span class="test">интерпретация · спорно</span></div>
+    <div class="grid">
+      <div class="f"><div class="k">источник</div><div class="val">Квантовая механика <b>без «коллапса»</b></div></div>
+      <div class="f"><div class="k">что отличается</div><div class="val">реализуются <b>все квантовые исходы</b>, каждый в своей ветви</div></div>
+      <div class="f"><div class="k">как отделены</div><div class="val"><b>не в пространстве!</b> ветви декогерируют — расходятся в «пространстве возможностей»</div></div>
+    </div>
+    <div class="note">Ключевое: это <b>не далёкие галактики</b>, а параллельные ветви одной волновой функции. Совершенно иной тип мультивселенной — из микромира, а не из космологии. Подробнее ↓</div>
+  </div>
+
+  <div class="lvl l4">
+    <div class="head"><span class="tag">УРОВЕНЬ IV</span><h3>Математический</h3><span class="test">философия</span></div>
+    <div class="grid">
+      <div class="f"><div class="k">источник</div><div class="val">Тегмарк: всякая непротиворечивая математика «существует»</div></div>
+      <div class="f"><div class="k">что отличается</div><div class="val"><b>сами законы</b> — любая математика = своя вселенная</div></div>
+      <div class="f"><div class="k">как отделены</div><div class="val">абстрактно, «в мире математики»</div></div>
+    </div>
+    <div class="note">Самый крайний и спекулятивный. Большинство физиков считает это уже философией, а не физикой.</div>
+  </div>
+
+  <!-- EVERETT -->
+  <p class="h2 vi">Подробнее про твою — многомировая Эверетта</p>
+  <div class="ev">
+    <h3>Никакого «коллапса» — Вселенная ветвится</h3>
+    <div class="evrow">
+      <div class="evc a"><div class="t">Проблема</div>
+        <p>Квант живёт в суперпозиции (спин ↑ <b>и</b> ↓), но при измерении мы видим <b>один</b> исход. Копенгаген: волновая функция «схлопывается» случайно в один результат. Но «коллапс» — <b>ad hoc</b>, его нет в уравнениях.</p></div>
+      <div class="evc b"><div class="t">Решение Эверетта (1957)</div>
+        <p>Коллапса <b>нет</b>. Волновая функция просто эволюционирует дальше. При измерении наблюдатель <b>запутывается</b> с системой и <b>ветвится</b>: каждый исход происходит — каждый в своей ветви.</p></div>
+    </div>
+    <div class="evbranch">
+      <svg viewBox="0 0 420 130" xmlns="http://www.w3.org/2000/svg">
+        <path d="M20,65 H150" stroke="#b48cff" stroke-width="3" fill="none"/>
+        <circle cx="150" cy="65" r="5" fill="#ffd27d"/>
+        <path d="M150,65 C210,65 230,30 300,28 H400" stroke="#5bc8e6" stroke-width="2.5" fill="none"/>
+        <path d="M150,65 C210,65 230,100 300,102 H400" stroke="#7fe0a8" stroke-width="2.5" fill="none"/>
+        <text x="60" y="56" fill="#8a93b6" font-family="ui-monospace,monospace" font-size="10">суперпозиция</text>
+        <text x="150" y="50" fill="#ffd27d" font-family="ui-monospace,monospace" font-size="9" text-anchor="middle">измерение</text>
+        <text x="360" y="22" fill="#5bc8e6" font-family="ui-monospace,monospace" font-size="10">ветвь: ↑</text>
+        <text x="360" y="118" fill="#7fe0a8" font-family="ui-monospace,monospace" font-size="10">ветвь: ↓</text>
+      </svg>
+    </div>
+    <div class="evkey"><b>Почему многие физики её любят:</b> она берёт уравнения квантовой механики
+      <i>буквально</i> и не добавляет лишнего постулата про «коллапс». Но это именно <b>интерпретация</b>:
+      экспериментально пока неотличима от Копенгагена — они предсказывают одни и те же результаты опытов.</div>
+  </div>
+
+  <!-- SOURCES -->
+  <p class="h2 vi">Откуда они лезут — прямо из нашего разговора</p>
+  <div class="src">
+    <div class="sc"><div class="t">Инфляция</div><p>Её «вечная» версия сама порождает бесконечные пузыри.</p><div class="arw">→ Уровень II</div></div>
+    <div class="sc"><div class="t">Струнный ландшафт</div><p>~10⁵⁰⁰ возможных вакуумов — «меню» разных наборов констант для пузырей.</p><div class="arw">→ наполняет Уровень II</div></div>
+    <div class="sc"><div class="t">Квантовая механика</div><p>Буквальное прочтение без коллапса даёт ветвление.</p><div class="arw">→ Уровень III</div></div>
+  </div>
+
+  <!-- IS IT SCIENCE -->
+  <div class="science">
+    <span class="k">а это вообще наука?</span>
+    <p><b>Главная претензия:</b> почти все мультивселенные <b>непроверяемы</b> — другие пузыри, ветви и
+      область за горизонтом не увидеть. А непроверяемая теория — наука ли это (Поппер, фальсифицируемость)?
+      Спор реальный и жаркий (Эллис и Силк, 2014).</p>
+    <p><b>Защита:</b> это не выдумки, а <b>следствия</b> теорий (инфляция, квантовая механика), которые мы
+      принимаем по другим причинам — нельзя оставить теорию, но выбросить её выводы. Плюс возможны косвенные
+      тесты (след столкновения пузырей в реликте — искали, не нашли).</p>
+    <p><b>Честный спектр:</b> от «почти точно есть и скучно» (Уровень I) через «серьёзно и спорно»
+      (II, III) до «чистая философия» (IV). Ни одна не подтверждена.</p>
+  </div>
+
+  <footer>
+    Классификация уровней — по Максу Тегмарку. Многомировая интерпретация: Хью Эверетт, 1957. Антропный аргумент для Λ: Вайнберг, 1987.<br>
+    Диаграмма ветвления схематична. Ни один тип мультивселенной пока не подтверждён. Тёмная тема — намеренно.
+  </footer>
+</div>
+</body>
+</html>

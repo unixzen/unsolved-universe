@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Где мы живём и куда нас тянет</title>
+<style>
+  :root{
+    --bg:#06070d; --bg2:#0a0d18;
+    --panel:#111629; --panel2:#151b31;
+    --line:#242c49; --line2:#2f3960;
+    --text:#dce3f7; --muted:#8a93b6; --faint:#5b6488;
+    --gold:#ffd27d; --gold2:#c99a4a; --golddim:#5f5230;
+    --crimson:#ff5c72; --crimsondim:#7d3140;
+    --cyan:#6fd8ea;
+    --maxw:940px;
+    --mono:ui-monospace,"SF Mono","JetBrains Mono","Cascadia Code",Menlo,Consolas,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+
+  body{ background:var(--bg); color:var(--text); font-family:var(--sans);
+    line-height:1.55; -webkit-font-smoothing:antialiased; margin:0; }
+
+  .stars{ position:fixed; inset:0; z-index:0; pointer-events:none;
+    background-color:var(--bg);
+    background-image:
+      radial-gradient(1.1px 1.1px at 24px 32px, rgba(255,255,255,.75), transparent),
+      radial-gradient(1px 1px at 96px 128px, rgba(214,226,255,.55), transparent),
+      radial-gradient(1.4px 1.4px at 160px 64px, rgba(255,255,255,.6), transparent),
+      radial-gradient(1px 1px at 56px 176px, rgba(190,205,255,.5), transparent),
+      radial-gradient(1px 1px at 180px 200px, rgba(255,244,220,.55), transparent);
+    background-repeat:repeat; background-size:220px 220px;
+    animation:twinkle 9s ease-in-out infinite;
+  }
+  .stars::after{ content:""; position:absolute; inset:0;
+    background:
+      radial-gradient(60% 40% at 78% 62%, rgba(255,92,114,.10), transparent 70%),
+      radial-gradient(55% 45% at 20% 12%, rgba(255,210,125,.09), transparent 70%),
+      radial-gradient(50% 50% at 85% 96%, rgba(111,216,234,.06), transparent 70%);
+  }
+  @keyframes twinkle{ 0%,100%{opacity:.85} 50%{opacity:1} }
+  @media (prefers-reduced-motion:reduce){ .stars{animation:none} }
+
+  .wrap{ position:relative; z-index:1; max-width:var(--maxw); margin:0 auto;
+    padding:56px 24px 72px; }
+
+  /* ---------- hero ---------- */
+  .eyebrow{ font-family:var(--mono); font-size:12px; letter-spacing:.32em;
+    text-transform:uppercase; color:var(--gold); margin:0 0 14px; }
+  h1{ font-size:clamp(30px,6vw,52px); line-height:1.03; letter-spacing:-.02em;
+    font-weight:800; margin:0 0 16px; text-wrap:balance; }
+  h1 .em{ color:var(--crimson); }
+  .lede{ font-size:clamp(15px,2.2vw,18px); color:var(--muted); max-width:60ch; margin:0; }
+
+  .legend{ display:flex; flex-wrap:wrap; gap:10px 20px; margin:26px 0 4px;
+    font-family:var(--mono); font-size:12px; color:var(--muted); }
+  .legend span{ display:inline-flex; align-items:center; gap:8px; }
+  .dot{ width:11px; height:11px; border-radius:50%; box-shadow:0 0 10px currentColor; }
+  .dot.g{ background:var(--gold); color:var(--gold); }
+  .dot.c{ background:var(--crimson); color:var(--crimson); }
+  .dot.o{ background:var(--faint); color:transparent; box-shadow:none;
+    border:1.5px solid var(--faint); }
+
+  /* ---------- ladder ---------- */
+  .ladder{ margin-top:34px; }
+  .rung{ display:grid; grid-template-columns:132px 44px 1fr; align-items:stretch; }
+
+  .scale{ padding:22px 14px 22px 0; text-align:right; }
+  .size{ display:block; font-family:var(--mono); font-size:13px; color:var(--text);
+    font-variant-numeric:tabular-nums; }
+  .bar{ display:block; height:4px; margin:9px 0 6px auto; border-radius:3px;
+    background:linear-gradient(90deg,var(--gold2),var(--gold)); opacity:.85; }
+  .outer .bar{ background:linear-gradient(90deg,#3a4266,var(--faint)); }
+  .scaleu{ font-family:var(--mono); font-size:10px; letter-spacing:.12em;
+    color:var(--faint); text-transform:uppercase; }
+
+  .spine{ position:relative; }
+  .spine::before{ content:""; position:absolute; left:50%; top:0; bottom:0; width:2px;
+    transform:translateX(-50%); background:var(--golddim); }
+  .outer .spine::before{ background:var(--line); border-left:2px dashed var(--line2);
+    width:0; background:none; }
+  .rung:first-child .spine::before{ top:34px; }
+  .rung:last-child .spine::before{ bottom:auto; height:34px; }
+  .spine::after{ content:""; position:absolute; left:50%; top:34px; width:15px; height:15px;
+    transform:translate(-50%,-50%); border-radius:50%; z-index:2;
+    background:radial-gradient(circle at 35% 35%,#fff,var(--gold) 55%,var(--gold2));
+    box-shadow:0 0 0 4px rgba(255,210,125,.12), 0 0 14px rgba(255,210,125,.55); }
+  .outer .spine::after{ background:var(--panel2); border:2px solid var(--faint);
+    box-shadow:none; }
+  .attractor .spine::after{
+    background:radial-gradient(circle at 35% 35%,#fff,var(--crimson) 55%,var(--crimsondim));
+    box-shadow:0 0 0 4px rgba(255,92,114,.14),0 0 18px rgba(255,92,114,.7);
+    animation:pulse 2.6s ease-in-out infinite; }
+  @keyframes pulse{ 0%,100%{box-shadow:0 0 0 4px rgba(255,92,114,.14),0 0 14px rgba(255,92,114,.55)}
+    50%{box-shadow:0 0 0 7px rgba(255,92,114,.05),0 0 26px rgba(255,92,114,.85)} }
+  @media (prefers-reduced-motion:reduce){ .attractor .spine::after{animation:none} }
+
+  .card{ margin:12px 0; padding:16px 20px; border-radius:14px;
+    background:linear-gradient(180deg,var(--panel),var(--bg2));
+    border:1px solid var(--line); }
+  .attractor .card{ border-color:var(--crimsondim);
+    box-shadow:0 0 0 1px rgba(255,92,114,.12),0 8px 30px rgba(255,92,114,.06); }
+  .outer .card{ background:rgba(17,22,41,.5); border-style:dashed; }
+
+  .lvl{ font-family:var(--mono); font-size:11px; color:var(--gold2);
+    letter-spacing:.2em; margin-bottom:4px; }
+  .outer .lvl{ color:var(--faint); }
+  .card h3{ font-size:19px; font-weight:700; margin:0 0 6px; letter-spacing:-.01em; }
+  .card h3 .en{ font-family:var(--mono); font-size:12px; font-weight:500;
+    color:var(--faint); letter-spacing:.02em; margin-left:8px; }
+  .card p{ margin:0; color:var(--muted); font-size:14.5px; }
+
+  .meta{ display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; align-items:center; }
+  .part{ font-family:var(--mono); font-size:12px; color:var(--gold);
+    background:rgba(255,210,125,.08); border:1px solid var(--golddim);
+    padding:3px 9px; border-radius:20px; }
+  .outer .part{ color:var(--muted); background:rgba(130,140,180,.07);
+    border-color:var(--line2); }
+  .badge{ font-family:var(--mono); font-size:11px; color:var(--cyan);
+    border:1px solid #2c4a55; background:rgba(111,216,234,.07);
+    padding:3px 9px; border-radius:20px; letter-spacing:.02em; }
+
+  .pulltag{ margin-top:13px; padding:11px 14px; border-radius:10px;
+    background:rgba(255,92,114,.09); border:1px solid var(--crimsondim);
+    color:#ffd0d7; font-size:13.5px; display:flex; gap:10px; align-items:flex-start; }
+  .pulltag b{ color:var(--crimson); }
+
+  .divider{ grid-column:1/-1; display:flex; align-items:center; gap:14px;
+    margin:6px 0 6px 176px; color:var(--faint); font-family:var(--mono);
+    font-size:11px; letter-spacing:.14em; text-transform:uppercase; }
+  .divider::before,.divider::after{ content:""; height:1px; flex:1;
+    background:linear-gradient(90deg,transparent,var(--line2),transparent); }
+
+  /* ---------- panels ---------- */
+  .panel{ margin-top:30px; padding:24px 26px; border-radius:16px;
+    background:linear-gradient(180deg,var(--panel2),var(--bg2));
+    border:1px solid var(--line); }
+  .panel.pull{ border-color:var(--crimsondim);
+    background:linear-gradient(180deg,rgba(45,20,28,.55),var(--bg2)); }
+  .panel h2{ font-size:15px; font-family:var(--mono); letter-spacing:.16em;
+    text-transform:uppercase; margin:0 0 4px; }
+  .panel.pull h2{ color:var(--crimson); }
+  .panel .sub{ color:var(--muted); font-size:13.5px; margin:0 0 16px; }
+  .flow{ display:flex; flex-wrap:wrap; align-items:center; gap:8px 4px;
+    font-family:var(--mono); font-size:13px; margin-bottom:18px; }
+  .flow .node{ padding:6px 11px; border-radius:8px; background:var(--panel);
+    border:1px solid var(--line2); }
+  .flow .node.home{ border-color:var(--golddim); color:var(--gold); }
+  .flow .node.hit{ border-color:var(--crimsondim); color:var(--crimson);
+    background:rgba(255,92,114,.08); }
+  .flow .arw{ color:var(--crimson); font-weight:700; }
+  .flow .v{ color:var(--cyan); }
+  ul.pts{ margin:0; padding:0; list-style:none; display:grid; gap:11px; }
+  ul.pts li{ padding-left:22px; position:relative; color:var(--text);
+    font-size:14.5px; }
+  ul.pts li::before{ content:"→"; position:absolute; left:0; color:var(--crimson);
+    font-family:var(--mono); }
+  ul.pts li b{ color:#fff; }
+
+  .grid2{ display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-top:24px; }
+  .note{ padding:22px 24px; border-radius:16px; border:1px solid var(--line);
+    background:linear-gradient(180deg,var(--panel),var(--bg2)); }
+  .note .tag{ font-family:var(--mono); font-size:11px; letter-spacing:.16em;
+    text-transform:uppercase; padding:3px 10px; border-radius:20px; display:inline-block;
+    margin-bottom:12px; }
+  .note.evil .tag{ color:var(--cyan); border:1px solid #2c4a55; background:rgba(111,216,234,.08); }
+  .note.pulled .tag{ color:var(--gold); border:1px solid var(--golddim); background:rgba(255,210,125,.08); }
+  .note h3{ margin:0 0 10px; font-size:18px; letter-spacing:-.01em; }
+  .note p{ margin:0 0 10px; color:var(--muted); font-size:14px; }
+  .note p:last-child{ margin-bottom:0; }
+  .note b{ color:var(--text); }
+  .verdict{ font-family:var(--mono); font-size:13px; margin-top:14px; padding-top:14px;
+    border-top:1px solid var(--line); }
+  .verdict.no{ color:var(--crimson); }
+  .verdict.maybe{ color:var(--cyan); }
+
+  footer{ margin-top:34px; color:var(--faint); font-size:12.5px;
+    font-family:var(--mono); line-height:1.7; text-align:center; }
+
+  @media (max-width:620px){
+    .rung{ grid-template-columns:96px 34px 1fr; }
+    .scale{ padding-right:8px; }
+    .size{ font-size:12px; }
+    .card h3 .en{ display:block; margin:4px 0 0; }
+    .grid2{ grid-template-columns:1fr; }
+    .divider{ margin-left:130px; }
+  }
+</style>
+</head>
+<body>
+<div class="stars"></div>
+
+<div class="wrap">
+  <p class="eyebrow">Космическая иерархия · масштабы и гравитация</p>
+  <h1>Где мы живём <span class="em">и куда нас тянет</span></h1>
+  <p class="lede">Матрёшка структур от Солнечной системы до края наблюдаемой Вселенной.
+    Золотая нить — то, <b style="color:var(--gold)">частью чего мы являемся</b>. Красное —
+    <b style="color:var(--crimson)">точка, к которой мы летим</b>.</p>
+
+  <div class="legend">
+    <span><i class="dot g"></i> наша цепочка принадлежности</span>
+    <span><i class="dot c"></i> Великий аттрактор — куда тянет</span>
+    <span><i class="dot o"></i> внешний контекст (уже не «мы»)</span>
+    <span style="color:var(--faint)">полоска слева = логарифм. масштаб (каждый шаг ≈ ×10–×100)</span>
+  </div>
+
+  <div class="ladder">
+
+    <div class="rung member">
+      <div class="scale"><span class="size">~2 св. года</span>
+        <span class="bar" style="width:5%"></span><span class="scaleu">поперечник</span></div>
+      <div class="spine"></div>
+      <div class="card">
+        <div class="lvl">01</div>
+        <h3>Солнечная система<span class="en">Solar System</span></h3>
+        <p>Солнце, планеты, пояс Койпера и облако Оорта на далёкой окраине.</p>
+        <div class="meta"><span class="part">часть → рукав Ориона</span></div>
+      </div>
+    </div>
+
+    <div class="rung member">
+      <div class="scale"><span class="size">~1 000 св. лет</span>
+        <span class="bar" style="width:27%"></span><span class="scaleu">поперечник</span></div>
+      <div class="spine"></div>
+      <div class="card">
+        <div class="lvl">02</div>
+        <h3>Местный пузырь<span class="en">Local Bubble</span></h3>
+        <p>Разрежённая каверна в межзвёздном газе, продутая древними сверхновыми — в ней сейчас летит Солнце.</p>
+        <div class="meta"><span class="part">часть → рукав Ориона</span></div>
+      </div>
+    </div>
+
+    <div class="rung member">
+      <div class="scale"><span class="size">~10 000 св. лет</span>
+        <span class="bar" style="width:37%"></span><span class="scaleu">длина</span></div>
+      <div class="spine"></div>
+      <div class="card">
+        <div class="lvl">03</div>
+        <h3>Рукав Ориона<span class="en">Orion Arm</span></h3>
+        <p>Небольшой спиральный рукав нашей Галактики — наш галактический «переулок» между двумя крупными рукавами.</p>
+        <div class="meta"><span class="part">часть → Млечный Путь</span></div>
+      </div>
+    </div>
+
+    <div class="rung member">
+      <div class="scale"><span class="size">~150 000 св. лет</span>
+        <span class="bar" style="width:47%"></span><span class="scaleu">поперечник</span></div>
+      <div class="spine"></div>
+      <div class="card">
+        <div class="lvl">04</div>
+        <h3>Млечный Путь<span class="en">Milky Way</span></h3>
+        <p>Наша галактика: 100–400 миллиардов звёзд, спиральный диск с перемычкой.</p>
+        <div class="meta"><span class="part">часть → Местная группа</span>
+          <span class="badge">крупнейший член — на пару с Андромедой</span></div>
+      </div>
+    </div>
+
+    <div class="rung member">
+      <div class="scale"><span class="size">~10 млн св. лет</span>
+        <span class="bar" style="width:64%"></span><span class="scaleu">поперечник</span></div>
+      <div class="spine"></div>
+      <div class="card">
+        <div class="lvl">05</div>
+        <h3>Местная группа<span class="en">Local Group</span></h3>
+        <p>~80 галактик: Млечный Путь, Андромеда (M31), Треугольник (M33) и рой карликов.</p>
+        <div class="meta"><span class="part">часть → Сверхскопление Девы</span>
+          <span class="badge">★ связана гравитацией — не разлетится</span></div>
+      </div>
+    </div>
+
+    <div class="rung member">
+      <div class="scale"><span class="size">~110 млн св. лет</span>
+        <span class="bar" style="width:73%"></span><span class="scaleu">поперечник</span></div>
+      <div class="spine"></div>
+      <div class="card">
+        <div class="lvl">06</div>
+        <h3>Сверхскопление Девы<span class="en">Virgo / Local Supercluster</span></h3>
+        <p>Сотня групп галактик вокруг скопления Девы. Раньше считалось нашим «домом» верхнего уровня…</p>
+        <div class="meta"><span class="part">часть → Ланиакея</span>
+          <span class="badge">оказалось лишь лепестком Ланиакеи</span></div>
+      </div>
+    </div>
+
+    <div class="rung member attractor">
+      <div class="scale"><span class="size">~520 млн св. лет</span>
+        <span class="bar" style="width:80%"></span><span class="scaleu">поперечник</span></div>
+      <div class="spine"></div>
+      <div class="card">
+        <div class="lvl">07 · наш «дом» верхнего уровня</div>
+        <h3>Ланиакея<span class="en">Laniakea · 2014</span></h3>
+        <p>~100 000 галактик. Определена в 2014 году по тому, куда текут галактики: всё, что «стекает» к одному центру, — это Ланиакея.</p>
+        <div class="pulltag">◄&nbsp;<span><b>Великий аттрактор</b> — гравитационный центр этого «водосбора».
+          Местная группа падает к нему со скоростью ~600 км/с.</span></div>
+      </div>
+    </div>
+
+    <div class="divider">граница: дальше — уже не «мы», а соседи по паутине</div>
+
+    <div class="rung outer">
+      <div class="scale"><span class="size">сотни млн св. лет</span>
+        <span class="bar" style="width:82%"></span><span class="scaleu">удалённость</span></div>
+      <div class="spine"></div>
+      <div class="card">
+        <div class="lvl">08</div>
+        <h3>Соседние сверхскопления<span class="en">neighbours</span></h3>
+        <p>Шепли (самое массивное рядом — тянет нас <i>из-за</i> Великого аттрактора), Персей–Рыбы, Кома, Геркулес.</p>
+        <div class="meta"><span class="part">узлы → космической паутины</span></div>
+      </div>
+    </div>
+
+    <div class="rung outer">
+      <div class="scale"><span class="size">~1 млрд+ св. лет</span>
+        <span class="bar" style="width:83%"></span><span class="scaleu">длина</span></div>
+      <div class="spine"></div>
+      <div class="card">
+        <div class="lvl">09</div>
+        <h3>Волокна и стены<span class="en">filaments &amp; walls</span></h3>
+        <p>Нити из тысяч галактик, напр. Слоановская Великая стена. Каркас, вдоль которого нанизаны все сверхскопления.</p>
+        <div class="meta"><span class="part">каркас → космической паутины</span></div>
+      </div>
+    </div>
+
+    <div class="rung outer">
+      <div class="scale"><span class="size">десятки млрд<br>св. лет</span>
+        <span class="bar" style="width:95%"></span><span class="scaleu">масштаб</span></div>
+      <div class="spine"></div>
+      <div class="card">
+        <div class="lvl">10</div>
+        <h3>Космическая паутина<span class="en">Cosmic Web</span></h3>
+        <p>Всё вещество Вселенной разом: светящиеся нити и стены галактик, разделённые гигантскими пустотами — войдами.</p>
+        <div class="meta"><span class="part">наполняет → наблюдаемую Вселенную</span></div>
+      </div>
+    </div>
+
+    <div class="rung outer">
+      <div class="scale"><span class="size">~93 млрд св. лет</span>
+        <span class="bar" style="width:100%"></span><span class="scaleu">поперечник</span></div>
+      <div class="spine"></div>
+      <div class="card">
+        <div class="lvl">11</div>
+        <h3>Наблюдаемая Вселенная<span class="en">Observable Universe</span></h3>
+        <p>Всё, свет от чего успел до нас дойти за 13,8 млрд лет. Дальше этого горизонта — принципиально неизвестность.</p>
+        <div class="meta"><span class="part">край того, что можно увидеть</span></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- PULL PANEL -->
+  <div class="panel pull">
+    <h2>Куда и почему нас тянет</h2>
+    <p class="sub">Поверх общего расширения Вселенной у нас есть добавочная «личная» скорость.</p>
+    <div class="flow">
+      <span class="node home">Местная группа</span>
+      <span class="arw">──▶</span>
+      <span class="v">~600 км/с</span>
+      <span class="arw">──▶</span>
+      <span class="node hit">Великий аттрактор</span>
+      <span class="arw">··▶</span>
+      <span class="node">Шепли (ещё дальше)</span>
+    </div>
+    <ul class="pts">
+      <li><b>Направление</b> — созвездия Наугольника и Центавра. Сам аттрактор (скопление Наугольника, Abell 3627) — в ~150–250 млн св. лет.</li>
+      <li><b>Это не объект и не чёрная дыра</b> — а огромная концентрация массы из скоплений галактик. Их суммарная гравитация и есть «сток».</li>
+      <li><b>За аттрактором тянет Шепли</b> — самое массивное сверхскопление по соседству; часть нашего движения на самом деле «его».</li>
+      <li><b>Нас ещё и выталкивает</b> — с противоположной стороны лежит огромная пустота, «Диполь-отталкиватель» (2017). Итог = притяжение Шепли + отталкивание войда.</li>
+      <li><b>Зона избегания</b> — аттрактор прячется прямо за диском Млечного Пути, пыль заслоняет его в оптике. Изучают в рентгене и радио.</li>
+    </ul>
+  </div>
+
+  <!-- TWO NOTES -->
+  <div class="grid2">
+    <div class="note evil">
+      <span class="tag">частая путаница</span>
+      <h3>Ось Зла — это не место</h3>
+      <p><b>Куда нас тянет — это Великий аттрактор.</b> А «Ось Зла» — совсем про другое: это аномалия в <b>реликтовом излучении</b> (свет-эхо Большого взрыва), а не структура в пространстве.</p>
+      <p>Крупные «пятна» фона (квадруполь и октуполь) загадочно выстроены в линию друг с другом — и, что странно, с плоскостью Солнечной системы. По теории Вселенная должна выглядеть <b>одинаково во все стороны</b>, поэтому выделенное направление «не должно существовать».</p>
+      <p>Подтверждено и WMAP, и Planck — значит, вряд ли сбой прибора. Но большинство считает это статистической случайностью или систематикой в данных, а не реальной «осью» космоса.</p>
+      <div class="verdict maybe">СТАТУС: открытая загадка, скорее всего — совпадение</div>
+    </div>
+
+    <div class="note pulled">
+      <span class="tag">главный вопрос</span>
+      <h3>Так утянет ли нас туда?</h3>
+      <p><b>Нет.</b> На таких масштабах побеждает <b>тёмная энергия</b> — ускоренное расширение Вселенной. Оно растаскивает пространство быстрее, чем гравитация успевает всё стянуть.</p>
+      <p>Ланиакея <b>не связана гравитационно</b>: это моментальный снимок потоков «прямо сейчас». Со временем она разлетится, а не схлопнется в точку.</p>
+      <p>Реально останется вместе только <b>Местная группа</b>. Через ~4,5 млрд лет Млечный Путь сольётся с Андромедой в галактику «Милкомеда».</p>
+      <div class="verdict no">ИТОГ: летим в сторону аттрактора — да; долетим — нет</div>
+    </div>
+  </div>
+
+  <footer>
+    Порядок вложенности: Солнечная система ⊂ рукав Ориона ⊂ Млечный Путь ⊂ Местная группа ⊂ Сверхскопление Девы ⊂ Ланиакея ⊂ космическая паутина ⊂ наблюдаемая Вселенная.<br>
+    Размеры округлены; «св. лет» = световых лет. Тёмная тема оформления выбрана намеренно — под цвет космоса.
+  </footer>
+</div>
+</body>
+</html>

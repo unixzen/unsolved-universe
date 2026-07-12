@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Великое объединение</title>
+<style>
+  :root{
+    --bg:#06070d; --bg2:#0a0d18;
+    --panel:#111629; --panel2:#151b31;
+    --line:#242c49; --line2:#2f3960;
+    --text:#dce3f7; --muted:#8a93b6; --faint:#5b6488;
+    --gold:#ffd27d; --golddim:#5f5230;
+    --hot:#ff7a4d; --hotdeep:#ff5c72; --hotdim:#7d3140;
+    --cold:#5bc8e6; --colddim:#2c4a55;
+    --violet:#b48cff; --violetdim:#4a3a72;
+    --green:#7fe0a8; --greendim:#2f5c42;
+    --maxw:960px;
+    --mono:ui-monospace,"SF Mono","JetBrains Mono","Cascadia Code",Menlo,Consolas,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{ box-sizing:border-box; }
+  body{ background:var(--bg); color:var(--text); font-family:var(--sans);
+    line-height:1.55; -webkit-font-smoothing:antialiased; margin:0; }
+
+  .stars{ position:fixed; inset:0; z-index:0; pointer-events:none; background-color:var(--bg);
+    background-image:
+      radial-gradient(1.1px 1.1px at 24px 32px, rgba(255,255,255,.7), transparent),
+      radial-gradient(1px 1px at 96px 128px, rgba(214,226,255,.5), transparent),
+      radial-gradient(1.3px 1.3px at 160px 64px, rgba(255,255,255,.55), transparent),
+      radial-gradient(1px 1px at 56px 176px, rgba(190,205,255,.45), transparent);
+    background-repeat:repeat; background-size:230px 230px; animation:tw 10s ease-in-out infinite; }
+  .stars::after{ content:""; position:absolute; inset:0;
+    background:
+      radial-gradient(50% 42% at 80% 10%, rgba(255,210,125,.08), transparent 70%),
+      radial-gradient(52% 45% at 16% 62%, rgba(180,140,255,.08), transparent 70%); }
+  @keyframes tw{ 0%,100%{opacity:.85} 50%{opacity:1} }
+  @media (prefers-reduced-motion:reduce){ .stars{animation:none} }
+
+  .wrap{ position:relative; z-index:1; max-width:var(--maxw); margin:0 auto; padding:56px 24px 72px; }
+
+  .eyebrow{ font-family:var(--mono); font-size:12px; letter-spacing:.26em; text-transform:uppercase;
+    margin:0 0 14px; background:linear-gradient(90deg,var(--violet),var(--cold),var(--gold));
+    -webkit-background-clip:text; background-clip:text; color:transparent; }
+  h1{ font-size:clamp(30px,6vw,54px); line-height:1.03; letter-spacing:-.025em; font-weight:800;
+    margin:0 0 16px; text-wrap:balance; }
+  h1 .u{ background:linear-gradient(90deg,var(--violet),var(--gold)); -webkit-background-clip:text;
+    background-clip:text; color:transparent; }
+  .lede{ font-size:clamp(15px,2.2vw,18px); color:var(--muted); max-width:64ch; margin:0; }
+  .lede b{ color:var(--text); }
+
+  .h2{ font-family:var(--mono); font-size:13px; letter-spacing:.18em; text-transform:uppercase;
+    color:var(--muted); margin:46px 0 6px; }
+  .h2 + .sub{ color:var(--muted); font-size:14.5px; margin:0 0 20px; max-width:64ch; }
+  .h2 + .sub b{ color:var(--text); }
+
+  .card{ padding:22px 24px; border-radius:16px; border:1px solid var(--line);
+    background:linear-gradient(180deg,var(--panel),var(--bg2)); }
+  .plotwrap{ overflow-x:auto; } svg.plot{ display:block; width:100%; min-width:560px; height:auto; }
+  .plegend{ display:flex; gap:18px; flex-wrap:wrap; margin-top:12px; font-size:13px; color:var(--muted); }
+  .plegend span{ display:inline-flex; align-items:center; gap:7px; }
+  .plegend i{ width:16px; height:3px; border-radius:2px; }
+  .pnote{ margin-top:12px; font-size:13px; color:var(--muted); }
+  .pnote b{ color:var(--text); }
+
+  /* ladder */
+  .ladder{ display:flex; flex-direction:column; gap:12px; }
+  .rung{ display:grid; grid-template-columns:120px 1fr auto; gap:16px; align-items:center;
+    padding:16px 20px; border-radius:14px; border:1px solid var(--line);
+    background:linear-gradient(90deg,var(--panel),var(--bg2)); }
+  .rung .en{ font-family:var(--mono); font-size:13px; color:var(--gold); font-variant-numeric:tabular-nums; }
+  .rung .en small{ display:block; color:var(--faint); font-size:10.5px; }
+  .rung .nm{ font-weight:700; font-size:16px; } .rung .nm span{ font-weight:400; color:var(--muted);
+    font-size:13px; display:block; margin-top:2px; }
+  .rung .bdg{ font-family:var(--mono); font-size:10.5px; letter-spacing:.08em; padding:3px 10px;
+    border-radius:20px; white-space:nowrap; }
+  .rung.conf{ border-color:var(--greendim); } .rung.conf .bdg{ color:var(--green);
+    background:rgba(127,224,168,.1); border:1px solid var(--greendim); }
+  .rung.hyp .bdg{ color:var(--gold); background:rgba(255,210,125,.1); border:1px solid var(--golddim); }
+  .rung.spec{ opacity:.9; } .rung.spec .bdg{ color:var(--violet); background:rgba(180,140,255,.1);
+    border:1px solid var(--violetdim); }
+  .rung.hyp{ border-color:var(--golddim); box-shadow:0 0 0 1px rgba(255,210,125,.08); }
+
+  /* groups */
+  .grp{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .gcard{ padding:18px 20px; border-radius:14px; border:1px solid var(--line); background:var(--panel); }
+  .gcard .nm{ font-family:var(--mono); font-size:17px; font-weight:700; color:var(--violet); }
+  .gcard .yr{ font-family:var(--mono); font-size:11px; color:var(--faint); margin-left:8px; }
+  .gcard p{ margin:8px 0 0; font-size:13px; color:var(--muted); } .gcard p b{ color:var(--text); }
+
+  /* predictions */
+  .preds{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .pred{ padding:15px 17px; border-radius:12px; border:1px solid var(--line); background:var(--panel);
+    display:flex; gap:12px; align-items:flex-start; }
+  .pred .v{ font-family:var(--mono); font-size:10px; letter-spacing:.06em; padding:3px 8px;
+    border-radius:6px; white-space:nowrap; flex:0 0 auto; margin-top:2px; }
+  .pred.win .v{ color:var(--green); background:rgba(127,224,168,.1); border:1px solid var(--greendim); }
+  .pred.dead .v{ color:var(--hotdeep); background:rgba(255,92,114,.1); border:1px solid var(--hotdim); }
+  .pred.open .v{ color:var(--cold); background:rgba(91,200,230,.1); border:1px solid var(--colddim); }
+  .pred .t{ font-weight:700; font-size:13.5px; } .pred p{ margin:2px 0 0; font-size:12.3px; color:var(--muted); }
+
+  .proton{ margin-top:16px; padding:18px 20px; border-radius:14px; border:1px solid var(--hotdim);
+    background:rgba(255,92,114,.06); }
+  .proton .t{ font-weight:700; font-size:15px; margin-bottom:6px; }
+  .proton p{ margin:0; font-size:13.5px; color:var(--muted); } .proton b{ color:var(--text); }
+  .proton .eq{ font-family:var(--mono); color:var(--hotdeep); }
+
+  .verdict{ margin-top:24px; padding:18px 20px; border-radius:14px; border:1px solid var(--line2);
+    background:var(--panel2); font-size:14.5px; } .verdict b{ color:var(--gold); }
+
+  footer{ margin-top:32px; color:var(--faint); font-size:12.5px; font-family:var(--mono);
+    line-height:1.7; text-align:center; }
+
+  @media (max-width:680px){
+    .grp,.preds{ grid-template-columns:1fr; }
+    .rung{ grid-template-columns:1fr auto; } .rung .en{ grid-column:1/-1; }
+  }
+</style>
+</head>
+<body>
+<div class="stars"></div>
+
+<div class="wrap">
+  <p class="eyebrow">Великое объединение · три силы как одна</p>
+  <h1>Что такое <span class="u">Великое объединение</span></h1>
+  <p class="lede">Из трёх фундаментальных сил (электромагнитная, слабая, сильная) <b>получается одна</b> —
+    если поднять энергию достаточно высоко. При наших энергиях единая сила «расщеплена» на три с разной
+    силой, но глубоко внутри это, возможно, <b>одно и то же</b>. Прецедент уже есть — две из трёх сил
+    физики объединили по-настоящему.</p>
+
+  <!-- COUPLING PLOT -->
+  <p class="h2">Главная улика: силы «сходятся» с ростом энергии</p>
+  <p class="sub">Сила каждого взаимодействия <b>не постоянна</b> — она меняется с энергией. Сильное с
+    ростом энергии слабеет, электромагнитное крепнет. Если продолжить их линии вверх — они почти
+    встречаются в одной точке около <b>10¹⁶ ГэВ</b>.</p>
+  <div class="card plotwrap">
+    <svg class="plot" viewBox="0 0 640 280" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <line x1="60" y1="234" x2="612" y2="234" stroke="#242c49"/>
+      <line x1="60" y1="234" x2="60" y2="26" stroke="#242c49"/>
+      <!-- Planck zone -->
+      <line x1="600" y1="30" x2="600" y2="234" stroke="#4a3a72" stroke-width="1" stroke-dasharray="4 4"/>
+      <text x="596" y="24" fill="#b48cff" font-family="ui-monospace,monospace" font-size="10" text-anchor="end">Планк 10¹⁹ · гравитация</text>
+      <!-- LHC marker -->
+      <line x1="124" y1="40" x2="124" y2="234" stroke="#5b6488" stroke-width="1" stroke-dasharray="3 4"/>
+      <text x="128" y="52" fill="#8a93b6" font-family="ui-monospace,monospace" font-size="10">мы здесь · LHC ~10⁴</text>
+      <!-- convergence glow -->
+      <circle cx="505" cy="116" r="16" fill="#ffd27d" opacity="0.14"/>
+      <circle cx="505" cy="116" r="6" fill="#fff"/>
+      <text x="505" y="100" fill="#ffd27d" font-family="ui-monospace,monospace" font-size="11" text-anchor="middle">объединение ~10¹⁶ ГэВ</text>
+      <!-- strong (violet) -->
+      <path d="M60,64 C220,86 380,108 505,116" stroke="#b48cff" stroke-width="3" fill="none"/>
+      <text x="66" y="58" fill="#b48cff" font-family="var(--sans)" font-size="11">сильное</text>
+      <!-- weak (cyan) -->
+      <path d="M60,132 C220,128 380,122 505,116" stroke="#5bc8e6" stroke-width="3" fill="none"/>
+      <text x="66" y="150" fill="#5bc8e6" font-family="var(--sans)" font-size="11">слабое</text>
+      <!-- em (gold) -->
+      <path d="M60,192 C220,172 380,140 505,116" stroke="#ffd27d" stroke-width="3" fill="none"/>
+      <text x="66" y="206" fill="#ffd27d" font-family="var(--sans)" font-size="11">электромагнитное</text>
+      <!-- unified -->
+      <path d="M505,116 L598,120" stroke="#ffffff" stroke-width="3.5" fill="none"/>
+      <text x="14" y="140" fill="#5b6488" font-family="ui-monospace,monospace" font-size="10" transform="rotate(-90 14 140)">сила взаимодействия</text>
+      <text x="300" y="256" fill="#5b6488" font-family="ui-monospace,monospace" font-size="10" text-anchor="middle">энергия (логарифм) →</text>
+    </svg>
+  </div>
+  <p class="pnote"><b>Тонкость:</b> в «голой» Стандартной модели линии сходятся <i>почти</i>, но чуть
+    промахиваются. С добавкой суперсимметрии они встречаются точнее — это была одна из причин в неё верить.</p>
+
+  <!-- LADDER -->
+  <p class="h2">Три этажа объединения — и где мы</p>
+  <p class="sub">Объединение уже <b>однажды случилось на глазах у физиков</b>. Великое объединение — следующий этаж; и оно, важно, <b>ещё не включает гравитацию</b>.</p>
+  <div class="ladder">
+    <div class="rung conf">
+      <div class="en">~100 ГэВ<small>достижимо</small></div>
+      <div class="nm">Электрослабое объединение<span>электромагнитное + слабое = одно</span></div>
+      <div class="bdg">ПОДТВЕРЖДЕНО · Нобель 1979</div>
+    </div>
+    <div class="rung hyp">
+      <div class="en">~10¹⁶ ГэВ<small>недостижимо</small></div>
+      <div class="nm">Великое объединение (GUT)<span>+ сильное взаимодействие = одно</span></div>
+      <div class="bdg">ГИПОТЕЗА · ищут</div>
+    </div>
+    <div class="rung spec">
+      <div class="en">~10¹⁹ ГэВ<small>Планк</small></div>
+      <div class="nm">Теория всего<span>+ гравитация = одно</span></div>
+      <div class="bdg">СПЕКУЛЯЦИЯ · струны</div>
+    </div>
+  </div>
+
+  <!-- GROUPS -->
+  <p class="h2">Как это пытаются записать</p>
+  <div class="grp">
+    <div class="gcard"><span class="nm">SU(5)</span><span class="yr">Джорджи–Глэшоу, 1974</span>
+      <p>Самая простая. Впервые уложила кварки и лептоны в <b>одни семейства</b>. Сделала громкое предсказание — распад протона — и на нём же <b>погорела</b>.</p></div>
+    <div class="gcard"><span class="nm">SO(10)</span><span class="yr">1975</span>
+      <p>Изящнее: все частицы одного поколения садятся в <b>один мультиплет</b>. Естественно содержит правое нейтрино → связывает с массой нейтрино (see-saw).</p></div>
+  </div>
+
+  <!-- PREDICTIONS -->
+  <p class="h2">Что предсказывает — и как сбывается</p>
+  <div class="preds">
+    <div class="pred dead"><span class="v">ОПРОВЕРГНУТО</span>
+      <div><div class="t">Распад протона (простейшая SU(5))</div>
+        <p>Предсказала жизнь протона ~10³¹ лет. Super-K не увидел распада → &gt;10³⁴ лет. Минимальная SU(5) мертва; сложные версии ещё живы.</p></div></div>
+    <div class="pred win"><span class="v">УСПЕХ ✓</span>
+      <div><div class="t">Квантование заряда</div>
+        <p>Объясняет, почему заряд электрона <b>ровно</b> равен и противоположен протонному — Стандартная модель это просто постулирует.</p></div></div>
+    <div class="pred open"><span class="v">НЕ НАЙДЕНЫ</span>
+      <div><div class="t">Магнитные монополи</div>
+        <p>GUT их предсказывает; мы ни одного не видели. Их отсутствие <b>помогло родиться теории инфляции</b> (она их «разбавила»).</p></div></div>
+    <div class="pred win"><span class="v">ЛОЖИТСЯ</span>
+      <div><div class="t">Массы нейтрино</div>
+        <p>SO(10) естественно даёт крохотные массы нейтрино через see-saw — как раз то, что нашли в осцилляциях.</p></div></div>
+  </div>
+
+  <div class="proton">
+    <div class="t">Ключевой тест — распад протона</div>
+    <p>Если кварки и лептоны — родня в одном мультиплете, протон <b>не абсолютно вечен</b>: возможен
+      распад <span class="eq">p → e⁺ + π⁰</span>. Ловят не один протон, а следят за <b>гигантскими баками
+      воды</b> (Super-Kamiokande — 50 000 тонн, там ~10³⁴ протонов) в ожидании хоть одного распада.
+      Десятилетия — ни одного. Следующие охотники: Hyper-Kamiokande, DUNE, JUNO.</p>
+  </div>
+
+  <div class="verdict"><b>Итог:</b> электрослабое объединение — <i>реальность</i>, подтверждённая и
+    нобелевская: это доказательство, что силы вообще умеют сливаться. Великое объединение — красивая,
+    <i>фальсифицируемая</i> гипотеза: одно предсказание (квантование заряда) сбылось, простейшая версия
+    уже опровергнута распадом протона, а решающий тест продолжается. Но гравитацию оно не трогает —
+    это лишь предпоследний этаж на пути к «теории всего».</div>
+
+  <footer>
+    График «схождения» — схематический (обычно рисуют обратную константу α⁻¹). Масштабы энергий порядковые.<br>
+    SU(5): Джорджи–Глэшоу 1974. Электрослабое: Глэшоу–Салам–Вайнберг, Нобель 1979, W/Z 1983. Тёмная тема — намеренно.
+  </footer>
+</div>
+</body>
+</html>

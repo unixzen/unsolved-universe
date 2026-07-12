@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Хаббловская напряжённость</title>
+<style>
+  :root{
+    --bg:#06070d; --bg2:#0a0d18;
+    --panel:#111629; --panel2:#151b31;
+    --line:#242c49; --line2:#2f3960;
+    --text:#dce3f7; --muted:#8a93b6; --faint:#5b6488;
+    --gold:#ffd27d; --golddim:#5f5230;
+    --hot:#ff7a4d; --hotdeep:#ff5c72; --hotdim:#7d3140;
+    --cold:#5bc8e6; --colddim:#2c4a55;
+    --violet:#b48cff; --violetdim:#4a3a72;
+    --green:#7fe0a8; --greendim:#2f5c42;
+    --labw:190px;
+    --maxw:960px;
+    --mono:ui-monospace,"SF Mono","JetBrains Mono","Cascadia Code",Menlo,Consolas,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{ box-sizing:border-box; }
+  body{ background:var(--bg); color:var(--text); font-family:var(--sans);
+    line-height:1.55; -webkit-font-smoothing:antialiased; margin:0; }
+
+  .stars{ position:fixed; inset:0; z-index:0; pointer-events:none; background-color:var(--bg);
+    background-image:
+      radial-gradient(1.1px 1.1px at 24px 32px, rgba(255,255,255,.7), transparent),
+      radial-gradient(1px 1px at 96px 128px, rgba(214,226,255,.5), transparent),
+      radial-gradient(1.3px 1.3px at 160px 64px, rgba(255,255,255,.55), transparent),
+      radial-gradient(1px 1px at 56px 176px, rgba(190,205,255,.45), transparent);
+    background-repeat:repeat; background-size:230px 230px; animation:tw 10s ease-in-out infinite; }
+  .stars::after{ content:""; position:absolute; inset:0;
+    background:
+      radial-gradient(50% 40% at 20% 10%, rgba(91,200,230,.08), transparent 70%),
+      radial-gradient(50% 45% at 82% 72%, rgba(255,122,77,.08), transparent 70%); }
+  @keyframes tw{ 0%,100%{opacity:.85} 50%{opacity:1} }
+  @media (prefers-reduced-motion:reduce){ .stars{animation:none} }
+
+  .wrap{ position:relative; z-index:1; max-width:var(--maxw); margin:0 auto; padding:56px 24px 72px; }
+
+  .eyebrow{ font-family:var(--mono); font-size:12px; letter-spacing:.28em; text-transform:uppercase;
+    margin:0 0 14px;
+    background:linear-gradient(90deg,var(--cold),var(--hotdeep)); -webkit-background-clip:text;
+    background-clip:text; color:transparent; }
+  h1{ font-size:clamp(30px,6vw,54px); line-height:1.03; letter-spacing:-.025em; font-weight:800;
+    margin:0 0 16px; text-wrap:balance; }
+  h1 .c{ color:var(--cold); } h1 .h{ color:var(--hotdeep); }
+  .lede{ font-size:clamp(15px,2.2vw,18px); color:var(--muted); max-width:64ch; margin:0; }
+  .lede b{ color:var(--text); }
+
+  .h2{ font-family:var(--mono); font-size:13px; letter-spacing:.18em; text-transform:uppercase;
+    color:var(--muted); margin:46px 0 6px; }
+  .h2 + .sub{ color:var(--muted); font-size:14.5px; margin:0 0 22px; max-width:64ch; }
+  .h2 + .sub b{ color:var(--text); }
+
+  /* forest plot */
+  .plot{ position:relative; padding:20px 22px 8px; border-radius:16px; border:1px solid var(--line);
+    background:linear-gradient(180deg,var(--panel),var(--bg2)); }
+  .guides{ position:absolute; left:calc(var(--labw) + 22px); right:22px; top:20px; bottom:44px;
+    pointer-events:none; z-index:1; }
+  .guide{ position:absolute; top:0; bottom:0; width:0; border-left:1px dashed; }
+  .guide.early{ left:28.3%; border-color:rgba(91,200,230,.55); }
+  .guide.late{ left:75.3%; border-color:rgba(255,122,77,.55); }
+  .gap{ position:absolute; left:28.3%; width:47%; top:-6px; height:16px; z-index:2;
+    border-bottom:1px solid var(--faint); }
+  .gap span{ position:absolute; top:-9px; left:50%; transform:translateX(-50%); white-space:nowrap;
+    font-family:var(--mono); font-size:10.5px; color:var(--faint); background:var(--panel); padding:0 6px; }
+
+  .frow{ display:grid; grid-template-columns:var(--labw) 1fr; align-items:center; gap:0 14px;
+    padding:5px 0; position:relative; z-index:2; }
+  .flabel .nm{ font-size:13.5px; font-weight:600; }
+  .flabel .nm .tag{ font-family:var(--mono); font-size:10px; letter-spacing:.06em; margin-left:6px;
+    padding:1px 6px; border-radius:10px; }
+  .flabel .val{ font-family:var(--mono); font-size:12px; color:var(--muted);
+    font-variant-numeric:tabular-nums; }
+  .ftrack{ position:relative; height:22px; }
+  .fbar{ position:absolute; top:50%; height:5px; transform:translateY(-50%); border-radius:3px; opacity:.85; }
+  .fdot{ position:absolute; top:50%; width:13px; height:13px; border-radius:50%;
+    transform:translate(-50%,-50%); border:2px solid var(--bg); }
+  .early .fbar{ background:var(--cold); } .early .fdot{ background:var(--cold); box-shadow:0 0 10px var(--cold); }
+  .early .tag{ color:var(--cold); background:rgba(91,200,230,.12); }
+  .late .fbar{ background:var(--hot); } .late .fdot{ background:var(--hot); box-shadow:0 0 10px var(--hot); }
+  .late .tag{ color:var(--hot); background:rgba(255,122,77,.12); }
+  .mid .fbar{ background:var(--violet); } .mid .fdot{ background:var(--violet); box-shadow:0 0 10px var(--violet); }
+  .mid .tag{ color:var(--violet); background:rgba(180,140,255,.12); }
+
+  .faxis{ grid-column:2; position:relative; height:26px; margin-top:6px;
+    border-top:1px solid var(--line2); }
+  .tick{ position:absolute; top:6px; transform:translateX(-50%); font-family:var(--mono);
+    font-size:11px; color:var(--faint); }
+  .axlabel{ text-align:center; grid-column:2; font-family:var(--mono); font-size:11px;
+    color:var(--muted); letter-spacing:.08em; margin-top:2px; }
+
+  /* two roads */
+  .roads{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  .road{ padding:20px 22px; border-radius:16px; border:1px solid var(--line);
+    background:linear-gradient(180deg,var(--panel),var(--bg2)); }
+  .road.late{ border-color:var(--hotdim); }
+  .road.early{ border-color:var(--colddim); }
+  .road .cap{ font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase;
+    margin-bottom:4px; }
+  .road.late .cap{ color:var(--hot); } .road.early .cap{ color:var(--cold); }
+  .road h3{ margin:0 0 14px; font-size:18px; letter-spacing:-.01em; }
+  .step{ display:flex; gap:11px; align-items:flex-start; padding:9px 0; border-top:1px solid var(--line); }
+  .step:first-of-type{ border-top:none; }
+  .step .n{ font-family:var(--mono); font-size:12px; color:var(--faint); flex:0 0 auto; margin-top:1px; }
+  .step .tx{ font-size:13.5px; } .step .tx b{ color:var(--text); }
+  .step .tx small{ color:var(--muted); font-size:12.5px; }
+  .road .out{ margin-top:14px; font-family:var(--mono); font-size:15px; font-weight:700;
+    text-align:center; padding:8px; border-radius:10px; }
+  .road.late .out{ color:var(--hot); background:rgba(255,122,77,.08); }
+  .road.early .out{ color:var(--cold); background:rgba(91,200,230,.08); }
+
+  /* void */
+  .void{ display:grid; grid-template-columns:210px 1fr; gap:26px; align-items:center;
+    padding:24px 26px; border-radius:18px; border:1px solid var(--violetdim);
+    background:linear-gradient(180deg,rgba(30,22,50,.5),var(--bg2)); }
+  .voiddiag{ position:relative; width:190px; height:190px; margin:0 auto; }
+  .voidring{ position:absolute; inset:0; border-radius:50%;
+    background:radial-gradient(circle, rgba(10,12,24,.9) 30%, rgba(120,100,180,.30) 72%, rgba(180,150,255,.55) 100%);
+    border:1px solid var(--violetdim); box-shadow:inset 0 0 40px rgba(0,0,0,.6); }
+  .voidwall{ position:absolute; inset:0; border-radius:50%; }
+  .voidwall span{ position:absolute; width:5px; height:5px; border-radius:50%; background:var(--violet);
+    box-shadow:0 0 6px var(--violet); }
+  .mw{ position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); z-index:3;
+    width:12px; height:12px; border-radius:50%; background:var(--gold); box-shadow:0 0 12px var(--gold); }
+  .mw::after{ content:"мы"; position:absolute; top:14px; left:50%; transform:translateX(-50%);
+    font-family:var(--mono); font-size:10px; color:var(--gold); }
+  .arrow{ position:absolute; top:50%; left:50%; color:var(--cold); font-size:15px; z-index:2;
+    transform-origin:0 0; }
+  .void h3{ margin:0 0 8px; font-size:19px; }
+  .void p{ margin:0 0 10px; font-size:14px; color:var(--muted); } .void p:last-child{ margin:0; }
+  .void b{ color:var(--text); }
+
+  /* explanations */
+  .exps{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; margin-top:22px; }
+  .exp{ padding:18px 20px; border-radius:16px; border:1px solid var(--line);
+    background:linear-gradient(180deg,var(--panel),var(--bg2)); }
+  .exp .flag{ font-family:var(--mono); font-size:10.5px; letter-spacing:.1em; text-transform:uppercase;
+    padding:3px 9px; border-radius:20px; display:inline-block; margin-bottom:10px; }
+  .exp h3{ margin:0 0 7px; font-size:16px; }
+  .exp p{ margin:0; font-size:13px; color:var(--muted); } .exp p b{ color:var(--text); }
+  .e1 .flag{ color:var(--green); background:rgba(127,224,168,.09); border:1px solid var(--greendim); }
+  .e2{ border-color:var(--violetdim); } .e2 .flag{ color:var(--violet);
+    background:rgba(180,140,255,.09); border:1px solid var(--violetdim); }
+  .e3 .flag{ color:var(--gold); background:rgba(255,210,125,.09); border:1px solid var(--golddim); }
+
+  .verdict{ margin-top:24px; padding:18px 20px; border-radius:14px; border:1px solid var(--line2);
+    background:var(--panel2); font-size:14.5px; }
+  .verdict b{ color:var(--gold); }
+
+  footer{ margin-top:34px; color:var(--faint); font-size:12.5px; font-family:var(--mono);
+    line-height:1.7; text-align:center; }
+
+  @media (max-width:720px){
+    :root{ --labw:130px; }
+    .roads,.exps{ grid-template-columns:1fr; }
+    .void{ grid-template-columns:1fr; }
+    .flabel .val{ display:none; }
+  }
+</style>
+</head>
+<body>
+<div class="stars"></div>
+
+<div class="wrap">
+  <p class="eyebrow">Кризис космологии · как быстро расширяется Вселенная</p>
+  <h1>Хаббловская напряжённость</h1>
+  <p class="lede">Одну и ту же величину — скорость расширения Вселенной, <b>постоянную Хаббла H₀</b> —
+    меряют двумя независимыми способами. <span class="c">Ранняя Вселенная</span> уверенно говорит
+    «~67», <span class="h">поздняя</span> — столь же уверенно «~73». И чем точнее измеряют,
+    тем упрямее держится разрыв.</p>
+
+  <!-- FOREST PLOT -->
+  <p class="h2">Два лагеря на одной линейке</p>
+  <p class="sub">Каждая точка — отдельное измерение H₀ (в км/с на мегапарсек) со своей погрешностью.
+    Видно, как они собираются в <b>две несовместимые кучки</b>, а не размазаны вокруг одного числа.</p>
+
+  <div class="plot">
+    <div class="guides">
+      <div class="guide early"></div>
+      <div class="guide late"></div>
+      <div class="gap"><span>разрыв ~5–6 · значимость ≈ 5σ</span></div>
+    </div>
+
+    <div class="frow early">
+      <div class="flabel"><div class="nm">Planck · реликт<span class="tag">ранняя</span></div>
+        <div class="val">67.4 ± 0.5</div></div>
+      <div class="ftrack"><div class="fbar" style="left:24.2%;width:8.3%"></div>
+        <div class="fdot" style="left:28.3%"></div></div>
+    </div>
+    <div class="frow early">
+      <div class="flabel"><div class="nm">BAO + BBN · DESI<span class="tag">ранняя</span></div>
+        <div class="val">≈ 68.0 ± 0.7</div></div>
+      <div class="ftrack"><div class="fbar" style="left:27.5%;width:11.7%"></div>
+        <div class="fdot" style="left:33.3%"></div></div>
+    </div>
+    <div class="frow mid">
+      <div class="flabel"><div class="nm">TRGB · крас. гиганты<span class="tag">спорная</span></div>
+        <div class="val">69.8 ± 1.7</div></div>
+      <div class="ftrack"><div class="fbar" style="left:34.2%;width:28.3%"></div>
+        <div class="fdot" style="left:48.3%"></div></div>
+    </div>
+    <div class="frow late">
+      <div class="flabel"><div class="nm">SH0ES · цефеиды+SN<span class="tag">поздняя</span></div>
+        <div class="val">73.0 ± 1.0</div></div>
+      <div class="ftrack"><div class="fbar" style="left:66.7%;width:17.3%"></div>
+        <div class="fdot" style="left:75.3%"></div></div>
+    </div>
+    <div class="frow late">
+      <div class="flabel"><div class="nm">Линзирование · TDCOSMO<span class="tag">поздняя</span></div>
+        <div class="val">≈ 73.0 ± 1.8</div></div>
+      <div class="ftrack"><div class="fbar" style="left:60%;width:30%"></div>
+        <div class="fdot" style="left:75%"></div></div>
+    </div>
+    <div class="frow late">
+      <div class="flabel"><div class="nm">Мегамазеры<span class="tag">поздняя</span></div>
+        <div class="val">73.9 ± 3.0</div></div>
+      <div class="ftrack"><div class="fbar" style="left:57.5%;width:50%"></div>
+        <div class="fdot" style="left:82.5%"></div></div>
+    </div>
+
+    <div class="faxis">
+      <div class="tick" style="left:16.7%">66</div>
+      <div class="tick" style="left:33.3%">68</div>
+      <div class="tick" style="left:50%">70</div>
+      <div class="tick" style="left:66.7%">72</div>
+      <div class="tick" style="left:83.3%">74</div>
+    </div>
+    <div class="axlabel">H₀, км·с⁻¹·Мпк⁻¹</div>
+  </div>
+
+  <!-- TWO ROADS -->
+  <p class="h2">Почему два ответа: две дороги к H₀</p>
+  <p class="sub">Способы устроены совершенно по-разному — потому их расхождение так и тревожит.</p>
+  <div class="roads">
+    <div class="road late">
+      <div class="cap">снизу вверх · «здесь и сейчас»</div>
+      <h3>Лестница расстояний</h3>
+      <div class="step"><span class="n">01</span><div class="tx"><b>Параллакс</b>
+        <small>— геометрия: до ближних цефеид линейкой тригонометрии.</small></div></div>
+      <div class="step"><span class="n">02</span><div class="tx"><b>Цефеиды</b>
+        <small>— «маячки» известной яркости калибруют сверхновые в соседних галактиках.</small></div></div>
+      <div class="step"><span class="n">03</span><div class="tx"><b>Сверхновые Ia</b>
+        <small>— эталонные «свечи», видны на миллиарды св. лет, замеряют разбегание.</small></div></div>
+      <div class="out">↑ даёт H₀ ≈ 73</div>
+    </div>
+    <div class="road early">
+      <div class="cap">сверху вниз · «из начала времён»</div>
+      <h3>Короткий путь через реликт</h3>
+      <div class="step"><span class="n">01</span><div class="tx"><b>Звуковой горизонт</b>
+        <small>— в реликтовом фоне (z≈1100) отпечатан точный масштаб-«линейка».</small></div></div>
+      <div class="step"><span class="n">02</span><div class="tx"><b>Модель ΛCDM</b>
+        <small>— по этому масштабу и составу Вселенной считают её историю.</small></div></div>
+      <div class="step"><span class="n">03</span><div class="tx"><b>Экстраполяция</b>
+        <small>— прокручивают модель на 13,8 млрд лет вперёд, до сегодня.</small></div></div>
+      <div class="out">↓ даёт H₀ ≈ 67</div>
+    </div>
+  </div>
+
+  <p class="sub" style="margin-top:22px"><b>Почему это уже не спишешь на ошибку.</b> Главным
+    подозреваемым была «замусоренность» снимков цефеид в далёких галактиках. В 2023–2024 команда
+    Рисса перепроверила их <b>телескопом James Webb</b> — с его резкостью — и высокое значение
+    устояло. Обе стороны за десятилетие стали только точнее, оставаясь врозь: это и есть <b>~5σ</b>,
+    порог открытия.</p>
+
+  <!-- KBC VOID -->
+  <p class="h2">Один изящный выход: КBC-войд</p>
+  <p class="sub">Что, если ошибки нет ни у кого, а дело в том, <b>где мы живём</b>?</p>
+  <div class="void">
+    <div class="voiddiag">
+      <div class="voidring"></div>
+      <div class="voidwall">
+        <span style="top:6%;left:48%"></span><span style="top:20%;left:80%"></span>
+        <span style="top:50%;left:94%"></span><span style="top:80%;left:78%"></span>
+        <span style="top:94%;left:46%"></span><span style="top:78%;left:16%"></span>
+        <span style="top:48%;left:4%"></span><span style="top:18%;left:18%"></span>
+      </div>
+      <div class="arrow" style="transform:rotate(-90deg) translateX(30px)">→</div>
+      <div class="arrow" style="transform:rotate(-18deg) translateX(30px)">→</div>
+      <div class="arrow" style="transform:rotate(54deg) translateX(30px)">→</div>
+      <div class="arrow" style="transform:rotate(126deg) translateX(30px)">→</div>
+      <div class="arrow" style="transform:rotate(198deg) translateX(30px)">→</div>
+      <div class="mw"></div>
+    </div>
+    <div>
+      <h3>Мы — в гигантской «дыре» плотности</h3>
+      <p>По измерениям Кинана, Баргера и Коуи (2013) местная Вселенная в радиусе ~1 млрд св. лет
+        <b>недоплотнена на ~15–20%</b> относительно средней, а Млечный Путь — близко к центру.</p>
+      <p><b>Механизм:</b> изнутри пустоты вещество гравитацией тянет наружу, к плотным стенкам
+        (голубые стрелки). Этот добавочный отток «здесь» подмешивается к расширению — и локальная
+        H₀ выходит <b>завышенной</b>, хотя глобальная равна «планковским» 67.</p>
+      <p><b>Красота идеи:</b> тогда напряжённость — не новая физика, а <b>обман местной географии</b>.</p>
+    </div>
+  </div>
+
+  <!-- EXPLANATIONS -->
+  <p class="h2">Три развязки</p>
+  <div class="exps">
+    <div class="exp e1">
+      <span class="flag">закрывается</span>
+      <h3>Просто ошибка</h3>
+      <p>Систематика в цефеидах или в реликте. Но перекрёстные проверки (JWST, наземные ACT/SPT, BAO) её всё сужают. Перекрыть 5σ ошибкой — уже почти не остаётся места.</p>
+    </div>
+    <div class="exp e2">
+      <span class="flag">без новой физики · спорно</span>
+      <h3>Локальный войд</h3>
+      <p>КBC-войд завышает <b>местное</b> H₀. Загвоздка: такой большой и глубокий войд сам по себе маловероятен в стандартной ΛCDM — легче получается в модифицированной гравитации (MOND).</p>
+    </div>
+    <div class="exp e3">
+      <span class="flag">громкий вариант</span>
+      <h3>Новая физика</h3>
+      <p>ΛCDM неполна. Фаворит — <b>ранняя тёмная энергия</b>: короткая вспышка у рекомбинации ужимает звуковой горизонт и поднимает «ранний» H₀ до 73. Но она портит другие сходимости.</p>
+    </div>
+  </div>
+
+  <div class="verdict"><b>Статус на 2026:</b> напряжённость реальна, держится на ~5σ и не рассасывается.
+    Войд — привлекательный «географический» выход, но он либо недостаточно глубок, либо сам требует
+    новой физики, чтобы вообще существовать. Плюс намёки DESI на <i>меняющуюся</i> тёмную энергию
+    тасуют карты заново. Убедительного решения пока нет — это, наравне с природой тёмной энергии,
+    центральная нерешённая задача космологии.</div>
+
+  <footer>
+    Значения H₀ округлены и отобраны как представители методов; погрешности — порядковые.<br>
+    Ранняя Вселенная: Planck 2018, DESI BAO. Поздняя: SH0ES 2022, TDCOSMO, мегамазеры MCP. Тёмная тема — намеренно.
+  </footer>
+</div>
+</body>
+</html>

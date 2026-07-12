@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Лептогенез</title>
+<style>
+  :root{
+    --bg:#06070d; --bg2:#0a0d18; --panel:#111629; --panel2:#151b31;
+    --line:#242c49; --line2:#2f3960; --text:#dce3f7; --muted:#8a93b6; --faint:#5b6488;
+    --gold:#ffd27d; --golddim:#5f5230; --hot:#ff7a4d; --hotdeep:#ff5c72; --hotdim:#7d3140;
+    --cold:#5bc8e6; --colddim:#2c4a55; --violet:#b48cff; --violetdim:#4a3a72; --green:#7fe0a8; --greendim:#2f5c42;
+    --maxw:960px; --mono:ui-monospace,"SF Mono","JetBrains Mono",Menlo,Consolas,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{ box-sizing:border-box; }
+  body{ background:var(--bg); color:var(--text); font-family:var(--sans); line-height:1.55; -webkit-font-smoothing:antialiased; margin:0; }
+  .stars{ position:fixed; inset:0; z-index:0; pointer-events:none; background-color:var(--bg);
+    background-image:radial-gradient(1.1px 1.1px at 24px 32px, rgba(255,255,255,.7), transparent),radial-gradient(1px 1px at 96px 128px, rgba(214,226,255,.5), transparent),radial-gradient(1.3px 1.3px at 160px 64px, rgba(255,255,255,.55), transparent),radial-gradient(1px 1px at 56px 176px, rgba(190,205,255,.45), transparent);
+    background-repeat:repeat; background-size:230px 230px; animation:tw 10s ease-in-out infinite; }
+  .stars::after{ content:""; position:absolute; inset:0; background:radial-gradient(52% 42% at 82% 8%, rgba(255,210,125,.08), transparent 70%),radial-gradient(50% 45% at 16% 60%, rgba(180,140,255,.07), transparent 70%); }
+  @keyframes tw{ 0%,100%{opacity:.85} 50%{opacity:1} } @media (prefers-reduced-motion:reduce){ .stars{animation:none} }
+  .wrap{ position:relative; z-index:1; max-width:var(--maxw); margin:0 auto; padding:56px 24px 80px; }
+  .eyebrow{ font-family:var(--mono); font-size:12px; letter-spacing:.26em; text-transform:uppercase; color:var(--gold); margin:0 0 14px; }
+  h1{ font-size:clamp(28px,5.6vw,50px); line-height:1.05; letter-spacing:-.025em; font-weight:800; margin:0 0 16px; text-wrap:balance; }
+  .lede{ font-size:clamp(15px,2.2vw,18px); color:var(--muted); max-width:64ch; margin:0; } .lede b{ color:var(--text); }
+  .h2{ font-family:var(--mono); font-size:13px; letter-spacing:.18em; text-transform:uppercase; color:var(--muted); margin:44px 0 6px; } .h2.g{ color:var(--gold); }
+  .h2 + .sub{ color:var(--muted); font-size:14.5px; margin:0 0 20px; max-width:64ch; } .h2 + .sub b{ color:var(--text); }
+  .card{ padding:22px 24px; border-radius:16px; border:1px solid var(--line); background:linear-gradient(180deg,var(--panel),var(--bg2)); }
+
+  .chain{ display:flex; flex-direction:column; gap:0; }
+  .cstep{ display:grid; grid-template-columns:40px 1fr; gap:14px; }
+  .cstep .rail{ position:relative; display:flex; justify-content:center; }
+  .cstep .rail::before{ content:""; position:absolute; top:0; bottom:0; width:2px; background:var(--golddim); }
+  .cstep:first-child .rail::before{ top:22px; } .cstep:last-child .rail::before{ bottom:auto; height:22px; }
+  .cstep .dot{ position:relative; z-index:2; width:16px; height:16px; border-radius:50%; margin-top:14px; background:radial-gradient(circle at 35% 35%,#fff,var(--gold)); box-shadow:0 0 12px rgba(255,210,125,.5); }
+  .cbox{ margin:8px 0; padding:14px 18px; border-radius:12px; border:1px solid var(--line); background:var(--panel); }
+  .cbox .n{ font-family:var(--mono); font-size:11px; color:var(--gold); letter-spacing:.06em; }
+  .cbox h4{ margin:4px 0 5px; font-size:16px; } .cbox p{ margin:0; font-size:13.5px; color:var(--muted); } .cbox p b{ color:var(--text); }
+  .cbox .eq{ font-family:var(--mono); font-size:13px; color:var(--cold); margin-top:8px; }
+  .cbox .eq .m{ color:var(--gold); } .cbox .eq .a{ color:var(--cold); }
+
+  .two{ display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:8px; }
+  .tc{ padding:16px 18px; border-radius:14px; border:1px solid var(--line); background:var(--panel); }
+  .tc .t{ font-weight:700; font-size:14px; margin-bottom:6px; color:var(--violet); } .tc p{ margin:0; font-size:13px; color:var(--muted); } .tc p b{ color:var(--text); }
+  .sak{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:6px; }
+  .sk{ padding:13px 14px; border-radius:12px; border:1px solid var(--line); background:var(--panel); font-size:12.5px; color:var(--muted); }
+  .sk b{ color:var(--text); display:block; margin-bottom:3px; font-size:13px; } .sk .c{ color:var(--green); font-family:var(--mono); font-size:11px; }
+  .status{ margin-top:22px; padding:18px 20px; border-radius:14px; border:1px solid var(--line2); background:var(--panel2); font-size:14px; color:var(--muted); } .status b{ color:var(--text); }
+  .status .k{ font-family:var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--gold); display:block; margin-bottom:8px; }
+  footer{ margin-top:30px; color:var(--faint); font-size:12.5px; font-family:var(--mono); line-height:1.7; text-align:center; }
+  @media (max-width:680px){ .two,.sak{ grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<div class="stars"></div>
+<div class="wrap">
+  <p class="eyebrow">Лептогенез · откуда взялось вещество</p>
+  <h1>Как Вселенная сохранила материю — через нейтрино</h1>
+  <p class="lede">Большой взрыв должен был родить материю и антиматерию поровну — и всё аннигилировало бы
+    в свет. Уцелела «единичка на миллиард». <b>Лептогенез</b> — ведущая версия, откуда взялся этот перекос:
+    из распада тяжёлых нейтрино. Одна идея чинит сразу <b>две</b> загадки.</p>
+
+  <p class="h2 g">Цепочка: от нейтрино к веществу</p>
+  <p class="sub">Перекос рождается сначала среди <b>лептонов</b>, а потом переводится в <b>барионы</b> (кварки, из которых мы).</p>
+  <div class="chain">
+    <div class="cstep"><div class="rail"><div class="dot"></div></div>
+      <div class="cbox"><div class="n">шаг 1 · ранняя Вселенная</div><h4>Рождаются тяжёлые нейтрино N</h4>
+        <p>Очень массивные (~10⁹–10¹⁵ ГэВ) правые нейтрино — <b>майорановские</b> (сами себе античастицы). Рождены тепловым «супом» Большого взрыва.</p></div></div>
+    <div class="cstep"><div class="rail"><div class="dot"></div></div>
+      <div class="cbox"><div class="n">шаг 2 · распад с нарушением CP</div><h4>N распадаются — но неровно</h4>
+        <p>Из-за CP-нарушения распад в <b>лептоны</b> идёт чуть чаще, чем в антилептоны. Возникает небольшой <b>перекос лептонов</b>.</p>
+        <div class="eq">N → <span class="m">лептон</span> + Хиггс &nbsp;&gt;&nbsp; N → <span class="a">антилептон</span> + Хиггс</div></div></div>
+    <div class="cstep"><div class="rail"><div class="dot"></div></div>
+      <div class="cbox"><div class="n">шаг 3 · сфалероны</div><h4>Перекос лептонов → перекос барионов</h4>
+        <p>«Сфалероны» (процессы Стандартной модели в горячей плазме) переводят примерно <b>треть</b> лептонного перекоса в <b>барионный</b>.</p></div></div>
+    <div class="cstep"><div class="rail"><div class="dot"></div></div>
+      <div class="cbox"><div class="n">итог</div><h4>Остаётся избыток вещества</h4>
+        <p>Тот самый «1 на миллиард», из которого — все звёзды, планеты и мы. <b>Родился как лептонный, стал барионным.</b></p></div></div>
+  </div>
+
+  <p class="h2 g">Красота: два в одном</p>
+  <div class="two">
+    <div class="tc"><div class="t">Чинит массу нейтрино</div><p>Механизм see-saw: тяжёлый партнёр N «придавливает» массу обычного нейтрино вниз — объясняет, почему они такие <b>лёгкие</b>.</p></div>
+    <div class="tc"><div class="t">Чинит перекос материи</div><p>Те же N при распаде создают асимметрию. <b>Одна сущность — два решённых вопроса.</b> Предложили Фукугита и Янагида, 1986.</p></div>
+  </div>
+
+  <p class="h2 g">Условия Сахарова — выполнены (для лептонов)</p>
+  <div class="sak">
+    <div class="sk"><b>Нарушение числа</b>лептонное число нарушается при распаде N <span class="c">✓</span></div>
+    <div class="sk"><b>Нарушение CP</b>распад в лептоны ≠ в антилептоны <span class="c">✓</span></div>
+    <div class="sk"><b>Неравновесность</b>N распадаются, пока Вселенная расширяется <span class="c">✓</span></div>
+  </div>
+
+  <p class="h2 g">Как проверить — трудно, но есть зацепки</p>
+  <p class="sub">Сами N при 10⁹⁺ ГэВ недостижимы. Но косвенно:</p>
+  <div class="two">
+    <div class="tc"><div class="t">Майорана? (0νββ)</div><p>Лептогенез требует, чтобы нейтрино были майорановскими. Ищут <b>безнейтринный двойной бета-распад</b> — прямая проверка.</p></div>
+    <div class="tc"><div class="t">CP у нейтрино</div><p>Если нейтрино нарушают CP <b>на низких энергиях</b> (DUNE, Hyper-K) — правдоподобнее, что нарушали и на высоких.</p></div>
+  </div>
+
+  <div class="status"><span class="k">статус</span>Ведущая и элегантная гипотеза, но <b>не подтверждена</b>.
+    Её правдоподобие держится на майорановской природе нейтрино и механизме see-saw. Найдут безнейтринный
+    двойной бета-распад — лептогенез получит мощную поддержку. Есть и «низкоэнергетические» варианты, которые
+    можно ловить на будущих экспериментах с тяжёлыми нейтральными лептонами.</div>
+
+  <footer>Схема цепочки упрощена. Фукугита–Янагида 1986 · условия Сахарова 1967 · сфалероны — процессы Стандартной модели. Тёмная тема — намеренно.</footer>
+</div>
+</body>
+</html>

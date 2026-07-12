@@ -1,0 +1,23 @@
+# Операционные системы
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
+desktop.ini
+
+# Редакторы / IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+*.bak
+
+# Логи и временные файлы
+*.log
+*.tmp
+*.temp
+
+# Служебное
+node_modules/
+.cache/

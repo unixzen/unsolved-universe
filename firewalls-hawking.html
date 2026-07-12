@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Файрволы и излучение Хокинга</title>
+<style>
+  :root{
+    --bg:#06070d; --bg2:#0a0d18;
+    --panel:#111629; --panel2:#151b31;
+    --line:#242c49; --line2:#2f3960;
+    --text:#dce3f7; --muted:#8a93b6; --faint:#5b6488;
+    --gold:#ffd27d; --golddim:#5f5230;
+    --hot:#ff7a4d; --hotdeep:#ff5c72; --hotdim:#7d3140;
+    --cold:#5bc8e6; --colddim:#2c4a55;
+    --violet:#b48cff; --violetdim:#4a3a72;
+    --green:#7fe0a8; --greendim:#2f5c42;
+    --maxw:960px;
+    --mono:ui-monospace,"SF Mono","JetBrains Mono","Cascadia Code",Menlo,Consolas,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{ box-sizing:border-box; }
+  body{ background:var(--bg); color:var(--text); font-family:var(--sans);
+    line-height:1.55; -webkit-font-smoothing:antialiased; margin:0; }
+  .stars{ position:fixed; inset:0; z-index:0; pointer-events:none; background-color:var(--bg);
+    background-image:
+      radial-gradient(1.1px 1.1px at 24px 32px, rgba(255,255,255,.7), transparent),
+      radial-gradient(1px 1px at 96px 128px, rgba(214,226,255,.5), transparent),
+      radial-gradient(1.3px 1.3px at 160px 64px, rgba(255,255,255,.55), transparent),
+      radial-gradient(1px 1px at 56px 176px, rgba(190,205,255,.45), transparent);
+    background-repeat:repeat; background-size:230px 230px; animation:tw 10s ease-in-out infinite; }
+  .stars::after{ content:""; position:absolute; inset:0;
+    background:
+      radial-gradient(52% 42% at 82% 8%, rgba(255,92,114,.10), transparent 70%),
+      radial-gradient(50% 45% at 16% 60%, rgba(180,140,255,.08), transparent 70%); }
+  @keyframes tw{ 0%,100%{opacity:.85} 50%{opacity:1} }
+  @media (prefers-reduced-motion:reduce){ .stars{animation:none} }
+  .wrap{ position:relative; z-index:1; max-width:var(--maxw); margin:0 auto; padding:56px 24px 80px; }
+
+  .eyebrow{ font-family:var(--mono); font-size:12px; letter-spacing:.26em; text-transform:uppercase;
+    color:var(--hotdeep); margin:0 0 14px; }
+  h1{ font-size:clamp(28px,5.6vw,50px); line-height:1.05; letter-spacing:-.025em; font-weight:800; margin:0 0 16px; text-wrap:balance; }
+  .lede{ font-size:clamp(15px,2.2vw,18px); color:var(--muted); max-width:64ch; margin:0; } .lede b{ color:var(--text); }
+
+  .h2{ font-family:var(--mono); font-size:13px; letter-spacing:.18em; text-transform:uppercase; color:var(--muted); margin:46px 0 6px; }
+  .h2.hot{ color:var(--hotdeep); } .h2.vi{ color:var(--violet); }
+  .h2 + .sub{ color:var(--muted); font-size:14.5px; margin:0 0 20px; max-width:64ch; } .h2 + .sub b{ color:var(--text); }
+  .card{ padding:22px 24px; border-radius:16px; border:1px solid var(--line); background:linear-gradient(180deg,var(--panel),var(--bg2)); }
+
+  /* monogamy diagram */
+  .mono{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  .mcard{ padding:18px 20px; border-radius:14px; }
+  .mcard.problem{ border:1px solid var(--hotdim); background:linear-gradient(180deg,rgba(60,22,30,.4),var(--bg2)); }
+  .mcard.fix{ border:1px solid var(--violetdim); background:linear-gradient(180deg,rgba(30,22,50,.5),var(--bg2)); }
+  .mcard .lab{ font-family:var(--mono); font-size:11px; letter-spacing:.1em; text-transform:uppercase; margin-bottom:12px; }
+  .mcard.problem .lab{ color:var(--hotdeep); } .mcard.fix .lab{ color:var(--violet); }
+  .mono svg{ display:block; width:100%; height:auto; }
+  .mcard p{ margin:10px 0 0; font-size:13px; color:var(--muted); } .mcard p b{ color:var(--text); }
+
+  /* trilemma */
+  .tri{ display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:16px; }
+  .tl{ padding:15px 16px; border-radius:12px; border:1px solid var(--line); background:var(--panel); text-align:center; }
+  .tl .t{ font-weight:700; font-size:14px; margin-bottom:5px; } .tl p{ margin:0; font-size:12px; color:var(--muted); }
+  .tl.cut{ border-color:var(--hotdim); background:rgba(255,92,114,.06); }
+  .tl.cut .t{ color:var(--hotdeep); }
+  .amps{ margin-top:14px; padding:14px 16px; border-radius:12px; border:1px solid var(--hotdim);
+    background:rgba(255,92,114,.06); font-size:13.5px; } .amps b{ color:var(--hotdeep); }
+
+  /* hawking */
+  .hawkwrap{ overflow-x:auto; } svg.hawk{ display:block; width:100%; min-width:500px; height:auto; }
+  .tscale{ display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:16px; }
+  .tc{ padding:16px 18px; border-radius:12px; border:1px solid var(--line); background:var(--panel); }
+  .tc .t{ font-family:var(--mono); font-size:12px; color:var(--gold); margin-bottom:6px; letter-spacing:.05em; }
+  .tc .big{ font-size:19px; font-weight:800; letter-spacing:-.01em; } .tc p{ margin:5px 0 0; font-size:12.5px; color:var(--muted); }
+  .tc.cold .big{ color:var(--cold); } .tc.hot .big{ color:var(--hotdeep); }
+  .life{ margin-top:14px; display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .lf{ padding:13px 15px; border-radius:12px; border:1px solid var(--line); background:var(--panel); font-size:13px; }
+  .lf b{ color:var(--text); } .lf .v{ font-family:var(--mono); color:var(--violet); font-size:15px; font-weight:700; }
+  .caveat{ margin-top:14px; padding:13px 15px; border-radius:10px; border:1px dashed var(--line2);
+    background:rgba(17,22,41,.5); font-size:13px; color:var(--muted); } .caveat b{ color:var(--gold); }
+
+  footer{ margin-top:32px; color:var(--faint); font-size:12.5px; font-family:var(--mono); line-height:1.7; text-align:center; }
+  @media (max-width:680px){ .mono,.tscale,.life,.tri{ grid-template-columns:1fr; } .tri{ grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<div class="stars"></div>
+<div class="wrap">
+  <p class="eyebrow">Чёрные дыры · файрволы и излучение Хокинга</p>
+  <h1>Сгоришь ли ты на горизонте?</h1>
+  <p class="lede">В 2012-м физики на миг решили: упасть в чёрную дыру — значит <b>сгореть на входе</b>,
+    а не пролететь незаметно. Парадокс «файрвола» стравил два священных принципа — и разрешился идеей,
+    что <b>запутанность и есть червоточина</b>. А ещё разберём, как чёрная дыра вообще испаряется.</p>
+
+  <!-- MONOGAMY / FIREWALL -->
+  <p class="h2 hot">Парадокс AMPS (2012): проблема «моногамии»</p>
+  <p class="sub">Один уходящий квант излучения обязан быть запутан <b>сразу с двумя</b> системами — а
+    квантовая «моногамия запутанности» это запрещает. Что-то должно сломаться.</p>
+  <div class="mono">
+    <div class="mcard problem">
+      <div class="lab">⚡ конфликт</div>
+      <svg viewBox="0 0 260 150" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="130" cy="75" r="16" fill="#ff7a4d"/><text x="130" y="79" fill="#06070d" font-family="ui-monospace,monospace" font-size="9" text-anchor="middle" font-weight="700">квант</text>
+        <circle cx="40" cy="75" r="15" fill="none" stroke="#5bc8e6" stroke-width="2"/><text x="40" y="105" fill="#5bc8e6" font-family="ui-monospace,monospace" font-size="9" text-anchor="middle">партнёр</text><text x="40" y="118" fill="#5bc8e6" font-family="ui-monospace,monospace" font-size="9" text-anchor="middle">внутри</text>
+        <circle cx="220" cy="75" r="15" fill="none" stroke="#7fe0a8" stroke-width="2"/><text x="220" y="105" fill="#7fe0a8" font-family="ui-monospace,monospace" font-size="9" text-anchor="middle">раннее</text><text x="220" y="118" fill="#7fe0a8" font-family="ui-monospace,monospace" font-size="9" text-anchor="middle">излучение</text>
+        <path d="M56,75 H112" stroke="#5bc8e6" stroke-width="2" stroke-dasharray="4 3"/>
+        <path d="M148,75 H204" stroke="#7fe0a8" stroke-width="2" stroke-dasharray="4 3"/>
+        <text x="130" y="30" fill="#ff5c72" font-family="ui-monospace,monospace" font-size="12" text-anchor="middle" font-weight="700">нельзя оба сразу!</text>
+      </svg>
+      <p><b>Гладкий горизонт</b> требует запутанности кванта с партнёром внутри. <b>Сохранение информации</b> требует запутанности с ранним излучением. Моногамия: <b>и то, и другое невозможно.</b></p>
+    </div>
+    <div class="mcard fix">
+      <div class="lab">✓ разгадка · ER = EPR (2013)</div>
+      <svg viewBox="0 0 260 150" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="130" cy="75" r="16" fill="#ff7a4d"/><text x="130" y="79" fill="#06070d" font-family="ui-monospace,monospace" font-size="9" text-anchor="middle" font-weight="700">квант</text>
+        <circle cx="40" cy="75" r="15" fill="none" stroke="#5bc8e6" stroke-width="2"/>
+        <circle cx="220" cy="75" r="15" fill="none" stroke="#7fe0a8" stroke-width="2"/>
+        <path d="M56,75 H114" stroke="#b48cff" stroke-width="2"/>
+        <path d="M55,68 C130,20 150,20 224,66" stroke="#b48cff" stroke-width="2" stroke-dasharray="5 3" fill="none"/>
+        <text x="140" y="30" fill="#b48cff" font-family="ui-monospace,monospace" font-size="10" text-anchor="middle">червоточина связывает</text>
+        <text x="140" y="132" fill="#b48cff" font-family="ui-monospace,monospace" font-size="10" text-anchor="middle">→ это одна система</text>
+      </svg>
+      <p>Малдасена и Сасскинд: раннее излучение связано с нутром <b>червоточиной</b>. Значит, «партнёр внутри» и «раннее излучение» — <b>одно и то же</b>. Моногамия не нарушена → <b>файрвол не нужен.</b></p>
+    </div>
+  </div>
+  <div class="tri">
+    <div class="tl"><div class="t">Информация цела</div><p>квантовая механика (унитарность)</p></div>
+    <div class="tl cut"><div class="t">Гладкий горизонт ✂</div><p>падаешь «без драмы» (принцип эквивалентности)</p></div>
+    <div class="tl"><div class="t">Обычная физика</div><p>у горизонта работают знакомые законы</p></div>
+  </div>
+  <div class="amps"><b>Трилемма AMPS:</b> все три сразу — нельзя. Если настоять на сохранении информации, ломается «гладкий горизонт»: на входе встаёт <b>стена высокоэнергичных квантов — файрвол</b>, и падающий сгорает. ER=EPR спасает гладкость, связав системы червоточиной. Сегодня консенсус: для обычной чёрной дыры <b>файрвола нет</b>.</div>
+
+  <!-- HAWKING RADIATION -->
+  <p class="h2 vi">Как чёрная дыра испаряется</p>
+  <p class="sub">Популярная картинка: у горизонта рождается пара «частица–античастица», одна падает
+    внутрь с <b>отрицательной</b> энергией, другая улетает. Дыра теряет массу.</p>
+  <div class="card hawkwrap">
+    <svg class="hawk" viewBox="0 0 600 200" xmlns="http://www.w3.org/2000/svg">
+      <defs><radialGradient id="bh2" cx="50%" cy="50%" r="50%">
+        <stop offset="60%" stop-color="#06070d"/><stop offset="100%" stop-color="#2a1e4a"/></radialGradient></defs>
+      <circle cx="150" cy="100" r="78" fill="url(#bh2)" stroke="#b48cff" stroke-width="2.5"/>
+      <text x="150" y="104" fill="#5b6488" font-family="ui-monospace,monospace" font-size="11" text-anchor="middle">масса ↓</text>
+      <!-- horizon pair -->
+      <circle cx="228" cy="100" r="5" fill="#7fe0a8"/>
+      <circle cx="252" cy="88" r="5" fill="#ff7a4d"/>
+      <path d="M233,99 Q245,94 247,90" stroke="#3a4266" stroke-width="1" stroke-dasharray="2 2"/>
+      <text x="228" y="128" fill="#7fe0a8" font-family="ui-monospace,monospace" font-size="9" text-anchor="middle">−E внутрь</text>
+      <path d="M258,86 L380,54" stroke="#ff7a4d" stroke-width="2"/><text x="330" y="46" fill="#ff7a4d" font-family="ui-monospace,monospace" font-size="10">улетает (излучение)</text>
+      <!-- more escaping quanta -->
+      <circle cx="300" cy="150" r="3.5" fill="#ff7a4d"/><path d="M300,150 L360,168" stroke="#ff7a4d" stroke-width="1.5" opacity="0.7"/>
+      <circle cx="250" cy="40" r="3" fill="#ff7a4d"/><path d="M250,40 L300,22" stroke="#ff7a4d" stroke-width="1.5" opacity="0.7"/>
+      <text x="150" y="196" fill="#5b6488" font-family="ui-monospace,monospace" font-size="10" text-anchor="middle">горизонт событий</text>
+    </svg>
+  </div>
+  <div class="caveat"><b>Честно:</b> «пара у горизонта» — лишь наглядная картинка самого Хокинга, не строгая.
+    Строго: <b>само понятие «вакуум» зависит от наблюдателя</b>. Далёкий наблюдатель видит вакуум искривлённого пространства как тёплую «ванну» из частиц с точной температурой.</div>
+  <div class="tscale">
+    <div class="tc cold"><div class="t">большая дыра</div><div class="big">ХОЛОДНАЯ</div><p>температура ∝ 1/масса. Дыра массой Солнца: ~60 нанокельвин — холоднее реликта (2,7 K), поэтому сейчас она <b>поглощает больше, чем излучает</b>.</p></div>
+    <div class="tc hot"><div class="t">маленькая дыра</div><div class="big">ГОРЯЧАЯ</div><p>Теряя массу, дыра <b>греется</b> и излучает быстрее — разгон. Финал — взрывная вспышка.</p></div>
+  </div>
+  <div class="life">
+    <div class="lf">Дыра массой Солнца испаряется за <span class="v">~10⁶⁷ лет</span> <b>(время жизни ∝ масса³)</b></div>
+    <div class="lf">Сверхмассивная — за <span class="v">~10¹⁰⁰ лет</span> («гугол»), это Эра чёрных дыр</div>
+  </div>
+
+  <footer>
+    Диаграммы схематические. AMPS: Альмхейри–Марольф–Полчински–Салли 2012 · ER=EPR: Малдасена–Сасскинд 2013.<br>
+    Излучение Хокинга: 1974; T ∝ 1/M; время жизни ∝ M³. Тёмная тема — намеренно.
+  </footer>
+</div>
+</body>
+</html>

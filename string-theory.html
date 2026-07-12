@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Теория струн</title>
+<style>
+  :root{
+    --bg:#06070d; --bg2:#0a0d18; --panel:#111629; --panel2:#151b31;
+    --line:#242c49; --line2:#2f3960; --text:#dce3f7; --muted:#8a93b6; --faint:#5b6488;
+    --gold:#ffd27d; --golddim:#5f5230; --hot:#ff7a4d; --hotdeep:#ff5c72; --hotdim:#7d3140;
+    --cold:#5bc8e6; --colddim:#2c4a55; --violet:#b48cff; --violetdim:#4a3a72; --green:#7fe0a8; --greendim:#2f5c42;
+    --maxw:960px; --mono:ui-monospace,"SF Mono","JetBrains Mono",Menlo,Consolas,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{ box-sizing:border-box; }
+  body{ background:var(--bg); color:var(--text); font-family:var(--sans); line-height:1.55; -webkit-font-smoothing:antialiased; margin:0; }
+  .stars{ position:fixed; inset:0; z-index:0; pointer-events:none; background-color:var(--bg);
+    background-image:radial-gradient(1.1px 1.1px at 24px 32px, rgba(255,255,255,.7), transparent),radial-gradient(1px 1px at 96px 128px, rgba(214,226,255,.5), transparent),radial-gradient(1.3px 1.3px at 160px 64px, rgba(255,255,255,.55), transparent),radial-gradient(1px 1px at 56px 176px, rgba(190,205,255,.45), transparent);
+    background-repeat:repeat; background-size:230px 230px; animation:tw 10s ease-in-out infinite; }
+  .stars::after{ content:""; position:absolute; inset:0; background:radial-gradient(52% 42% at 80% 10%, rgba(180,140,255,.10), transparent 70%),radial-gradient(50% 45% at 16% 60%, rgba(255,210,125,.06), transparent 70%); }
+  @keyframes tw{ 0%,100%{opacity:.85} 50%{opacity:1} } @media (prefers-reduced-motion:reduce){ .stars{animation:none} }
+  .wrap{ position:relative; z-index:1; max-width:var(--maxw); margin:0 auto; padding:56px 24px 80px; }
+  .eyebrow{ font-family:var(--mono); font-size:12px; letter-spacing:.26em; text-transform:uppercase; color:var(--violet); margin:0 0 14px; }
+  h1{ font-size:clamp(28px,5.6vw,50px); line-height:1.05; letter-spacing:-.025em; font-weight:800; margin:0 0 16px; text-wrap:balance; }
+  .lede{ font-size:clamp(15px,2.2vw,18px); color:var(--muted); max-width:64ch; margin:0; } .lede b{ color:var(--text); }
+  .h2{ font-family:var(--mono); font-size:13px; letter-spacing:.18em; text-transform:uppercase; color:var(--muted); margin:44px 0 6px; } .h2.vi{ color:var(--violet); }
+  .h2 + .sub{ color:var(--muted); font-size:14.5px; margin:0 0 20px; max-width:64ch; } .h2 + .sub b{ color:var(--text); }
+  .card{ padding:22px 24px; border-radius:16px; border:1px solid var(--line); background:linear-gradient(180deg,var(--panel),var(--bg2)); }
+
+  .stringwrap{ overflow-x:auto; } svg.st{ display:block; width:100%; min-width:480px; height:auto; }
+  .modes{ display:flex; justify-content:space-around; flex-wrap:wrap; gap:12px; margin-top:14px; font-family:var(--mono); font-size:12px; color:var(--muted); text-align:center; }
+  .modes .m b{ display:block; color:var(--gold); font-size:13px; }
+  .modes .m.grav b{ color:var(--violet); }
+  .keyidea{ margin-top:14px; padding:14px 16px; border-radius:12px; border:1px solid var(--violetdim); background:rgba(180,140,255,.06); font-size:14px; } .keyidea b{ color:var(--text); }
+
+  .req{ display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+  .rq{ padding:16px 18px; border-radius:14px; border:1px solid var(--line); background:var(--panel); }
+  .rq .t{ font-weight:700; font-size:15px; margin-bottom:6px; color:var(--cold); } .rq p{ margin:0; font-size:12.7px; color:var(--muted); } .rq p b{ color:var(--text); }
+
+  .land{ padding:20px 22px; border-radius:16px; border:1px solid var(--golddim); background:linear-gradient(180deg,rgba(45,38,18,.4),var(--bg2)); }
+  .land .big{ font-family:var(--mono); font-size:clamp(26px,6vw,44px); font-weight:800; color:var(--gold); letter-spacing:-.02em; text-align:center; }
+  .land p{ margin:10px 0 0; font-size:14px; color:var(--muted); text-align:center; } .land b{ color:var(--text); }
+
+  .scale{ display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:8px; }
+  .sc{ padding:18px 20px; border-radius:14px; }
+  .sc.win{ border:1px solid var(--greendim); background:linear-gradient(180deg,rgba(20,40,30,.4),var(--bg2)); }
+  .sc.con{ border:1px solid var(--hotdim); background:linear-gradient(180deg,rgba(60,22,30,.35),var(--bg2)); }
+  .sc .h{ font-family:var(--mono); font-size:11px; letter-spacing:.1em; text-transform:uppercase; margin-bottom:10px; } .sc.win .h{ color:var(--green); } .sc.con .h{ color:var(--hotdeep); }
+  .sc ul{ margin:0; padding-left:18px; } .sc li{ font-size:13px; color:var(--muted); margin-bottom:6px; } .sc li b{ color:var(--text); }
+
+  .status{ margin-top:22px; padding:18px 20px; border-radius:14px; border:1px solid var(--line2); background:var(--panel2); font-size:14px; color:var(--muted); } .status b{ color:var(--text); }
+  .status .k{ font-family:var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--violet); display:block; margin-bottom:8px; }
+  footer{ margin-top:30px; color:var(--faint); font-size:12.5px; font-family:var(--mono); line-height:1.7; text-align:center; }
+  @media (max-width:680px){ .req,.scale{ grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<div class="stars"></div>
+<div class="wrap">
+  <p class="eyebrow">Теория струн · кандидат в «теорию всего»</p>
+  <h1>Всё — это вибрирующие струны</h1>
+  <p class="lede">Самая развитая попытка объединить квантовую механику с гравитацией. Идея дерзкая:
+    в основе всего — не точки-частицы, а крошечные <b>вибрирующие струны</b>. Разные «ноты» = разные
+    частицы. И, что поразительно, <b>гравитация выпадает из неё сама собой</b>.</p>
+
+  <p class="h2 vi">Одна струна — много «нот»</p>
+  <p class="sub">Как одна гитарная струна даёт разные ноты, так один тип струны, вибрируя по-разному, даёт <b>разные частицы</b>.</p>
+  <div class="card stringwrap">
+    <svg class="st" viewBox="0 0 560 150" xmlns="http://www.w3.org/2000/svg">
+      <path d="M40,75 Q90,75 140,75" stroke="#5b6488" stroke-width="1" stroke-dasharray="3 3"/>
+      <path d="M40,75 Q90,40 140,75" stroke="#ffd27d" stroke-width="2.5" fill="none"/>
+      <path d="M180,75 Q205,40 230,75 Q255,110 280,75" stroke="#5bc8e6" stroke-width="2.5" fill="none"/>
+      <path d="M320,75 Q337,45 353,75 Q370,105 387,75 Q404,45 420,75" stroke="#b48cff" stroke-width="2.5" fill="none"/>
+      <path d="M460,75 Q472,50 484,75 Q496,100 508,75 Q520,50 532,75" stroke="#7fe0a8" stroke-width="2.5" fill="none"/>
+      <text x="90" y="128" fill="#ffd27d" font-family="ui-monospace,monospace" font-size="11" text-anchor="middle">основная</text>
+      <text x="230" y="128" fill="#5bc8e6" font-family="ui-monospace,monospace" font-size="11" text-anchor="middle">2-я мода</text>
+      <text x="370" y="128" fill="#b48cff" font-family="ui-monospace,monospace" font-size="11" text-anchor="middle">3-я мода</text>
+      <text x="496" y="128" fill="#7fe0a8" font-family="ui-monospace,monospace" font-size="11" text-anchor="middle">4-я мода</text>
+    </svg>
+    <div class="modes">
+      <div class="m"><b>электрон</b>одна мода</div>
+      <div class="m"><b>кварк</b>другая мода</div>
+      <div class="m"><b>фотон</b>третья…</div>
+      <div class="m grav"><b>гравитон</b>обязательно есть!</div>
+    </div>
+    <div class="keyidea">🔑 <b>Главный козырь:</b> среди мод замкнутой струны <b>неизбежно</b> есть безмассовая
+      частица со спином 2 — а это ровно <b>гравитон</b>, квант гравитации. Значит, теория струн <b>не может не
+      содержать гравитацию</b>. Наивное квантование гравитации даёт бесконечности; протяжённая струна их «размазывает».</div>
+  </div>
+
+  <p class="h2 vi">Плата: чего теория требует</p>
+  <div class="req">
+    <div class="rq"><div class="t">Суперсимметрия</div><p>Непротиворечивая («супер»)струна требует суперсимметрии. А её на коллайдере <b>пока не нашли</b>.</p></div>
+    <div class="rq"><div class="t">10–11 измерений</div><p>Нужно <b>10</b> измерений (у M-теории 11). Лишние 6–7 «свёрнуты» невероятно мелко (многообразия Калаби–Яу). Форма свёртки задаёт нашу физику.</p></div>
+    <div class="rq"><div class="t">Браны</div><p>Многомерные «мембраны», на которых заканчиваются струны. Наша 4D-Вселенная может быть <b>браной</b> в высших измерениях.</p></div>
+  </div>
+
+  <p class="h2 vi">Ландшафт — и мультивселенная</p>
+  <div class="land">
+    <div class="big">~10⁵⁰⁰</div>
+    <p>способов свернуть лишние измерения — и <b>у каждого своя физика</b> (свои константы, частицы).
+    В связке с вечной инфляцией каждый вариант достаётся своему пузырю-вселенной (мультивселенная Уровня II).
+    Это и объяснение тонкой настройки — и главная головная боль: <b>нет единственного предсказания</b>.</p>
+  </div>
+
+  <p class="h2 vi">За и против</p>
+  <div class="scale">
+    <div class="sc win"><div class="h">что говорит «за»</div><ul>
+      <li>Единственный каркас, где <b>квант и гравитация уживаются</b>.</li>
+      <li>Точно <b>сосчитала энтропию</b> некоторых чёрных дыр (S=A/4) — Строминджер, Вафа, 1996.</li>
+      <li>Подарила <b>голографию (AdS/CFT)</b> — мощный рабочий инструмент.</li>
+    </ul></div>
+    <div class="sc con"><div class="h">что говорит «против»</div><ul>
+      <li>С 10⁵⁰⁰ вселенных — <b>почти ничего не запрещает</b>; трудно опровергнуть.</li>
+      <li><b>Ни одного</b> экспериментального подтверждения; струнный масштаб недостижим.</li>
+      <li>Суперсимметрия и лишние измерения не найдены.</li>
+    </ul></div>
+  </div>
+
+  <div class="status"><span class="k">статус</span>Ведущий, математически глубокий кандидат в «теорию
+    всего» — и при этом <b>не подтверждён</b>, возможно, непроверяем. Раскалывает сообщество надвое: для
+    одних это вершина теорфизики, для других — красивая математика без физики. Истина, вероятно,
+    посередине: реальные озарения (голография, энтропия дыр) при отсутствии прямых улик.</div>
+
+  <footer>Веневиано ~1968 · гравитон-мода: Шерк–Шварц 1974 · M-теория: Виттен 1995 · энтропия дыр: Строминджер–Вафа 1996. Иллюстрации схематичны. Тёмная тема — намеренно.</footer>
+</div>
+</body>
+</html>

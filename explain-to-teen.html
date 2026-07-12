@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Шпаргалка: объясняем 14-летнему</title>
+<style>
+  :root{
+    --bg:#06070d; --bg2:#0a0d18; --panel:#111629; --panel2:#151b31;
+    --line:#242c49; --line2:#2f3960; --text:#dce3f7; --muted:#9aa3c4; --faint:#5b6488;
+    --gold:#ffd27d; --golddim:#5f5230; --hot:#ff7a4d; --hotdeep:#ff5c72; --hotdim:#7d3140;
+    --cold:#5bc8e6; --colddim:#2c4a55; --violet:#b48cff; --violetdim:#4a3a72; --green:#7fe0a8; --greendim:#2f5c42;
+    --maxw:1000px; --mono:ui-monospace,"SF Mono","JetBrains Mono",Menlo,Consolas,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{ box-sizing:border-box; }
+  body{ background:var(--bg); color:var(--text); font-family:var(--sans); line-height:1.55; -webkit-font-smoothing:antialiased; margin:0; }
+  .stars{ position:fixed; inset:0; z-index:0; pointer-events:none; background-color:var(--bg);
+    background-image:radial-gradient(1.1px 1.1px at 24px 32px, rgba(255,255,255,.6), transparent),radial-gradient(1px 1px at 96px 128px, rgba(214,226,255,.45), transparent),radial-gradient(1.3px 1.3px at 160px 64px, rgba(255,255,255,.5), transparent),radial-gradient(1px 1px at 56px 176px, rgba(190,205,255,.4), transparent);
+    background-repeat:repeat; background-size:230px 230px; animation:tw 11s ease-in-out infinite; }
+  .stars::after{ content:""; position:absolute; inset:0; background:radial-gradient(50% 40% at 18% 6%, rgba(255,210,125,.06), transparent 70%),radial-gradient(52% 42% at 85% 40%, rgba(91,200,230,.06), transparent 70%),radial-gradient(55% 40% at 30% 90%, rgba(180,140,255,.06), transparent 70%); }
+  @keyframes tw{ 0%,100%{opacity:.85} 50%{opacity:1} } @media (prefers-reduced-motion:reduce){ .stars{animation:none} }
+  .wrap{ position:relative; z-index:1; max-width:var(--maxw); margin:0 auto; padding:56px 24px 80px; }
+
+  .eyebrow{ font-family:var(--mono); font-size:12px; letter-spacing:.26em; text-transform:uppercase; margin:0 0 14px;
+    background:linear-gradient(90deg,var(--gold),var(--cold),var(--violet)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  h1{ font-size:clamp(30px,6vw,52px); line-height:1.03; letter-spacing:-.02em; font-weight:800; margin:0 0 16px; text-wrap:balance; }
+  .lede{ font-size:clamp(15px,2.2vw,18px); color:var(--muted); max-width:64ch; margin:0; } .lede b{ color:var(--text); }
+  .howto{ margin-top:22px; padding:14px 18px; border-radius:12px; border:1px dashed var(--line2); background:rgba(17,22,41,.5); font-size:13.5px; color:var(--muted); }
+  .howto b{ color:var(--text); } .howto .t1{ color:var(--gold); } .howto .t2{ color:var(--cold); } .howto .t3{ color:var(--green); }
+
+  .chap{ margin-top:40px; }
+  .chap .ct{ display:flex; align-items:baseline; gap:12px; margin-bottom:14px; }
+  .chap .cn{ font-family:var(--mono); font-size:12px; letter-spacing:.14em; color:var(--cacc,var(--cold)); }
+  .chap h2{ font-size:19px; margin:0; letter-spacing:-.01em; } .chap .cl{ height:1px; flex:1; background:linear-gradient(90deg,var(--line2),transparent); align-self:center; }
+  .grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+
+  .c{ padding:18px 20px; border-radius:16px; border:1px solid var(--line); background:linear-gradient(180deg,var(--panel),var(--bg2)); }
+  .c .hd{ display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+  .c .em{ font-size:22px; } .c .nm{ font-weight:800; font-size:16px; letter-spacing:-.01em; }
+  .c .an{ padding:10px 12px; border-radius:10px; background:rgba(255,210,125,.07); border:1px solid var(--golddim); font-size:13px; color:var(--text); margin-bottom:11px; }
+  .c .an b{ color:var(--gold); }
+  .c ul{ margin:0 0 11px; padding:0; list-style:none; display:grid; gap:6px; }
+  .c li{ position:relative; padding-left:18px; font-size:13.3px; color:var(--muted); }
+  .c li::before{ content:"▸"; position:absolute; left:0; color:var(--cacc,var(--cold)); }
+  .c li b{ color:var(--text); }
+  .c .pt{ font-size:13px; color:var(--green); border-top:1px solid var(--line); padding-top:9px; }
+  .c .pt b{ color:#fff; }
+
+  .k1{ --cacc:var(--gold); } .k2{ --cacc:var(--cold); } .k3{ --cacc:var(--violet); }
+  .k4{ --cacc:var(--green); } .k5{ --cacc:var(--hotdeep); } .k6{ --cacc:var(--gold); } .k7{ --cacc:var(--violet); }
+
+  footer{ margin-top:40px; color:var(--faint); font-size:12.5px; font-family:var(--mono); line-height:1.7; text-align:center; }
+  @media (max-width:720px){ .grid{ grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<div class="stars"></div>
+<div class="wrap">
+  <p class="eyebrow">Шпаргалка рассказчика · для 14-летних</p>
+  <h1>Как объяснить это школьнику</h1>
+  <p class="lede">Весь атлас — но простыми словами. На каждую тему: <b>живая аналогия</b>, <b>три коротких
+    тезиса</b> и <b>одна ударная мысль</b>. Без формул. Читай сверху вниз — это готовый рассказ.</p>
+  <div class="howto">Как устроена каждая карточка: <b class="t1">🪄 аналогия</b> (с чего начать) →
+    <b class="t2">▸ три тезиса</b> (суть по шагам) → <b class="t3">🎯 главное</b> (что запомнить).</div>
+
+  <!-- CH1 -->
+  <div class="chap k1"><div class="ct"><span class="cn">ГЛАВА 1</span><h2>Космос вокруг нас</h2><span class="cl"></span></div>
+  <div class="grid">
+    <div class="c k1"><div class="hd"><span class="em">🌌</span><span class="nm">Где мы живём</span></div>
+      <div class="an">🪄 <b>Космический адрес:</b> дом → город → страна → материк. У Земли он тоже есть — только огромный.</div>
+      <ul><li>Земля → Солнечная система → Млечный Путь → скопления → <b>Ланиакея</b>.</li><li>Каждая ступень в десятки раз больше.</li><li>Нашу галактику что-то тянет — гигантское скопление массы.</li></ul>
+      <div class="pt">🎯 <b>Мы — крошечная точка в матрёшке из матрёшек.</b></div></div>
+
+    <div class="c k1"><div class="hd"><span class="em">🌌</span><span class="nm">Как всё закончится</span></div>
+      <div class="an">🪄 <b>Костёр:</b> ярко горит, потом угли, потом холодный пепел. Вселенная — очень медленный костёр.</div>
+      <ul><li>Вселенная расширяется и остывает.</li><li>Через триллионы лет погаснут все звёзды.</li><li>Потом испарятся даже чёрные дыры — останется тьма.</li></ul>
+      <div class="pt">🎯 <b>Конец — не взрыв, а тихое угасание.</b></div></div>
+  </div></div>
+
+  <!-- CH2 -->
+  <div class="chap k2"><div class="ct"><span class="cn">ГЛАВА 2</span><h2>Странности, которые не сходятся</h2><span class="cl"></span></div>
+  <div class="grid">
+    <div class="c k2"><div class="hd"><span class="em">🌌</span><span class="nm">Ось Зла</span></div>
+      <div class="an">🪄 <b>Монетки:</b> подбросил тысячу — узор случайный. А тут будто их выложили в линию.</div>
+      <ul><li>Есть «эхо» Большого взрыва — древний свет со всех сторон.</li><li>В нём нашли будто <b>выделенное направление</b>.</li><li>А его быть не должно — космос всюду одинаков.</li></ul>
+      <div class="pt">🎯 <b>Или редкая случайность, или мы чего-то не понимаем.</b></div></div>
+
+    <div class="c k2"><div class="hd"><span class="em">📏</span><span class="nm">Спор о скорости</span></div>
+      <div class="an">🪄 <b>Две линейки:</b> меряют один стол — и дают разную длину. Что-то не так с правилами.</div>
+      <ul><li>Вселенная расширяется — это точно.</li><li>Два способа измерить скорость дают <b>разные числа</b>.</li><li>Точнее меряем — а числа всё равно не сходятся.</li></ul>
+      <div class="pt">🎯 <b>Один из главных кризисов науки прямо сейчас.</b></div></div>
+  </div></div>
+
+  <!-- CH3 -->
+  <div class="chap k3"><div class="ct"><span class="cn">ГЛАВА 3</span><h2>Тёмная сторона — 95% Вселенной</h2><span class="cl"></span></div>
+  <div class="grid">
+    <div class="c k3"><div class="hd"><span class="em">🌑</span><span class="nm">Тёмная энергия</span></div>
+      <div class="an">🪄 <b>Мяч вверх:</b> должен замедляться — а летит всё быстрее. Кто его толкает?</div>
+      <ul><li>Расширение Вселенной не тормозит, а <b>разгоняется</b>.</li><li>Что-то «расталкивает» пространство — это 68% всего.</li><li>Что именно — не знает никто.</li></ul>
+      <div class="pt">🎯 <b>Самая большая часть Вселенной — и полная загадка.</b></div></div>
+
+    <div class="c k3"><div class="hd"><span class="em">🌀</span><span class="nm">Тёмная материя</span></div>
+      <div class="an">🪄 <b>Ветер:</b> его не видно, но листья кружатся — значит, он есть. Так и невидимая масса.</div>
+      <ul><li>Галактики крутятся так быстро, что должны были разлететься.</li><li>Значит, их держит <b>невидимая масса</b>.</li><li>Её в 5 раз больше обычной — но поймать не могут.</li></ul>
+      <div class="pt">🎯 <b>Почти всё вещество мира — невидимка.</b></div></div>
+  </div></div>
+
+  <!-- CH4 -->
+  <div class="chap k4"><div class="ct"><span class="cn">ГЛАВА 4</span><h2>Кирпичики и силы</h2><span class="cl"></span></div>
+  <div class="grid">
+    <div class="c k4"><div class="hd"><span class="em">⚛️</span><span class="nm">Недостающие частицы</span></div>
+      <div class="an">🪄 <b>Альбом наклеек:</b> явно не хватает пары штук — их и ищут.</div>
+      <ul><li><b>Аксион</b> — частицу ищут (вдруг это тёмная материя).</li><li><b>Суперсимметрия</b> — красивая идея о «двойниках», но не нашли.</li><li><b>Нейтрино</b> — «призраки», у которых оказалась масса (сюрприз!).</li></ul>
+      <div class="pt">🎯 <b>Наш список частиц точно неполон.</b></div></div>
+
+    <div class="c k4"><div class="hd"><span class="em">🔗</span><span class="nm">Великое объединение</span></div>
+      <div class="an">🪄 <b>Белый свет:</b> красный+зелёный+синий вместе дают белый. Может, и силы — грани одной.</div>
+      <ul><li>Есть три силы природы (кроме гравитации).</li><li>При огромной энергии они, возможно, <b>сливаются в одну</b>.</li><li>Проверка: тогда протон должен изредка распадаться (ищут).</li></ul>
+      <div class="pt">🎯 <b>Может, все силы — это одна сила в разных «нарядах».</b></div></div>
+  </div></div>
+
+  <!-- CH5 -->
+  <div class="chap k5"><div class="ct"><span class="cn">ГЛАВА 5</span><h2>Самое глубокое</h2><span class="cl"></span></div>
+  <div class="grid">
+    <div class="c k5"><div class="hd"><span class="em">🎆</span><span class="nm">Три больших «почему»</span></div>
+      <div class="an">🪄 <b>Три вопроса</b>, на которые нет ответа даже у лучших учёных.</div>
+      <ul><li>Почему после Большого взрыва <b>уцелело вещество</b>?</li><li>Что за миг <b>раздуло</b> Вселенную и создало галактики?</li><li>Как соединить гравитацию с квантовым миром?</li></ul>
+      <div class="pt">🎯 <b>Границы известного — прямо здесь.</b></div></div>
+
+    <div class="c k5"><div class="hd"><span class="em">🌐</span><span class="nm">Пространство — не «кирпич»</span></div>
+      <div class="an">🪄 <b>Экран:</b> картинка кажется цельной, а на деле это пиксели. Вдруг и пространство «собрано»?</div>
+      <ul><li>Может, пространство-время — не основа, а <b>следствие</b> чего-то глубже.</li><li>Как объёмная голограмма на плоской плёнке.</li><li>«Клей» пространства — квантовая связь частиц.</li></ul>
+      <div class="pt">🎯 <b>Возможно, «расстояние» — это иллюзия, что-то более базовое.</b></div></div>
+
+    <div class="c k5"><div class="hd"><span class="em">🕳️</span><span class="nm">Тайна чёрных дыр</span></div>
+      <div class="an">🪄 <b>Сжёг письмо:</b> буквы пропали, но дым и пепел в принципе всё «помнят». А чёрная дыра?</div>
+      <ul><li>Чёрная дыра поглощает всё и медленно испаряется.</li><li>Куда девается <b>информация</b> о том, что упало?</li><li>Недавно поняли: она, похоже, всё же выходит наружу.</li></ul>
+      <div class="pt">🎯 <b>Даже чёрная дыра ничего не стирает насовсем.</b></div></div>
+
+    <div class="c k5"><div class="hd"><span class="em">🔥</span><span class="nm">Дыры испаряются</span></div>
+      <div class="an">🪄 <b>Лужа на солнце:</b> медленно, но испаряется вся. Даже чёрная дыра — тоже.</div>
+      <ul><li>Чёрные дыры чуть-чуть «светятся» и теряют массу.</li><li>Маленькие — горячие, большие — очень холодные.</li><li>Был спор: сгоришь ли на границе? (Скорее нет.)</li></ul>
+      <div class="pt">🎯 <b>Ничто во Вселенной не вечно — даже «пылесосы».</b></div></div>
+  </div></div>
+
+  <!-- CH6 -->
+  <div class="chap k6"><div class="ct"><span class="cn">ГЛАВА 6</span><h2>Вся Вселенная разом</h2><span class="cl"></span></div>
+  <div class="grid">
+    <div class="c k6"><div class="hd"><span class="em">♾️</span><span class="nm">Форма и энергия</span></div>
+      <div class="an">🪄 <b>Старая игра:</b> улетел за правый край экрана — вышел слева. Вдруг и космос так «замкнут»?</div>
+      <ul><li>Конечна Вселенная или бесконечна — <b>не знаем</b>.</li><li>Она может быть «завёрнута» сама на себя.</li><li>А вся её энергия, возможно, в сумме — <b>ноль</b>.</li></ul>
+      <div class="pt">🎯 <b>Мы даже не знаем, есть ли у Вселенной «край».</b></div></div>
+
+    <div class="c k6"><div class="hd"><span class="em">🫧</span><span class="nm">Мультивселенные</span></div>
+      <div class="an">🪄 <b>Книга-игра:</b> на каждой развилке история раздваивается. Может, и реальность так же.</div>
+      <ul><li>«Мультивселенная» — это <b>несколько разных</b> идей.</li><li>За горизонтом — другие области; в «пузырях» — другие законы.</li><li>У Эверетта: при каждом выборе мир <b>ветвится</b>.</li></ul>
+      <div class="pt">🎯 <b>«Другие вселенные» бывают очень разного смысла.</b></div></div>
+  </div></div>
+
+  <!-- CH7 -->
+  <div class="chap k7"><div class="ct"><span class="cn">ГЛАВА 7</span><h2>Для самых любопытных</h2><span class="cl"></span></div>
+  <div class="grid">
+    <div class="c k7"><div class="hd"><span class="em">⚖️</span><span class="nm">Почему мир есть</span></div>
+      <div class="an">🪄 <b>Ровно поровну:</b> будь материи и антиматерии одинаково — всё исчезло бы во вспышку. Мира бы не было.</div>
+      <ul><li>Материя и антиматерия при встрече исчезают в свет.</li><li>В начале материи было больше <b>на чуть-чуть</b>.</li><li>Этот «остаток» и стал всем миром. Мы — он.</li></ul>
+      <div class="pt">🎯 <b>Нас спасла крошечная «ошибка» в 1 на миллиард.</b></div></div>
+
+    <div class="c k7"><div class="hd"><span class="em">🎻</span><span class="nm">Теория струн</span></div>
+      <div class="an">🪄 <b>Гитара:</b> одна струна даёт много нот. Может, и все частицы — «ноты» крошечных струн.</div>
+      <ul><li>В основе всего — не точки, а вибрирующие <b>струны</b>.</li><li>Разная «нота» = разная частица.</li><li>Гравитация получается сама собой — но нужны лишние измерения.</li></ul>
+      <div class="pt">🎯 <b>Красивая идея — но пока не проверена.</b></div></div>
+
+    <div class="c k7"><div class="hd"><span class="em">🌊</span><span class="nm">Круги от рождения мира</span></div>
+      <div class="an">🪄 <b>Круги на воде</b> говорят, что бросили камень. Ищем «круги» от самого рождения Вселенной.</div>
+      <ul><li>При рождении Вселенная должна была оставить <b>рябь</b> пространства.</li><li>Эта рябь особым узором «закрутила» древний свет.</li><li>Найти узор — почти доказать, что так и было.</li></ul>
+      <div class="pt">🎯 <b>Это одна из главных «охот» астрономов сегодня.</b></div></div>
+
+    <div class="c k7"><div class="hd"><span class="em">👁️</span><span class="nm">Мир «под нас»?</span></div>
+      <div class="an">🪄 <b>Лужа:</b> «как удачно ямка подошла под меня!» Но это она приняла форму ямки.</div>
+      <ul><li>Многие «настройки» Вселенной будто идеальны для жизни.</li><li>Может, не мир под нас настроен — а мы там, <b>где смогли появиться</b>.</li><li>Если вселенных много — мы, конечно, в подходящей.</li></ul>
+      <div class="pt">🎯 <b>Порядок причин легко перепутать.</b></div></div>
+  </div></div>
+
+  <footer>Объяснения намеренно упрощены — это «мостик» к темам, а не точная физика. Аналогии помогают понять суть, но у каждой есть пределы.</footer>
+</div>
+</body>
+</html>

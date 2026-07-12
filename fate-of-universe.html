@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Как всё закончится — судьба Вселенной</title>
+<style>
+  :root{
+    --bg:#06070d; --bg2:#0a0d18;
+    --panel:#111629; --panel2:#151b31;
+    --line:#242c49; --line2:#2f3960;
+    --text:#dce3f7; --muted:#8a93b6; --faint:#5b6488;
+    --gold:#ffd27d; --golddim:#5f5230;
+    --cyan:#6fd8ea; --cyandim:#2c4a55;
+    --violet:#b48cff; --violetdim:#4a3a72;
+    --ash:#9aa3c4; --ashdim:#3a4266;
+    --crimson:#ff5c72; --crimsondim:#7d3140;
+    --green:#7fe0a8; --greendim:#2f5c42;
+    --maxw:960px;
+    --mono:ui-monospace,"SF Mono","JetBrains Mono","Cascadia Code",Menlo,Consolas,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{ box-sizing:border-box; }
+  body{ background:var(--bg); color:var(--text); font-family:var(--sans);
+    line-height:1.55; -webkit-font-smoothing:antialiased; margin:0; }
+
+  .stars{ position:fixed; inset:0; z-index:0; pointer-events:none; background-color:var(--bg);
+    background-image:
+      radial-gradient(1.1px 1.1px at 24px 32px, rgba(255,255,255,.7), transparent),
+      radial-gradient(1px 1px at 96px 128px, rgba(214,226,255,.5), transparent),
+      radial-gradient(1.3px 1.3px at 160px 64px, rgba(255,255,255,.55), transparent),
+      radial-gradient(1px 1px at 56px 176px, rgba(190,205,255,.45), transparent),
+      radial-gradient(1px 1px at 182px 202px, rgba(255,244,220,.5), transparent);
+    background-repeat:repeat; background-size:230px 230px; animation:tw 10s ease-in-out infinite; }
+  .stars::after{ content:""; position:absolute; inset:0;
+    background:
+      radial-gradient(55% 40% at 22% 8%, rgba(255,210,125,.08), transparent 70%),
+      radial-gradient(50% 45% at 82% 55%, rgba(180,140,255,.08), transparent 70%),
+      radial-gradient(60% 50% at 50% 100%, rgba(90,100,140,.10), transparent 70%); }
+  @keyframes tw{ 0%,100%{opacity:.85} 50%{opacity:1} }
+  @media (prefers-reduced-motion:reduce){ .stars{animation:none} }
+
+  .wrap{ position:relative; z-index:1; max-width:var(--maxw); margin:0 auto; padding:56px 24px 72px; }
+
+  .eyebrow{ font-family:var(--mono); font-size:12px; letter-spacing:.3em; text-transform:uppercase;
+    color:var(--violet); margin:0 0 14px; }
+  h1{ font-size:clamp(32px,6.5vw,56px); line-height:1.02; letter-spacing:-.025em; font-weight:800;
+    margin:0 0 16px; text-wrap:balance; }
+  .lede{ font-size:clamp(15px,2.2vw,18px); color:var(--muted); max-width:62ch; margin:0; }
+  .lede b{ color:var(--text); }
+
+  .cooling{ display:flex; align-items:center; gap:12px; margin:28px 0 6px; font-family:var(--mono);
+    font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--faint); }
+  .cooling .grad{ flex:1; height:6px; border-radius:4px;
+    background:linear-gradient(90deg,var(--gold),var(--cyan) 45%,var(--violet) 75%,var(--ashdim)); }
+
+  /* timeline */
+  .tl{ margin-top:26px; display:flex; flex-direction:column; }
+  .row{ display:grid; grid-template-columns:118px 44px 1fr; }
+  .when{ padding:16px 14px 16px 0; text-align:right; }
+  .when .t{ font-family:var(--mono); font-size:15px; font-variant-numeric:tabular-nums;
+    color:var(--text); display:block; line-height:1.2; }
+  .when .t sup{ font-size:.66em; }
+  .when .u{ font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase;
+    color:var(--faint); }
+
+  .spine{ position:relative; }
+  .spine::before{ content:""; position:absolute; left:50%; top:0; bottom:0; width:2px;
+    transform:translateX(-50%); background:var(--eradim,var(--line)); }
+  .row:first-child .spine::before{ top:28px; }
+  .row.last .spine::before{ bottom:auto; height:28px; }
+  .spine::after{ content:""; position:absolute; left:50%; top:28px; width:13px; height:13px;
+    transform:translate(-50%,-50%); border-radius:50%; z-index:2; background:var(--bg);
+    border:2px solid var(--era,var(--muted)); box-shadow:0 0 12px -2px var(--era,transparent); }
+
+  .era-star{ --era:var(--gold); --eradim:var(--golddim); }
+  .era-degen{ --era:var(--cyan); --eradim:var(--cyandim); }
+  .era-bh{ --era:var(--violet); --eradim:var(--violetdim); }
+  .era-dark{ --era:var(--ash); --eradim:var(--ashdim); }
+
+  .band .spine::after{ width:16px; height:16px; transform:translate(-50%,-50%) rotate(45deg);
+    border-radius:3px; background:var(--era); border:none; box-shadow:0 0 16px -1px var(--era); }
+  .band .when{ padding-top:22px; }
+  .band .card{ margin:14px 0 4px; padding:12px 18px; border-radius:12px; display:flex;
+    flex-wrap:wrap; align-items:baseline; gap:6px 12px;
+    background:linear-gradient(90deg,color-mix(in srgb,var(--era) 14%,var(--bg2)),var(--bg2));
+    border:1px solid var(--eradim); }
+  .band .card .name{ font-size:19px; font-weight:800; letter-spacing:-.01em; color:var(--era); }
+  .band .card .en{ font-family:var(--mono); font-size:11px; color:var(--faint); letter-spacing:.04em; }
+  .band .card .rng{ font-family:var(--mono); font-size:12px; color:var(--muted); margin-left:auto; }
+  .band .card .rng sup{ font-size:.7em; }
+
+  .ev .card{ margin:8px 0; padding:13px 17px; border-radius:11px;
+    background:linear-gradient(180deg,var(--panel),var(--bg2)); border:1px solid var(--line); }
+  .ev .card h4{ margin:0 0 4px; font-size:15.5px; font-weight:700; letter-spacing:-.01em; }
+  .ev .card p{ margin:0; font-size:13.5px; color:var(--muted); }
+  .ev .card p b{ color:var(--text); }
+  .ev.warn .card{ border-color:var(--crimsondim);
+    background:linear-gradient(180deg,rgba(60,22,30,.4),var(--bg2)); }
+  .ev.warn h4{ color:#ffb3bd; }
+
+  /* forks */
+  .h2{ font-family:var(--mono); font-size:13px; letter-spacing:.18em; text-transform:uppercase;
+    color:var(--muted); margin:48px 0 6px; }
+  .h2 + .sub{ color:var(--muted); font-size:14.5px; margin:0 0 20px; max-width:60ch; }
+
+  .forks{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  .fork{ padding:20px 22px; border-radius:16px; border:1px solid var(--line);
+    background:linear-gradient(180deg,var(--panel),var(--bg2)); position:relative; }
+  .fork.wide{ grid-column:1/-1; }
+  .fork .flag{ font-family:var(--mono); font-size:10.5px; letter-spacing:.14em; text-transform:uppercase;
+    padding:3px 9px; border-radius:20px; display:inline-block; margin-bottom:11px; }
+  .fork h3{ margin:0 0 8px; font-size:19px; letter-spacing:-.01em; }
+  .fork h3 .en{ font-family:var(--mono); font-size:12px; color:var(--faint); font-weight:500;
+    margin-left:7px; }
+  .fork p{ margin:0; color:var(--muted); font-size:14px; }
+  .fork p b{ color:var(--text); }
+
+  .f-base{ border-color:var(--greendim); }
+  .f-base .flag{ color:var(--green); background:rgba(127,224,168,.09); border:1px solid var(--greendim); }
+  .f-rip .flag{ color:var(--crimson); background:rgba(255,92,114,.09); border:1px solid var(--crimsondim); }
+  .f-crunch .flag{ color:var(--gold); background:rgba(255,210,125,.09); border:1px solid var(--golddim); }
+  .f-bounce .flag{ color:var(--cyan); background:rgba(111,216,234,.09); border:1px solid var(--cyandim); }
+  .f-vac{ border-color:var(--violetdim); }
+  .f-vac .flag{ color:var(--violet); background:rgba(180,140,255,.09); border:1px solid var(--violetdim); }
+
+  /* science note */
+  .panel{ margin-top:26px; padding:24px 26px; border-radius:16px; border:1px solid var(--line2);
+    background:linear-gradient(180deg,var(--panel2),var(--bg2)); }
+  .panel .k{ font-family:var(--mono); font-size:11px; letter-spacing:.16em; text-transform:uppercase;
+    color:var(--cyan); border:1px solid var(--cyandim); background:rgba(111,216,234,.08);
+    padding:3px 10px; border-radius:20px; display:inline-block; margin-bottom:13px; }
+  .panel h3{ margin:0 0 10px; font-size:20px; letter-spacing:-.01em; }
+  .panel p{ margin:0 0 11px; color:var(--muted); font-size:14.5px; }
+  .panel p:last-child{ margin:0; } .panel b{ color:var(--text); }
+
+  .curio{ margin-top:22px; display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .curio .c{ padding:16px 18px; border-radius:14px; border:1px dashed var(--line2);
+    background:rgba(17,22,41,.4); }
+  .curio .c .t{ font-family:var(--mono); font-size:12px; color:var(--violet); margin-bottom:6px;
+    letter-spacing:.03em; }
+  .curio .c p{ margin:0; font-size:13px; color:var(--muted); }
+
+  footer{ margin-top:38px; color:var(--faint); font-size:12.5px; font-family:var(--mono);
+    line-height:1.7; text-align:center; }
+
+  @media (max-width:640px){
+    .row{ grid-template-columns:86px 34px 1fr; }
+    .when .t{ font-size:13px; }
+    .band .card .rng{ margin-left:0; width:100%; }
+    .forks,.curio{ grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="stars"></div>
+
+<div class="wrap">
+  <p class="eyebrow">Судьба Вселенной · глубокое будущее</p>
+  <h1>Как всё закончится</h1>
+  <p class="lede">Пять актов остывающего космоса — от последних звёзд до вечной тьмы. Числа тут
+    логарифмические: каждая ступень вниз — это не годы, а <b>степени десятки</b>. «10<sup>14</sup>» —
+    это единица со 14 нулями лет.</p>
+
+  <div class="cooling"><span>жарко · сейчас</span><span class="grad"></span><span>абсолютный холод</span></div>
+
+  <div class="tl">
+
+    <!-- STELLIFEROUS -->
+    <div class="row band era-star">
+      <div class="when"><span class="t">сейчас</span><span class="u">13,8 млрд лет</span></div>
+      <div class="spine"></div>
+      <div class="card"><span class="name">Звёздная эра</span><span class="en">Stelliferous</span>
+        <span class="rng">сейчас → 10<sup>14</sup> лет</span></div>
+    </div>
+
+    <div class="row ev era-star">
+      <div class="when"><span class="t">~5·10<sup>9</sup></span><span class="u">лет</span></div>
+      <div class="spine"></div>
+      <div class="card"><h4>Смерть Солнца</h4>
+        <p>Солнце раздувается в красный гигант, сбрасывает оболочку и гаснет белым карликом. Землю к тому времени уже выжжет.</p></div>
+    </div>
+    <div class="row ev era-star">
+      <div class="when"><span class="t">~10<sup>11</sup></span><span class="u">лет</span></div>
+      <div class="spine"></div>
+      <div class="card"><h4>Небо пустеет</h4>
+        <p>Тёмная энергия уносит <b>все другие галактики за горизонт</b>. Будущие астрономы увидят лишь свою галактику — доказать расширение станет невозможно.</p></div>
+    </div>
+    <div class="row ev era-star">
+      <div class="when"><span class="t">~10<sup>12</sup></span><span class="u">лет</span></div>
+      <div class="spine"></div>
+      <div class="card"><h4>Одинокая галактика</h4>
+        <p>Млечный Путь, Андромеда и вся Местная группа сливаются в одну гигантскую эллиптическую галактику.</p></div>
+    </div>
+    <div class="row ev era-star">
+      <div class="when"><span class="t">~10<sup>14</sup></span><span class="u">лет</span></div>
+      <div class="spine"></div>
+      <div class="card"><h4>Гаснет последняя звезда</h4>
+        <p>Газ для новых звёзд исчерпан. Догорают самые долгоживущие красные карлики. <b>Свет во Вселенной кончился.</b></p></div>
+    </div>
+
+    <!-- DEGENERATE -->
+    <div class="row band era-degen">
+      <div class="when"><span class="u">затем</span></div>
+      <div class="spine"></div>
+      <div class="card"><span class="name">Вырожденная эра</span><span class="en">Degenerate</span>
+        <span class="rng">10<sup>14</sup> → 10<sup>40</sup> лет</span></div>
+    </div>
+    <div class="row ev era-degen">
+      <div class="when"><span class="t">10<sup>14</sup>₊</span><span class="u">лет</span></div>
+      <div class="spine"></div>
+      <div class="card"><h4>Кладбище звёзд</h4>
+        <p>Остались лишь «трупы»: белые карлики остывают в чёрные, плюс нейтронные звёзды, коричневые карлики и чёрные дыры. Изредка столкновения карликов дают тусклые вспышки.</p></div>
+    </div>
+    <div class="row ev warn era-degen">
+      <div class="when"><span class="t">10<sup>34</sup>–10<sup>40</sup></span><span class="u">лет</span></div>
+      <div class="spine"></div>
+      <div class="card"><h4>Распад протонов <span style="font-weight:500;color:var(--faint)">(если они нестабильны)</span></h4>
+        <p>Само обычное вещество медленно испаряется: протоны распадаются, белые карлики и нейтронные звёзды растворяются в излучение и лёгкие частицы. <b>Атомов больше нет.</b></p></div>
+    </div>
+
+    <!-- BLACK HOLE -->
+    <div class="row band era-bh">
+      <div class="when"><span class="u">затем</span></div>
+      <div class="spine"></div>
+      <div class="card"><span class="name">Эра чёрных дыр</span><span class="en">Black Hole Era</span>
+        <span class="rng">10<sup>40</sup> → 10<sup>100</sup> лет</span></div>
+    </div>
+    <div class="row ev era-bh">
+      <div class="when"><span class="t">~10<sup>67</sup></span><span class="u">лет</span></div>
+      <div class="spine"></div>
+      <div class="card"><h4>Чёрные дыры — хозяева Вселенной</h4>
+        <p>Они доминируют, но и они не вечны: медленно «испаряются» излучением Хокинга. Дыра звёздной массы держится ~10<sup>67</sup> лет.</p></div>
+    </div>
+    <div class="row ev era-bh">
+      <div class="when"><span class="t">~10<sup>100</sup></span><span class="u">лет · «гугол»</span></div>
+      <div class="spine"></div>
+      <div class="card"><h4>Испаряется последний гигант</h4>
+        <p>Даже сверхмассивная чёрная дыра в миллиарды солнц окончательно испаряется финальной вспышкой. <b>Структур во Вселенной не осталось.</b></p></div>
+    </div>
+
+    <!-- DARK -->
+    <div class="row band era-dark last">
+      <div class="when"><span class="u">навсегда</span></div>
+      <div class="spine"></div>
+      <div class="card"><span class="name">Тёмная эра</span><span class="en">Dark Era · тепловая смерть</span>
+        <span class="rng">после 10<sup>100</sup> лет</span></div>
+    </div>
+    <div class="row ev era-dark last">
+      <div class="when"><span class="t">→ ∞</span><span class="u"></span></div>
+      <div class="spine"></div>
+      <div class="card"><h4>Максимум энтропии</h4>
+        <p>Только разлетающиеся фотоны предельно низкой энергии, нейтрино да редкие электроны. Нет перепадов энергии → нельзя совершить работу → нет процессов, нет событий, нет жизни. Время теряет смысл.</p></div>
+    </div>
+
+  </div>
+
+  <!-- FORKS -->
+  <p class="h2">Развилки: а точно так?</p>
+  <p class="sub">Сценарий выше — «Большое замерзание», основной по нынешним данным. Но всё зависит от одной
+    капризной величины — поведения тёмной энергии. Возможны и другие финалы:</p>
+
+  <div class="forks">
+    <div class="fork wide f-base">
+      <span class="flag">базовый сценарий · ΛCDM</span>
+      <h3>Тепловая смерть / Большое замерзание<span class="en">Heat Death · Big Freeze</span></h3>
+      <p>Ровно то, что на таймлайне: тёмная энергия постоянна, Вселенная вечно расширяется и остывает к равновесию. Не взрыв, а бесконечное угасание. <b>Сейчас считается наиболее вероятным.</b></p>
+    </div>
+
+    <div class="fork f-rip">
+      <span class="flag">маловероятно, но не закрыто</span>
+      <h3>Большой разрыв<span class="en">Big Rip</span></h3>
+      <p>Если тёмная энергия «фантомная» и усиливается — расширение разгоняется без предела и в конечный момент рвёт <b>всё</b>: скопления, галактики, планеты, в последние доли секунды — атомы. В одной модели 2003 г. — через ~22 млрд лет.</p>
+    </div>
+
+    <div class="fork f-crunch">
+      <span class="flag">снова в обсуждении</span>
+      <h3>Большое сжатие<span class="en">Big Crunch</span></h3>
+      <p>Если тёмная энергия ослабнет и сменится притяжением, расширение развернётся и Вселенная схлопнется в горячую сингулярность. Свежие намёки на «эволюционирующую» тёмную энергию вернули сценарий на стол.</p>
+    </div>
+
+    <div class="fork f-bounce">
+      <span class="flag">гипотеза</span>
+      <h3>Большой отскок<span class="en">Big Bounce · циклы</span></h3>
+      <p>Сжатие сменяется новым Большим взрывом — Вселенная перезапускается снова и снова. Циклические модели, конформная космология Пенроуза, экпиротический сценарий.</p>
+    </div>
+
+    <div class="fork f-vac">
+      <span class="flag">джокер · когда угодно</span>
+      <h3>Распад вакуума<span class="en">Vacuum Decay</span></h3>
+      <p>Поле Хиггса, возможно, лишь <b>метастабильно</b>. Где-то может «проколоться» пузырь истинного вакуума и со скоростью света стереть всё на пути — без предупреждения. Измеренные массы Хиггса и топ-кварка кладут нас пугающе близко к границе. Вероятность в обозримое время — ничтожна.</p>
+    </div>
+  </div>
+
+  <!-- SCIENCE NOW -->
+  <div class="panel">
+    <span class="k">что говорит наука сейчас · 2024–2026</span>
+    <h3>Всё держится на одном вопросе о тёмной энергии</h3>
+    <p>Какой финал реален — зависит от того, <b>постоянна ли тёмная энергия</b> (тогда — замерзание) или <b>меняется со временем</b>. Это сегодня главная развилка космологии.</p>
+    <p>Обзор <b>DESI</b> (2024–2025), измеряющий «звуковые» отпечатки ранней Вселенной в разбегании галактик, дал намёки, что тёмная энергия, возможно, <b>слабеет</b>. Если подтвердится — Большой разрыв становится менее вероятным, а далёкое Большое сжатие вновь попадает в число вариантов.</p>
+    <p>Пока это именно <b>намёки, а не приговор</b> — статистической уверенности не хватает. Так что честный ответ на «как всё закончится» в 2026-м: <b>скорее всего замерзание — но вопрос открыт.</b></p>
+  </div>
+
+  <div class="curio">
+    <div class="c"><div class="t">↺ Больцмановские мозги</div>
+      <p>В вечной тёплой пустоте случайные флуктуации за немыслимое время могут собрать целый сознающий мозг «из ничего» — чаще, чем целую вселенную. Философская головная боль космологов.</p></div>
+    <div class="c"><div class="t">↻ Возвращение Пуанкаре</div>
+      <p>За время вида 10<sup>10<sup>76</sup></sup> лет флуктуации могли бы случайно «пересобрать» почти исходное состояние. Число настолько огромно, что запись самих нулей не поместилась бы в наблюдаемой Вселенной.</p></div>
+  </div>
+
+  <footer>
+    Порядок эпох: Звёздная → Вырожденная → Чёрных дыр → Тёмная (по «Пяти возрастам Вселенной» Адамса и Лафлина).<br>
+    Распад протонов и излучение Хокинга — теоретически ожидаемы, но пока не наблюдались. Числа огрублены. Тёмная тема — намеренно.
+  </footer>
+</div>
+</body>
+</html>

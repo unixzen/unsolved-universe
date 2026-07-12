@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Тёмная материя</title>
+<style>
+  :root{
+    --bg:#06070d; --bg2:#0a0d18;
+    --panel:#111629; --panel2:#151b31;
+    --line:#242c49; --line2:#2f3960;
+    --text:#dce3f7; --muted:#8a93b6; --faint:#5b6488;
+    --gold:#ffd27d; --golddim:#5f5230;
+    --hot:#ff7a4d; --hotdeep:#ff5c72; --hotdim:#7d3140;
+    --cold:#5bc8e6; --colddim:#2c4a55;
+    --violet:#b48cff; --violetdim:#4a3a72;
+    --green:#7fe0a8; --greendim:#2f5c42;
+    --maxw:960px;
+    --mono:ui-monospace,"SF Mono","JetBrains Mono","Cascadia Code",Menlo,Consolas,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{ box-sizing:border-box; }
+  body{ background:var(--bg); color:var(--text); font-family:var(--sans);
+    line-height:1.55; -webkit-font-smoothing:antialiased; margin:0; }
+
+  .stars{ position:fixed; inset:0; z-index:0; pointer-events:none; background-color:var(--bg);
+    background-image:
+      radial-gradient(1.1px 1.1px at 24px 32px, rgba(255,255,255,.7), transparent),
+      radial-gradient(1px 1px at 96px 128px, rgba(214,226,255,.5), transparent),
+      radial-gradient(1.3px 1.3px at 160px 64px, rgba(255,255,255,.55), transparent),
+      radial-gradient(1px 1px at 56px 176px, rgba(190,205,255,.45), transparent);
+    background-repeat:repeat; background-size:230px 230px; animation:tw 10s ease-in-out infinite; }
+  .stars::after{ content:""; position:absolute; inset:0;
+    background:
+      radial-gradient(55% 45% at 82% 12%, rgba(180,140,255,.10), transparent 70%),
+      radial-gradient(50% 45% at 14% 66%, rgba(255,210,125,.06), transparent 70%); }
+  @keyframes tw{ 0%,100%{opacity:.85} 50%{opacity:1} }
+  @media (prefers-reduced-motion:reduce){ .stars{animation:none} }
+
+  .wrap{ position:relative; z-index:1; max-width:var(--maxw); margin:0 auto; padding:56px 24px 72px; }
+
+  .eyebrow{ font-family:var(--mono); font-size:12px; letter-spacing:.28em; text-transform:uppercase;
+    color:var(--violet); margin:0 0 14px; }
+  h1{ font-size:clamp(30px,6vw,54px); line-height:1.03; letter-spacing:-.025em; font-weight:800;
+    margin:0 0 16px; text-wrap:balance; }
+  h1 .v{ color:var(--violet); }
+  .lede{ font-size:clamp(15px,2.2vw,18px); color:var(--muted); max-width:64ch; margin:0; }
+  .lede b{ color:var(--text); }
+
+  .h2{ font-family:var(--mono); font-size:13px; letter-spacing:.18em; text-transform:uppercase;
+    color:var(--muted); margin:46px 0 6px; }
+  .h2.v{ color:var(--violet); }
+  .h2 + .sub{ color:var(--muted); font-size:14.5px; margin:0 0 20px; max-width:64ch; }
+  .h2 + .sub b{ color:var(--text); }
+
+  .card{ padding:22px 24px; border-radius:16px; border:1px solid var(--line);
+    background:linear-gradient(180deg,var(--panel),var(--bg2)); }
+  .curvewrap{ overflow-x:auto; }
+  svg.curve{ display:block; width:100%; min-width:540px; height:auto; }
+  .clegend{ display:flex; gap:20px; flex-wrap:wrap; margin-top:14px; font-size:13px; color:var(--muted); }
+  .clegend span{ display:inline-flex; align-items:center; gap:8px; }
+  .clegend i{ width:18px; height:3px; border-radius:2px; display:inline-block; }
+
+  /* evidence grid */
+  .ev{ display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+  .ecard{ padding:18px 18px; border-radius:14px; border:1px solid var(--line); background:var(--panel);
+    position:relative; }
+  .ecard.smoking{ border-color:var(--hotdim); background:linear-gradient(180deg,rgba(60,22,30,.35),var(--bg2)); }
+  .ecard .n{ font-family:var(--mono); font-size:11px; color:var(--faint); }
+  .ecard.smoking .n{ color:var(--hotdeep); }
+  .ecard .t{ font-weight:700; font-size:15px; margin:5px 0 6px; }
+  .ecard p{ margin:0; font-size:12.7px; color:var(--muted); } .ecard p b{ color:var(--text); }
+
+  /* mass spectrum */
+  .mass{ padding:24px; border-radius:16px; border:1px solid var(--violetdim);
+    background:linear-gradient(180deg,rgba(30,22,50,.4),var(--bg2)); }
+  .mtrack{ position:relative; height:4px; border-radius:3px; margin:44px 0 8px;
+    background:linear-gradient(90deg,var(--cold),var(--violet),var(--gold)); }
+  .mmark{ position:absolute; top:50%; transform:translate(-50%,-50%); width:13px; height:13px;
+    border-radius:50%; border:2px solid var(--bg); }
+  .mmark b{ position:absolute; left:50%; transform:translateX(-50%); white-space:nowrap;
+    font-family:var(--sans); font-size:12.5px; font-weight:700; color:var(--text); }
+  .mmark small{ position:absolute; left:50%; transform:translateX(-50%); white-space:nowrap;
+    font-family:var(--mono); font-size:10.5px; }
+  .mmark .up{ bottom:16px; } .mmark .upx{ bottom:32px; } .mmark .dn{ top:16px; }
+  .mticks{ display:flex; justify-content:space-between; font-family:var(--mono); font-size:11px;
+    color:var(--faint); margin-top:4px; }
+  .mnote{ margin-top:16px; font-size:13px; color:var(--muted); } .mnote b{ color:var(--text); }
+
+  /* hunt */
+  .hunt{ display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+  .hcard{ padding:18px 20px; border-radius:14px; border:1px solid var(--line);
+    background:linear-gradient(180deg,var(--panel),var(--bg2)); }
+  .hcard .ic{ font-size:22px; margin-bottom:8px; }
+  .hcard .t{ font-weight:700; font-size:15px; margin-bottom:6px; }
+  .hcard p{ margin:0 0 12px; font-size:12.7px; color:var(--muted); } .hcard p b{ color:var(--text); }
+  .hcard .res{ font-family:var(--mono); font-size:11px; padding:4px 9px; border-radius:20px;
+    color:var(--hotdeep); background:rgba(255,92,114,.08); border:1px solid var(--hotdim);
+    display:inline-block; }
+
+  /* mond */
+  .mond{ margin-top:24px; padding:22px 24px; border-radius:16px; border:1px solid var(--line2);
+    background:var(--panel2); }
+  .mond .k{ font-family:var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--gold); display:block; margin-bottom:10px; }
+  .mond h3{ margin:0 0 10px; font-size:19px; }
+  .mrow{ display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:4px; }
+  .mrow .col .h{ font-size:13px; font-weight:700; margin-bottom:6px; }
+  .mrow .pro .h{ color:var(--green); } .mrow .con .h{ color:var(--hotdeep); }
+  .mrow ul{ margin:0; padding-left:18px; } .mrow li{ font-size:13px; color:var(--muted); margin-bottom:5px; }
+
+  .verdict{ margin-top:24px; padding:18px 20px; border-radius:14px; border:1px solid var(--violetdim);
+    background:rgba(180,140,255,.06); font-size:14.5px; }
+  .verdict b{ color:var(--violet); }
+
+  footer{ margin-top:32px; color:var(--faint); font-size:12.5px; font-family:var(--mono);
+    line-height:1.7; text-align:center; }
+
+  @media (max-width:680px){ .ev,.hunt{ grid-template-columns:1fr; } .mrow{ grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<div class="stars"></div>
+
+<div class="wrap">
+  <p class="eyebrow">Тёмная материя · 27% Вселенной, которого не видно</p>
+  <h1>Тёмная материя: <span class="v">её точно видно<br>по гравитации — но не поймать</span></h1>
+  <p class="lede">85% всей материи Вселенной <b>не светится</b> — не излучает, не поглощает, не отражает
+    свет. Мы знаем, что она есть, по тому, как её гравитация ворочает звёзды и гнёт лучи света. Но что
+    это за вещество — <b>крупнейшая загадка физики частиц</b>. Тут всё наоборот: доказательств гора,
+    а частицы нет.</p>
+
+  <!-- ROTATION CURVES -->
+  <p class="h2 v">Улика №1: галактики крутятся «неправильно»</p>
+  <p class="sub">В 1970-х Вера Рубин измерила, как быстро звёзды обращаются вокруг центра галактики.
+    По видимой массе далёкие звёзды должны замедляться (как дальние планеты). А они несутся <b>так же
+    быстро</b>, будто галактику окружает невидимый массивный «гало».</p>
+  <div class="card curvewrap">
+    <svg class="curve" viewBox="0 0 640 270" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <line x1="58" y1="220" x2="612" y2="220" stroke="#242c49" stroke-width="1"/>
+      <line x1="58" y1="220" x2="58" y2="26" stroke="#242c49" stroke-width="1"/>
+      <!-- shaded gap = dark matter -->
+      <path d="M188,86 C320,78 470,76 600,74 L600,150 C460,140 300,120 188,86 Z"
+        fill="#b48cff" opacity="0.12"/>
+      <text x="404" y="112" fill="#b48cff" font-family="ui-monospace,monospace" font-size="12"
+        text-anchor="middle">вклад тёмной материи</text>
+      <!-- shared rise -->
+      <path d="M58,214 C104,196 150,120 188,86" stroke="#ffd27d" stroke-width="3.5" fill="none"/>
+      <!-- observed flat (gold) -->
+      <path d="M188,86 C320,78 470,76 600,74" stroke="#ffd27d" stroke-width="3.5" fill="none"/>
+      <!-- expected decline (cyan dashed) -->
+      <path d="M188,86 C300,110 440,134 600,150" stroke="#5bc8e6" stroke-width="2.5"
+        stroke-dasharray="6 5" fill="none"/>
+      <!-- visible disk marker -->
+      <line x1="188" y1="86" x2="188" y2="220" stroke="#5b6488" stroke-width="1" stroke-dasharray="3 4"/>
+      <text x="188" y="238" fill="#5b6488" font-family="ui-monospace,monospace" font-size="10" text-anchor="middle">край видимого диска</text>
+      <text x="470" y="66" fill="#ffd27d" font-family="var(--sans)" font-size="12">наблюдение — плоско</text>
+      <text x="470" y="168" fill="#5bc8e6" font-family="var(--sans)" font-size="12">ожидание по видимой массе</text>
+      <text x="20" y="130" fill="#5b6488" font-family="ui-monospace,monospace" font-size="10" transform="rotate(-90 20 130)">скорость звёзд</text>
+      <text x="560" y="238" fill="#5b6488" font-family="ui-monospace,monospace" font-size="10">радиус →</text>
+    </svg>
+  </div>
+
+  <!-- EVIDENCE -->
+  <p class="h2">Почему уверены: улики сходятся с разных сторон</p>
+  <p class="sub">Сила аргумента — в <b>независимости</b>. Разные эпохи, разные методы, а мажут в одно:
+    материи примерно <b>в 5 раз больше</b>, чем светящейся.</p>
+  <div class="ev">
+    <div class="ecard"><div class="n">галактики</div><div class="t">Кривые вращения</div>
+      <p>Плоские вместо спадающих (Рубин, 1970-е). Ещё в 1933-м Цвикки увидел то же в скоплении Волос Вероники.</p></div>
+    <div class="ecard"><div class="n">скопления</div><div class="t">Линзирование</div>
+      <p>Масса гнёт свет сильнее, чем может видимое вещество. Карты массы не совпадают с картами галактик и газа.</p></div>
+    <div class="ecard smoking"><div class="n">★ решающая улика</div><div class="t">Скопление Пуля</div>
+      <p>При столкновении обычный газ застрял в центре, а <b>масса</b> (по линзированию) улетела вперёд с галактиками. Вещество и масса <b>разъехались</b> — модифицированной гравитацией так не объяснить.</p></div>
+    <div class="ecard"><div class="n">ранняя Вселенная</div><div class="t">Пики реликта</div>
+      <p>Высоты акустических пиков реликтового фона независимо задают: тёмной материи ~в 5 раз больше обычной.</p></div>
+    <div class="ecard"><div class="n">структура</div><div class="t">Космическая паутина</div>
+      <p>Без тёмной материи галактики не успели бы собраться. Она — «леса», в чьи ямы стекало обычное вещество.</p></div>
+    <div class="ecard"><div class="n">нуклеосинтез</div><div class="t">Это не барионы</div>
+      <p>Обилие лёгких элементов ограничивает обычную материю ~5%. Значит, недостающее — <b>не</b> тусклое обычное вещество.</p></div>
+  </div>
+
+  <!-- MASS SPECTRUM -->
+  <p class="h2 v">Что это может быть: 18 порядков незнания</p>
+  <p class="sub">Кандидатов много, а их возможные массы разбросаны на множитель в <b>10¹⁸</b>. Вот масштаб
+    нашего неведения (ось масс — логарифмическая):</p>
+  <div class="mass">
+    <div class="mtrack">
+      <div class="mmark" style="left:8%;background:var(--cold)">
+        <b class="upx">Аксионы</b><small class="up" style="color:var(--cold)">~мкэВ · ↑ фаворит</small></div>
+      <div class="mmark" style="left:50%;background:var(--violet)">
+        <b class="up">Стерильные нейтрино</b><small class="dn" style="color:var(--violet)">~кэВ</small></div>
+      <div class="mmark" style="left:90%;background:var(--gold)">
+        <b class="upx">WIMP</b><small class="up" style="color:var(--gold)">ГэВ–ТэВ · теснятся</small></div>
+    </div>
+    <div class="mticks"><span>10⁻⁶ эВ</span><span>10³ эВ</span><span>10¹² эВ</span></div>
+    <div class="mnote"><b>Плюс совсем иной масштаб:</b> первичные чёрные дыры — реликты ранней Вселенной,
+      не частицы вовсе. Часть массовых «окон» для них ещё открыта.</div>
+  </div>
+
+  <!-- HUNT -->
+  <p class="h2">Как её ловят — тремя способами</p>
+  <div class="hunt">
+    <div class="hcard"><div class="ic">🔬</div><div class="t">Прямой поиск</div>
+      <p>Огромные баки жидкого ксенона глубоко под землёй ждут, когда частица <b>толкнёт ядро</b>. LZ, XENONnT, PandaX.</p>
+      <span class="res">десятилетия — тишина</span></div>
+    <div class="hcard"><div class="ic">📡</div><div class="t">Косвенный поиск</div>
+      <p>Ищут продукты <b>аннигиляции</b> тёмной материи в космосе — избыток гамма-лучей, позитронов. Fermi-LAT, AMS-02, IceCube.</p>
+      <span class="res">аномалии есть — но объяснимы</span></div>
+    <div class="hcard"><div class="ic">💥</div><div class="t">На коллайдере</div>
+      <p>Пытаются <b>родить</b> её в столкновениях (LHC). Улика была бы — «недостающая энергия», уносимая невидимками.</p>
+      <span class="res">пока не поймали</span></div>
+  </div>
+
+  <!-- MOND -->
+  <div class="mond">
+    <span class="k">альтернатива · и почему она проигрывает</span>
+    <h3>А может, никакой материи нет — просто гравитация другая?</h3>
+    <div class="mrow">
+      <div class="col pro">
+        <div class="h">MOND за (Милгром, 1983):</div>
+        <ul>
+          <li>Одним параметром точно описывает вращение сотен галактик.</li>
+          <li>Объясняет тонкие закономерности (Талли–Фишер) лучше, чем «наивная» тёмная материя.</li>
+        </ul>
+      </div>
+      <div class="col con">
+        <div class="h">MOND против:</div>
+        <ul>
+          <li>В скоплениях всё равно требует «лишней» массы.</li>
+          <li>Не объясняет Скопление Пуля и пики реликта.</li>
+          <li>Релятивистские версии в основном отброшены.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="verdict"><b>Итог:</b> что тёмная материя существует — гравитирующая, небарионная, «холодная» —
+    стоит на прочнейшем фундаменте из многих независимых улик. А вот что она <i>такое</i> — не знает никто.
+    Классические WIMP теснятся под давлением пустых детекторов, аксионы идут в гору, но за десятилетия —
+    ни одного подтверждённого «негравитационного» сигнала. Знаем, что оно есть; не знаем, из чего.</div>
+
+  <footer>
+    Кривая вращения и спектр масс — схематические иллюстрации. Доли: ~27% энергии Вселенной / ~85% всей материи.<br>
+    Ключевые вехи: Цвикки 1933, Рубин 1970-е, Скопление Пуля 2006. Тёмная тема — намеренно.
+  </footer>
+</div>
+</body>
+</html>

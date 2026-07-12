@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Антропный принцип</title>
+<style>
+  :root{
+    --bg:#06070d; --bg2:#0a0d18; --panel:#111629; --panel2:#151b31;
+    --line:#242c49; --line2:#2f3960; --text:#dce3f7; --muted:#8a93b6; --faint:#5b6488;
+    --gold:#ffd27d; --golddim:#5f5230; --hot:#ff7a4d; --hotdeep:#ff5c72; --hotdim:#7d3140;
+    --cold:#5bc8e6; --colddim:#2c4a55; --violet:#b48cff; --violetdim:#4a3a72; --green:#7fe0a8; --greendim:#2f5c42;
+    --maxw:960px; --mono:ui-monospace,"SF Mono","JetBrains Mono",Menlo,Consolas,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{ box-sizing:border-box; }
+  body{ background:var(--bg); color:var(--text); font-family:var(--sans); line-height:1.55; -webkit-font-smoothing:antialiased; margin:0; }
+  .stars{ position:fixed; inset:0; z-index:0; pointer-events:none; background-color:var(--bg);
+    background-image:radial-gradient(1.1px 1.1px at 24px 32px, rgba(255,255,255,.7), transparent),radial-gradient(1px 1px at 96px 128px, rgba(214,226,255,.5), transparent),radial-gradient(1.3px 1.3px at 160px 64px, rgba(255,255,255,.55), transparent),radial-gradient(1px 1px at 56px 176px, rgba(190,205,255,.45), transparent);
+    background-repeat:repeat; background-size:230px 230px; animation:tw 10s ease-in-out infinite; }
+  .stars::after{ content:""; position:absolute; inset:0; background:radial-gradient(52% 42% at 80% 10%, rgba(255,210,125,.08), transparent 70%),radial-gradient(50% 45% at 16% 60%, rgba(180,140,255,.07), transparent 70%); }
+  @keyframes tw{ 0%,100%{opacity:.85} 50%{opacity:1} } @media (prefers-reduced-motion:reduce){ .stars{animation:none} }
+  .wrap{ position:relative; z-index:1; max-width:var(--maxw); margin:0 auto; padding:56px 24px 80px; }
+  .eyebrow{ font-family:var(--mono); font-size:12px; letter-spacing:.26em; text-transform:uppercase; color:var(--gold); margin:0 0 14px; }
+  h1{ font-size:clamp(28px,5.6vw,50px); line-height:1.05; letter-spacing:-.025em; font-weight:800; margin:0 0 16px; text-wrap:balance; }
+  .lede{ font-size:clamp(15px,2.2vw,18px); color:var(--muted); max-width:64ch; margin:0; } .lede b{ color:var(--text); }
+  .h2{ font-family:var(--mono); font-size:13px; letter-spacing:.18em; text-transform:uppercase; color:var(--muted); margin:44px 0 6px; } .h2.g{ color:var(--gold); }
+  .h2 + .sub{ color:var(--muted); font-size:14.5px; margin:0 0 20px; max-width:64ch; } .h2 + .sub b{ color:var(--text); }
+  .card{ padding:22px 24px; border-radius:16px; border:1px solid var(--line); background:linear-gradient(180deg,var(--panel),var(--bg2)); }
+
+  .dial{ text-align:center; }
+  .dialbar{ position:relative; height:46px; border-radius:10px; margin:8px 0 6px;
+    background:linear-gradient(90deg,var(--hotdeep) 0%,var(--hotdim) 38%,var(--green) 47%,var(--green) 53%,var(--hotdim) 62%,var(--hotdeep) 100%); box-shadow:inset 0 0 24px rgba(0,0,0,.4); }
+  .dialbar .win{ position:absolute; left:47%; width:6%; top:-7px; bottom:-7px; border:2px solid #fff; border-radius:6px; box-shadow:0 0 14px rgba(255,255,255,.4); }
+  .dialbar .win span{ position:absolute; top:-24px; left:50%; transform:translateX(-50%); white-space:nowrap; font-family:var(--mono); font-size:11px; color:#fff; }
+  .dialbar .mk{ position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:12px; height:12px; border-radius:50%; background:#fff; box-shadow:0 0 12px #fff; }
+  .dialt{ display:flex; justify-content:space-between; font-family:var(--mono); font-size:11px; color:var(--faint); }
+  .exlist{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:16px; }
+  .ex{ padding:12px 14px; border-radius:10px; border:1px solid var(--line); background:var(--panel); font-size:12.7px; color:var(--muted); } .ex b{ color:var(--text); }
+
+  .vers{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .ve{ padding:18px 20px; border-radius:14px; border:1px solid var(--line); background:var(--panel); }
+  .ve .t{ font-weight:700; font-size:15px; margin-bottom:6px; } .ve.w .t{ color:var(--green); } .ve.s .t{ color:var(--gold); }
+  .ve p{ margin:0; font-size:13px; color:var(--muted); } .ve p b{ color:var(--text); }
+
+  .sel{ padding:20px 22px; border-radius:16px; border:1px solid var(--violetdim); background:linear-gradient(180deg,rgba(30,22,50,.4),var(--bg2)); }
+  .sel h3{ margin:0 0 10px; font-size:18px; } .sel p{ margin:0 0 10px; font-size:14px; color:var(--muted); } .sel p:last-child{ margin:0; } .sel b{ color:var(--text); }
+  .sel .win2{ font-family:var(--mono); font-size:12.5px; color:var(--green); }
+
+  .debate{ display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:8px; }
+  .db{ padding:18px 20px; border-radius:14px; }
+  .db.con{ border:1px solid var(--hotdim); background:linear-gradient(180deg,rgba(60,22,30,.35),var(--bg2)); }
+  .db.pro{ border:1px solid var(--greendim); background:linear-gradient(180deg,rgba(20,40,30,.4),var(--bg2)); }
+  .db .h{ font-family:var(--mono); font-size:11px; letter-spacing:.1em; text-transform:uppercase; margin-bottom:10px; } .db.con .h{ color:var(--hotdeep); } .db.pro .h{ color:var(--green); }
+  .db ul{ margin:0; padding-left:18px; } .db li{ font-size:13px; color:var(--muted); margin-bottom:6px; } .db li b{ color:var(--text); }
+
+  .status{ margin-top:22px; padding:18px 20px; border-radius:14px; border:1px solid var(--line2); background:var(--panel2); font-size:14px; color:var(--muted); } .status b{ color:var(--text); }
+  .status .k{ font-family:var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--gold); display:block; margin-bottom:8px; }
+  footer{ margin-top:30px; color:var(--faint); font-size:12.5px; font-family:var(--mono); line-height:1.7; text-align:center; }
+  @media (max-width:680px){ .vers,.debate,.exlist{ grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<div class="stars"></div>
+<div class="wrap">
+  <p class="eyebrow">Антропный принцип · почему константы «те самые»</p>
+  <h1>Мир настроен под жизнь? Или мы просто там, где могли возникнуть</h1>
+  <p class="lede">Многие константы выглядят <b>подозрительно точно подогнанными</b> под существование сложности
+    и жизни. Антропный принцип переворачивает вопрос: возможно, они не «настроены», а мы просто <b>не могли бы
+    оказаться</b> там, где они другие. Это мощный — и очень спорный — ход мысли.</p>
+
+  <p class="h2 g">Проблема тонкой настройки</p>
+  <p class="sub">Сдвинь некоторые константы чуть-чуть — и не будет ни галактик, ни химии, ни наблюдателей.
+    Ярче всего это у <b>тёмной энергии</b> (космологической постоянной):</p>
+  <div class="card dial">
+    <div class="dialbar"><div class="mk"></div><div class="win"><span>жизнь возможна</span></div></div>
+    <div class="dialt"><span>Λ велика → всё разлетается,<br>галактики не образуются</span><span style="text-align:right">Λ велика и отрицательна →<br>Вселенная схлопывается</span></div>
+    <div class="exlist">
+      <div class="ex"><b>Космологическая постоянная:</b> будь она в разы больше — материя не успела бы собраться в галактики.</div>
+      <div class="ex"><b>Сила ядерного взаимодействия:</b> чуть иначе — не сварились бы углерод и кислород в звёздах.</div>
+      <div class="ex"><b>Массы частиц:</b> сдвинь отношение — нет стабильных атомов и химии.</div>
+      <div class="ex"><b>Число измерений:</b> не 3 пространственных — нет устойчивых орбит.</div>
+    </div>
+  </div>
+
+  <p class="h2 g">Две версии (Картер, 1974)</p>
+  <div class="vers">
+    <div class="ve w"><div class="t">Слабый принцип (WAP)</div><p>Мы неизбежно наблюдаем себя <b>там и тогда</b>, где условия совместимы с наблюдателями. Почти очевидно — но реально объясняет <b>эффекты отбора</b>. Неспорно.</p></div>
+    <div class="ve s"><div class="t">Сильный принцип (SAP)</div><p>Вселенная <b>обязана</b> иметь свойства, допускающие жизнь. Гораздо спорнее — некоторые трактовки сползают к «замыслу», чего физики избегают.</p></div>
+  </div>
+
+  <p class="h2 g">Как мультивселенная превращает это в науку</p>
+  <div class="sel">
+    <h3>Тонкая настройка → эффект отбора</h3>
+    <p>Если есть <b>мультивселенная</b> (пузыри с разными константами — Уровень II), то большинство их
+      безжизненны. Но наблюдатели могут возникнуть <b>только</b> в редких «удачных» пузырях. Значит, мы и
+      обязаны видеть «настроенные» значения — это не чудо и не замысел, а <b>отбор</b>.</p>
+    <p class="win2">✓ Успех: Вайнберг (1987) антропно <b>предсказал</b>, что Λ должна быть мала, но не ноль —
+      примерно как и намерили в 1998-м.</p>
+  </div>
+
+  <p class="h2 g">Наука или отговорка? — спор</p>
+  <div class="debate">
+    <div class="db con"><div class="h">критика</div><ul>
+      <li><b>Нефальсифицируемо:</b> «объясняет» что угодно, ничего не предсказывая.</li>
+      <li>Похоже на <b>капитуляцию</b> — отказ искать глубинную причину.</li>
+      <li>Требует мультивселенной, а та сама непроверяема.</li>
+      <li><b>Проблема меры:</b> как посчитать «долю наблюдателей»? (больцмановские мозги).</li>
+    </ul></div>
+    <div class="db pro"><div class="h">защита</div><ul>
+      <li><b>Бывает предсказательным</b> — предсказание Λ Вайнбергом.</li>
+      <li>Если мультивселенная реальна (следствие принятых теорий), то отбор — <b>просто верное рассуждение</b>.</li>
+      <li>Это <b>честный ответ</b>, если динамической причины нет.</li>
+    </ul></div>
+  </div>
+
+  <div class="status"><span class="k">статус</span>Законный, но глубоко спорный инструмент на границе физики
+    и философии. <b>Силён в связке с мультивселенной</b> — особенно против загадки космологической постоянной, —
+    но труден для предсказаний и легко скатывается в «всё объясняющую» пустоту. Многие физики принимают его
+    лишь как <b>последнее средство</b>, когда динамического объяснения не находится.</div>
+
+  <footer>Картер 1974 (WAP/SAP) · антропное предсказание Λ: Вайнберг 1987 · ускорение открыто 1998. Схема-«шкала» условна. Тёмная тема — намеренно.</footer>
+</div>
+</body>
+</html>

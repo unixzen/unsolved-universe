@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Тёмная энергия и DESI</title>
+<style>
+  :root{
+    --bg:#06070d; --bg2:#0a0d18;
+    --panel:#111629; --panel2:#151b31;
+    --line:#242c49; --line2:#2f3960;
+    --text:#dce3f7; --muted:#8a93b6; --faint:#5b6488;
+    --gold:#ffd27d; --golddim:#5f5230;
+    --hot:#ff7a4d; --hotdeep:#ff5c72; --hotdim:#7d3140;
+    --cold:#5bc8e6; --colddim:#2c4a55;
+    --violet:#b48cff; --violetdim:#4a3a72;
+    --green:#7fe0a8; --greendim:#2f5c42;
+    --maxw:960px;
+    --mono:ui-monospace,"SF Mono","JetBrains Mono","Cascadia Code",Menlo,Consolas,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{ box-sizing:border-box; }
+  body{ background:var(--bg); color:var(--text); font-family:var(--sans);
+    line-height:1.55; -webkit-font-smoothing:antialiased; margin:0; }
+
+  .stars{ position:fixed; inset:0; z-index:0; pointer-events:none; background-color:var(--bg);
+    background-image:
+      radial-gradient(1.1px 1.1px at 24px 32px, rgba(255,255,255,.7), transparent),
+      radial-gradient(1px 1px at 96px 128px, rgba(214,226,255,.5), transparent),
+      radial-gradient(1.3px 1.3px at 160px 64px, rgba(255,255,255,.55), transparent),
+      radial-gradient(1px 1px at 56px 176px, rgba(190,205,255,.45), transparent);
+    background-repeat:repeat; background-size:230px 230px; animation:tw 10s ease-in-out infinite; }
+  .stars::after{ content:""; position:absolute; inset:0;
+    background:
+      radial-gradient(55% 45% at 80% 15%, rgba(180,140,255,.10), transparent 70%),
+      radial-gradient(50% 45% at 15% 70%, rgba(255,122,77,.07), transparent 70%); }
+  @keyframes tw{ 0%,100%{opacity:.85} 50%{opacity:1} }
+  @media (prefers-reduced-motion:reduce){ .stars{animation:none} }
+
+  .wrap{ position:relative; z-index:1; max-width:var(--maxw); margin:0 auto; padding:56px 24px 72px; }
+
+  .eyebrow{ font-family:var(--mono); font-size:12px; letter-spacing:.28em; text-transform:uppercase;
+    color:var(--violet); margin:0 0 14px; }
+  h1{ font-size:clamp(30px,6vw,54px); line-height:1.03; letter-spacing:-.025em; font-weight:800;
+    margin:0 0 16px; text-wrap:balance; }
+  h1 .v{ color:var(--violet); }
+  .lede{ font-size:clamp(15px,2.2vw,18px); color:var(--muted); max-width:64ch; margin:0; }
+  .lede b{ color:var(--text); }
+
+  .h2{ font-family:var(--mono); font-size:13px; letter-spacing:.18em; text-transform:uppercase;
+    color:var(--muted); margin:44px 0 6px; }
+  .h2.v{ color:var(--violet); }
+  .h2 + .sub{ color:var(--muted); font-size:14.5px; margin:0 0 20px; max-width:64ch; }
+  .h2 + .sub b{ color:var(--text); }
+
+  /* composition bar */
+  .comp{ display:flex; height:52px; border-radius:12px; overflow:hidden; border:1px solid var(--line);
+    font-family:var(--mono); font-size:12.5px; }
+  .comp div{ display:flex; align-items:center; justify-content:center; color:#06070d; font-weight:700;
+    text-align:center; padding:0 6px; }
+  .comp .de{ flex:68; background:linear-gradient(180deg,#c9a6ff,var(--violet)); }
+  .comp .dm{ flex:27; background:linear-gradient(180deg,#7a83a6,#5b6488); color:#dce3f7; }
+  .comp .om{ flex:5; background:linear-gradient(180deg,var(--gold),#e0b45f); }
+  .complabels{ display:flex; margin-top:8px; font-family:var(--mono); font-size:11.5px; color:var(--muted); }
+  .complabels .de{ flex:68; } .complabels .dm{ flex:27; } .complabels .om{ flex:5; min-width:60px; }
+  .complabels b{ display:block; color:var(--text); }
+
+  /* expansion curve card */
+  .card{ padding:22px 24px; border-radius:16px; border:1px solid var(--line);
+    background:linear-gradient(180deg,var(--panel),var(--bg2)); }
+  .curvewrap{ overflow-x:auto; }
+  svg.curve{ display:block; width:100%; min-width:520px; height:auto; }
+
+  /* w spectrum */
+  .wspec{ padding:24px; border-radius:16px; border:1px solid var(--violetdim);
+    background:linear-gradient(180deg,rgba(30,22,50,.4),var(--bg2)); }
+  .wbar{ position:relative; height:56px; border-radius:10px; margin:26px 0 8px;
+    background:linear-gradient(90deg,var(--hotdeep) 0%,#e8b56a 46%,#f4e6c0 50%,#8fd0e0 54%,var(--cold) 100%);
+    box-shadow:inset 0 0 30px rgba(0,0,0,.35); }
+  .wlambda{ position:absolute; left:50%; top:-8px; bottom:-8px; width:2px; transform:translateX(-50%);
+    background:#fff; box-shadow:0 0 10px #fff; }
+  .wlambda span{ position:absolute; top:-22px; left:50%; transform:translateX(-50%); white-space:nowrap;
+    font-family:var(--mono); font-size:12px; color:#fff; font-weight:700; }
+  .wzone{ position:absolute; top:50%; transform:translateY(-50%); font-family:var(--mono);
+    font-size:12px; color:#06070d; font-weight:700; }
+  .wticks{ display:flex; justify-content:space-between; font-family:var(--mono); font-size:11px;
+    color:var(--faint); }
+  .wnote{ display:flex; gap:16px; flex-wrap:wrap; margin-top:16px; font-size:13.5px; color:var(--muted); }
+  .wnote .p{ display:flex; align-items:center; gap:8px; }
+  .wnote .p i{ width:11px; height:11px; border-radius:50%; display:inline-block; }
+  .desiarrow{ position:absolute; top:50%; left:32%; width:34%; height:0; transform:translateY(-50%);
+    border-top:2px dashed #fff; z-index:3; }
+  .desiarrow::after{ content:""; position:absolute; right:-2px; top:-4px; border-left:8px solid #fff;
+    border-top:5px solid transparent; border-bottom:5px solid transparent; }
+  .desiarrow b{ position:absolute; top:-30px; left:50%; transform:translateX(-50%); white-space:nowrap;
+    font-family:var(--mono); font-size:11px; color:#fff; }
+
+  /* DESI result */
+  .desi{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  .dcard{ padding:20px 22px; border-radius:16px; border:1px solid var(--line);
+    background:linear-gradient(180deg,var(--panel),var(--bg2)); }
+  .dcard .yr{ font-family:var(--mono); font-size:12px; color:var(--violet); letter-spacing:.06em; }
+  .dcard h4{ margin:6px 0 12px; font-size:17px; }
+  .sig{ display:flex; align-items:flex-end; gap:4px; height:70px; margin-bottom:10px; }
+  .sig .b{ flex:1; background:linear-gradient(180deg,var(--violet),var(--violetdim)); border-radius:4px 4px 0 0;
+    position:relative; min-height:8px; }
+  .sig .b span{ position:absolute; top:-18px; left:50%; transform:translateX(-50%);
+    font-family:var(--mono); font-size:10.5px; color:var(--muted); }
+  .dcard p{ margin:0; font-size:13px; color:var(--muted); } .dcard p b{ color:var(--text); }
+
+  /* candidates */
+  .cands{ display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+  .cand{ padding:18px 18px; border-radius:14px; border:1px solid var(--line); background:var(--panel); }
+  .cand .t{ font-weight:700; font-size:15px; margin-bottom:6px; }
+  .cand .w{ font-family:var(--mono); font-size:11px; color:var(--violet); margin-bottom:8px; }
+  .cand p{ margin:0; font-size:12.5px; color:var(--muted); }
+
+  /* bridge */
+  .bridge{ margin-top:24px; padding:20px 22px; border-radius:14px; border:1px dashed var(--line2);
+    background:rgba(17,22,41,.4); font-size:14px; color:var(--muted); }
+  .bridge b{ color:var(--text); } .bridge .k{ color:var(--cold); font-family:var(--mono);
+    font-size:11px; letter-spacing:.12em; text-transform:uppercase; display:block; margin-bottom:8px; }
+
+  footer{ margin-top:32px; color:var(--faint); font-size:12.5px; font-family:var(--mono);
+    line-height:1.7; text-align:center; }
+
+  @media (max-width:680px){ .desi,.cands{ grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<div class="stars"></div>
+
+<div class="wrap">
+  <p class="eyebrow">Тёмная энергия · и что поймал DESI в 2024–2025</p>
+  <h1>Тёмная энергия: <span class="v">68% всего —<br>и мы не знаем, что это</span></h1>
+  <p class="lede">Нечто разгоняет расширение Вселенной — она раздувается всё <b>быстрее</b>. Это «нечто» —
+    крупнейшая составляющая космоса и главная загадка физики. 25 лет её считали неизменной константой.
+    А DESI намекает, что она, возможно, <b>слабеет</b>.</p>
+
+  <!-- COMPOSITION -->
+  <p class="h2">Из чего вообще состоит Вселенная</p>
+  <div class="comp"><div class="de">тёмная энергия · 68%</div><div class="dm">тёмная материя · 27%</div><div class="om">5%</div></div>
+  <div class="complabels">
+    <div class="de"><b>Тёмная энергия</b>разгоняет расширение</div>
+    <div class="dm"><b>Тёмная материя</b>держит галактики</div>
+    <div class="om"><b>Обычное</b>звёзды, мы</div>
+  </div>
+
+  <!-- EXPANSION CURVE -->
+  <p class="h2">Что она делает: разворот 6 млрд лет назад</p>
+  <p class="sub">В 1998-м две команды по сверхновым ждали увидеть, как гравитация <b>тормозит</b>
+    расширение. Увидели обратное — оно <b>разгоняется</b>. Нобелевская премия 2011 года.</p>
+  <div class="card curvewrap">
+    <svg class="curve" viewBox="0 0 640 250" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <line x1="40" y1="222" x2="620" y2="222" stroke="#242c49" stroke-width="1"/>
+      <line x1="40" y1="222" x2="40" y2="20" stroke="#242c49" stroke-width="1"/>
+      <!-- counterfactual: only decelerating -->
+      <path d="M40,214 Q180,150 300,150 Q430,150 560,185" stroke="#5b6488" stroke-width="2"
+        stroke-dasharray="5 5" fill="none" opacity="0.7"/>
+      <text x="566" y="196" fill="#5b6488" font-family="ui-monospace,monospace" font-size="11">если бы только тормозила</text>
+      <!-- actual: decelerate then accelerate -->
+      <path d="M40,214 Q180,150 300,150 C400,150 500,110 600,26" stroke="#b48cff" stroke-width="3.5" fill="none"/>
+      <!-- inflection -->
+      <circle cx="300" cy="150" r="5" fill="#ffd27d"/>
+      <text x="300" y="176" fill="#ffd27d" font-family="ui-monospace,monospace" font-size="11" text-anchor="middle">разворот · ~6 млрд лет назад</text>
+      <!-- now -->
+      <circle cx="470" cy="112" r="5" fill="#5bc8e6"/>
+      <text x="470" y="104" fill="#5bc8e6" font-family="ui-monospace,monospace" font-size="11" text-anchor="middle">сейчас</text>
+      <text x="150" y="140" fill="#8a93b6" font-family="var(--sans)" font-size="12">торможение</text>
+      <text x="520" y="70" fill="#b48cff" font-family="var(--sans)" font-size="12">разгон</text>
+      <text x="40" y="240" fill="#5b6488" font-family="ui-monospace,monospace" font-size="10">Большой взрыв</text>
+      <text x="556" y="240" fill="#5b6488" font-family="ui-monospace,monospace" font-size="10">будущее</text>
+      <text x="8" y="120" fill="#5b6488" font-family="ui-monospace,monospace" font-size="10" transform="rotate(-90 12 120)">размер Вселенной</text>
+    </svg>
+  </div>
+
+  <!-- W SPECTRUM -->
+  <p class="h2 v">Главная «ручка» — параметр w</p>
+  <p class="sub">Всё поведение тёмной энергии кодирует одно число — <b>w</b> (отношение давления к
+    плотности). От него зависит буквально судьба Вселенной.</p>
+  <div class="wspec">
+    <div class="wbar">
+      <div class="wlambda"><span>Λ · w = −1</span></div>
+      <div class="wzone" style="left:12%">фантом</div>
+      <div class="wzone" style="left:74%">квинтэссенция</div>
+      <div class="desiarrow"><b>намёк DESI: w «переползает» вверх</b></div>
+    </div>
+    <div class="wticks"><span>w = −1.5</span><span>w = −1.0</span><span>w = −0.5</span></div>
+    <div class="wnote">
+      <div class="p"><i style="background:var(--hotdeep)"></i><span><b style="color:var(--text)">w &lt; −1 · фантом:</b> усиливается → Большой разрыв</span></div>
+      <div class="p"><i style="background:#f4e6c0"></i><span><b style="color:var(--text)">w = −1 · Λ:</b> константа, стандарт ΛCDM</span></div>
+      <div class="p"><i style="background:var(--cold)"></i><span><b style="color:var(--text)">w &gt; −1 · квинтэссенция:</b> слабеет со временем</span></div>
+    </div>
+  </div>
+
+  <!-- DESI -->
+  <p class="h2 v">Что намерил DESI</p>
+  <p class="sub">DESI строит 3D-карту миллионов галактик и по «звуковой линейке» ранней Вселенной
+    (BAO, масштаб ~490 млн св. лет) измеряет, как расширение менялось в разные эпохи — то есть
+    <b>прослеживает историю тёмной энергии</b>, а не только сегодняшнее значение.</p>
+  <div class="desi">
+    <div class="dcard">
+      <div class="yr">DR1 · апрель 2024</div>
+      <h4>Первый намёк</h4>
+      <div class="sig">
+        <div class="b" style="height:20%"><span>ΛCDM</span></div>
+        <div class="b" style="height:55%"><span>~2.5–3.9σ</span></div>
+      </div>
+      <p>Первый год данных + реликт + сверхновые <b>предпочли меняющуюся</b> тёмную энергию простой константе. Слабо, но заметно.</p>
+    </div>
+    <div class="dcard">
+      <div class="yr">DR2 · март 2025</div>
+      <h4>Намёк усилился</h4>
+      <div class="sig">
+        <div class="b" style="height:20%"><span>ΛCDM</span></div>
+        <div class="b" style="height:78%"><span>~2.8–4.2σ</span></div>
+      </div>
+      <p>Три года данных — сигнал <b>вырос</b>, а не растворился. Картина: в прошлом w был ниже −1, а теперь «переполз» выше — энергия <b>слабеет</b>.</p>
+    </div>
+  </div>
+  <p class="sub" style="margin-top:16px"><b>Осторожно:</b> это ещё <b>не</b> 5σ, и значимость заметно
+    зависит от того, какой набор сверхновых подмешать. Сам BAO в одиночку так ярко сигнал не даёт.
+    Намёк дразнящий, но не приговор — решат следующие данные (DESI, Euclid, Rubin/LSST).</p>
+
+  <!-- CANDIDATES -->
+  <p class="h2">Так что же это может быть</p>
+  <div class="cands">
+    <div class="cand"><div class="t">Λ · энергия вакуума</div><div class="w">w = −1, ровно</div>
+      <p>Энергия самого пустого пространства. Проблема: квантовая теория предсказывает её в ~10¹²⁰ раз больше наблюдаемой — «худшее предсказание в физике».</p></div>
+    <div class="cand"><div class="t">Квинтэссенция</div><div class="w">w ≠ −1, меняется</div>
+      <p>Динамическое поле, медленно «скатывающееся» и слабеющее со временем. Именно на него указывал бы намёк DESI.</p></div>
+    <div class="cand"><div class="t">Модиф. гравитация</div><div class="w">никакой энергии</div>
+      <p>А вдруг тёмной энергии нет вовсе — просто на космических масштабах неверна сама общая теория относительности?</p></div>
+  </div>
+
+  <!-- BRIDGE -->
+  <div class="bridge">
+    <span class="k">и рядом — вторая, тихая напряжённость</span>
+    <b>S₈-напряжённость.</b> Ранняя Вселенная предсказывает, что материя сегодня должна быть сбита в
+    комки чуть <b>сильнее</b>, чем показывает гравитационное линзирование. Расхождение мягче хаббловского
+    (~2–3σ) и в 2024–2025 <b>идёт на убыль</b> — возможно, растворится само. Но важна связка: многие
+    «починки» для H₀ (например, ранняя тёмная энергия) <b>ухудшают</b> S₈. Хорошее решение обязано
+    закрыть одно, не сломав другое.
+  </div>
+
+  <footer>
+    Доли состава — по Planck 2018 (~68 / 27 / 5). Значимости DESI — диапазон по разным наборам сверхновых; ещё не 5σ.<br>
+    Кривая расширения схематична. w-спектр — качественная иллюстрация. Тёмная тема — намеренно.
+  </footer>
+</div>
+</body>
+</html>

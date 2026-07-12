@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Инфляционные B-моды</title>
+<style>
+  :root{
+    --bg:#06070d; --bg2:#0a0d18; --panel:#111629; --panel2:#151b31;
+    --line:#242c49; --line2:#2f3960; --text:#dce3f7; --muted:#8a93b6; --faint:#5b6488;
+    --gold:#ffd27d; --golddim:#5f5230; --hot:#ff7a4d; --hotdeep:#ff5c72; --hotdim:#7d3140;
+    --cold:#5bc8e6; --colddim:#2c4a55; --violet:#b48cff; --violetdim:#4a3a72; --green:#7fe0a8; --greendim:#2f5c42;
+    --maxw:960px; --mono:ui-monospace,"SF Mono","JetBrains Mono",Menlo,Consolas,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{ box-sizing:border-box; }
+  body{ background:var(--bg); color:var(--text); font-family:var(--sans); line-height:1.55; -webkit-font-smoothing:antialiased; margin:0; }
+  .stars{ position:fixed; inset:0; z-index:0; pointer-events:none; background-color:var(--bg);
+    background-image:radial-gradient(1.1px 1.1px at 24px 32px, rgba(255,255,255,.7), transparent),radial-gradient(1px 1px at 96px 128px, rgba(214,226,255,.5), transparent),radial-gradient(1.3px 1.3px at 160px 64px, rgba(255,255,255,.55), transparent),radial-gradient(1px 1px at 56px 176px, rgba(190,205,255,.45), transparent);
+    background-repeat:repeat; background-size:230px 230px; animation:tw 10s ease-in-out infinite; }
+  .stars::after{ content:""; position:absolute; inset:0; background:radial-gradient(52% 42% at 82% 8%, rgba(91,200,230,.09), transparent 70%),radial-gradient(50% 45% at 16% 60%, rgba(127,224,168,.06), transparent 70%); }
+  @keyframes tw{ 0%,100%{opacity:.85} 50%{opacity:1} } @media (prefers-reduced-motion:reduce){ .stars{animation:none} }
+  .wrap{ position:relative; z-index:1; max-width:var(--maxw); margin:0 auto; padding:56px 24px 80px; }
+  .eyebrow{ font-family:var(--mono); font-size:12px; letter-spacing:.26em; text-transform:uppercase; color:var(--cold); margin:0 0 14px; }
+  h1{ font-size:clamp(28px,5.6vw,50px); line-height:1.05; letter-spacing:-.025em; font-weight:800; margin:0 0 16px; text-wrap:balance; }
+  .lede{ font-size:clamp(15px,2.2vw,18px); color:var(--muted); max-width:64ch; margin:0; } .lede b{ color:var(--text); }
+  .h2{ font-family:var(--mono); font-size:13px; letter-spacing:.18em; text-transform:uppercase; color:var(--muted); margin:44px 0 6px; } .h2.cy{ color:var(--cold); }
+  .h2 + .sub{ color:var(--muted); font-size:14.5px; margin:0 0 20px; max-width:64ch; } .h2 + .sub b{ color:var(--text); }
+
+  .modes{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .mo{ padding:20px; border-radius:16px; border:1px solid var(--line); background:linear-gradient(180deg,var(--panel),var(--bg2)); text-align:center; }
+  .mo.b{ border-color:var(--colddim); box-shadow:0 0 0 1px rgba(91,200,230,.1); }
+  .mo svg{ display:block; margin:0 auto 12px; }
+  .mo .t{ font-weight:800; font-size:17px; margin-bottom:4px; } .mo.e .t{ color:var(--gold); } .mo.b .t{ color:var(--cold); }
+  .mo .s{ font-family:var(--mono); font-size:11px; color:var(--faint); margin-bottom:8px; }
+  .mo p{ margin:0; font-size:13px; color:var(--muted); } .mo p b{ color:var(--text); }
+  .mo .badge{ display:inline-block; margin-top:10px; font-family:var(--mono); font-size:10.5px; padding:3px 10px; border-radius:20px; }
+  .mo.e .badge{ color:var(--gold); background:rgba(255,210,125,.1); border:1px solid var(--golddim); }
+  .mo.b .badge{ color:var(--cold); background:rgba(91,200,230,.1); border:1px solid var(--colddim); }
+
+  .why{ margin-top:8px; padding:20px 22px; border-radius:16px; border:1px solid var(--violetdim); background:linear-gradient(180deg,rgba(30,22,50,.4),var(--bg2)); }
+  .why h3{ margin:0 0 10px; font-size:18px; } .why p{ margin:0 0 10px; font-size:14px; color:var(--muted); } .why p:last-child{ margin:0; } .why b{ color:var(--text); }
+  .why .r{ font-family:var(--mono); font-size:12.5px; color:var(--violet); }
+
+  .saga{ padding:18px 20px; border-radius:14px; border:1px solid var(--hotdim); background:rgba(255,92,114,.06); font-size:14px; } .saga b{ color:var(--text); } .saga .h{ font-weight:700; color:var(--hotdeep); margin-bottom:6px; }
+
+  .future{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:8px; }
+  .ft{ padding:15px 17px; border-radius:12px; border:1px solid var(--line); background:var(--panel); }
+  .ft .t{ font-weight:700; font-size:14px; margin-bottom:4px; } .ft p{ margin:0; font-size:12.7px; color:var(--muted); } .ft p b{ color:var(--text); }
+
+  .status{ margin-top:22px; padding:18px 20px; border-radius:14px; border:1px solid var(--line2); background:var(--panel2); font-size:14px; color:var(--muted); } .status b{ color:var(--text); }
+  .status .k{ font-family:var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--cold); display:block; margin-bottom:8px; }
+  footer{ margin-top:30px; color:var(--faint); font-size:12.5px; font-family:var(--mono); line-height:1.7; text-align:center; }
+  @media (max-width:680px){ .modes,.future{ grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<div class="stars"></div>
+<div class="wrap">
+  <p class="eyebrow">Инфляционные B-моды · «дымящийся пистолет»</p>
+  <h1>Завитки в реликте, которые докажут инфляцию</h1>
+  <p class="lede">Реликтовое излучение слегка <b>поляризовано</b>, и этот узор бывает двух видов. Один из
+    них — <b>B-моды</b> — на больших масштабах может создать <b>только одно</b>: первичные гравитационные
+    волны от инфляции. Поймать их — почти окончательное доказательство, что инфляция была.</p>
+
+  <p class="h2 cy">Два узора поляризации</p>
+  <p class="sub">Поляризацию реликта раскладывают на два типа — как векторное поле на «расходящуюся» и «закрученную» части.</p>
+  <div class="modes">
+    <div class="mo e">
+      <svg width="130" height="110" viewBox="0 0 130 110" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="65" cy="55" r="9" fill="none" stroke="#5f5230" stroke-width="1"/>
+        <g stroke="#ffd27d" stroke-width="2.4">
+          <line x1="65" y1="20" x2="65" y2="34"/><line x1="65" y1="76" x2="65" y2="90"/>
+          <line x1="30" y1="55" x2="44" y2="55"/><line x1="86" y1="55" x2="100" y2="55"/>
+          <line x1="40" y1="30" x2="50" y2="40"/><line x1="80" y1="80" x2="90" y2="70"/>
+          <line x1="90" y1="30" x2="80" y2="40"/><line x1="40" y1="80" x2="50" y2="70"/></g>
+      </svg>
+      <div class="t">E-моды</div><div class="s">радиальный / без завихрений</div>
+      <p>Их создают обычные <b>сгустки плотности</b>. Давно измерены (с 2002), всё сходится.</p>
+      <span class="badge">не улика — их делает вещество</span>
+    </div>
+    <div class="mo b">
+      <svg width="130" height="110" viewBox="0 0 130 110" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="65" cy="55" r="9" fill="none" stroke="#2c4a55" stroke-width="1"/>
+        <g stroke="#5bc8e6" stroke-width="2.4">
+          <line x1="58" y1="22" x2="72" y2="26"/><line x1="94" y1="48" x2="90" y2="62"/>
+          <line x1="72" y1="88" x2="58" y2="84"/><line x1="36" y1="62" x2="40" y2="48"/>
+          <line x1="44" y1="32" x2="54" y2="42"/><line x1="88" y1="34" x2="78" y2="44"/>
+          <line x1="86" y1="78" x2="76" y2="68"/><line x1="44" y1="78" x2="54" y2="68"/></g>
+      </svg>
+      <div class="t">B-моды</div><div class="s">закрученный / вихревой</div>
+      <p>Их на больших масштабах может дать <b>только</b> первичная гравитационная волна (или линзирование — его вычитают).</p>
+      <span class="badge">★ вот это и есть цель</span>
+    </div>
+  </div>
+
+  <p class="h2 cy">Почему это «дымящийся пистолет»</p>
+  <div class="why">
+    <h3>Первичные B-моды = прямое доказательство инфляции</h3>
+    <p>Инфляция должна была породить фон <b>первичных гравитационных волн</b> — рябь самого пространства-времени.
+      Эти волны отпечатывают характерный вихрь в поляризации. <b>Сгустки плотности так не умеют</b> — потому
+      находка была бы почти окончательной.</p>
+    <p>Больше того: амплитуда B-мод (параметр <b>r</b> — отношение тензоров к скалярам) прямо показывает
+      <b>энергию инфляции</b> — возможно, у масштаба Великого объединения (~10¹⁶ ГэВ).</p>
+    <p class="r">Бонус: это ещё и след квантовой гравитации — гравитационные волны из квантовых флуктуаций.</p>
+  </div>
+
+  <p class="h2 cy">Урок 2014 года: BICEP2</p>
+  <div class="saga"><div class="h">Громкая находка, которая оказалась пылью</div>
+    Команда BICEP2 объявила о детекции первичных B-мод (r≈0,2) — заговорили о Нобеле. Но они недооценили
+    <b>поляризованную пыль нашей Галактики</b>, которая даёт похожий сигнал. Совместный анализ с Planck показал:
+    это в основном <b>пыль</b>. Открытие отозвали — классический урок про важность «переднего плана».</div>
+
+  <p class="h2 cy">Где мы сейчас и что дальше</p>
+  <div class="future">
+    <div class="ft"><div class="t">Пределы сжимаются</div><p>Пока не нашли; предел <b>r &lt; ~0,03</b> (BICEP/Keck + Planck) уже отсёк простейшие модели инфляции.</p></div>
+    <div class="ft"><div class="t">Новые охотники</div><p>Цель r~0,001: <b>Simons Observatory, CMB-S4</b> (на Земле) и спутник <b>LiteBIRD</b> (~2030-е).</p></div>
+  </div>
+
+  <div class="status"><span class="k">статус</span>Пожалуй, <b>важнейшая наблюдательная цель космологии</b>.
+    Подтверждённая детекция сразу дала бы: доказательство инфляции, след квантовой гравитации и энергию
+    самого первого мгновения. Главная трудность — отделить первичный сигнал от <b>пыли</b> и от <b>линзирования</b>.
+    Если инфляция шла на высокой энергии — найдут; если r крохотное — может остаться неуловимым.</div>
+
+  <footer>E-моды: DASI 2002 · линзовые B-моды: 2013 · BICEP2: 2014 (пыль) · предел r&lt;0,03: BICEP/Keck+Planck. Узоры схематичны. Тёмная тема — намеренно.</footer>
+</div>
+</body>
+</html>

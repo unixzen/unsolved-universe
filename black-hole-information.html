@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Парадокс информации чёрных дыр</title>
+<style>
+  :root{
+    --bg:#06070d; --bg2:#0a0d18;
+    --panel:#111629; --panel2:#151b31;
+    --line:#242c49; --line2:#2f3960;
+    --text:#dce3f7; --muted:#8a93b6; --faint:#5b6488;
+    --gold:#ffd27d; --golddim:#5f5230;
+    --hot:#ff7a4d; --hotdeep:#ff5c72; --hotdim:#7d3140;
+    --cold:#5bc8e6; --colddim:#2c4a55;
+    --violet:#b48cff; --violetdim:#4a3a72;
+    --green:#7fe0a8; --greendim:#2f5c42;
+    --maxw:960px;
+    --mono:ui-monospace,"SF Mono","JetBrains Mono","Cascadia Code",Menlo,Consolas,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{ box-sizing:border-box; }
+  body{ background:var(--bg); color:var(--text); font-family:var(--sans);
+    line-height:1.55; -webkit-font-smoothing:antialiased; margin:0; }
+
+  .stars{ position:fixed; inset:0; z-index:0; pointer-events:none; background-color:var(--bg);
+    background-image:
+      radial-gradient(1.1px 1.1px at 24px 32px, rgba(255,255,255,.7), transparent),
+      radial-gradient(1px 1px at 96px 128px, rgba(214,226,255,.5), transparent),
+      radial-gradient(1.3px 1.3px at 160px 64px, rgba(255,255,255,.55), transparent),
+      radial-gradient(1px 1px at 56px 176px, rgba(190,205,255,.45), transparent);
+    background-repeat:repeat; background-size:230px 230px; animation:tw 10s ease-in-out infinite; }
+  .stars::after{ content:""; position:absolute; inset:0;
+    background:
+      radial-gradient(52% 42% at 82% 8%, rgba(180,140,255,.09), transparent 70%),
+      radial-gradient(52% 45% at 16% 62%, rgba(91,200,230,.07), transparent 70%); }
+  @keyframes tw{ 0%,100%{opacity:.85} 50%{opacity:1} }
+  @media (prefers-reduced-motion:reduce){ .stars{animation:none} }
+
+  .wrap{ position:relative; z-index:1; max-width:var(--maxw); margin:0 auto; padding:56px 24px 80px; }
+
+  .eyebrow{ font-family:var(--mono); font-size:12px; letter-spacing:.26em; text-transform:uppercase;
+    color:var(--violet); margin:0 0 14px; }
+  h1{ font-size:clamp(28px,5.6vw,50px); line-height:1.05; letter-spacing:-.025em; font-weight:800;
+    margin:0 0 16px; text-wrap:balance; }
+  .lede{ font-size:clamp(15px,2.2vw,18px); color:var(--muted); max-width:64ch; margin:0; }
+  .lede b{ color:var(--text); }
+
+  .h2{ font-family:var(--mono); font-size:13px; letter-spacing:.18em; text-transform:uppercase;
+    color:var(--muted); margin:46px 0 6px; }
+  .h2.vi{ color:var(--violet); } .h2.cy{ color:var(--cold); }
+  .h2 + .sub{ color:var(--muted); font-size:14.5px; margin:0 0 20px; max-width:64ch; }
+  .h2 + .sub b{ color:var(--text); }
+
+  .card{ padding:22px 24px; border-radius:16px; border:1px solid var(--line);
+    background:linear-gradient(180deg,var(--panel),var(--bg2)); }
+
+  /* three geometries */
+  .geos{ display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+  .geo{ padding:18px 16px; border-radius:16px; border:1px solid var(--line); background:var(--panel);
+    text-align:center; }
+  .geo.ours{ border-color:var(--golddim); box-shadow:0 0 0 1px rgba(255,210,125,.08); }
+  .geo.ads{ border-color:var(--colddim); }
+  .geo svg{ display:block; margin:0 auto 12px; }
+  .geo .nm{ font-weight:800; font-size:16px; letter-spacing:-.01em; }
+  .geo .k{ font-family:var(--mono); font-size:11px; color:var(--faint); margin:3px 0 8px; }
+  .geo .tri{ font-family:var(--mono); font-size:11px; color:var(--muted); }
+  .geo .us{ display:inline-block; margin-top:9px; font-family:var(--mono); font-size:10.5px;
+    padding:3px 9px; border-radius:20px; }
+  .geo.ours .us{ color:var(--gold); background:rgba(255,210,125,.1); border:1px solid var(--golddim); }
+  .geo.flat .us{ color:var(--faint); background:rgba(130,140,180,.08); border:1px solid var(--line2); }
+  .geo.ads .us{ color:var(--cold); background:rgba(91,200,230,.1); border:1px solid var(--colddim); }
+  .adsnote{ margin-top:14px; padding:14px 16px; border-radius:12px; border:1px solid var(--colddim);
+    background:rgba(91,200,230,.05); font-size:13.5px; } .adsnote b{ color:var(--text); }
+
+  /* entropy area */
+  .entrow{ display:grid; grid-template-columns:auto 1fr; gap:24px; align-items:center; }
+  .bhsvg{ flex:0 0 auto; }
+  .entrow .formula{ font-family:var(--mono); font-size:clamp(20px,4vw,30px); font-weight:800;
+    color:var(--violet); letter-spacing:-.01em; margin-bottom:10px; }
+  .entrow p{ margin:0; font-size:14px; color:var(--muted); } .entrow p b{ color:var(--text); }
+  .shock{ margin-top:12px; font-family:var(--mono); font-size:12.5px; color:var(--gold); }
+
+  /* holo principle */
+  .holo{ font-size:14.5px; color:var(--muted); } .holo b{ color:var(--text); }
+  .holo .chain{ font-family:var(--mono); font-size:12.5px; color:var(--cold); margin-top:10px; }
+
+  /* page curve */
+  .pcwrap{ overflow-x:auto; } svg.pc{ display:block; width:100%; min-width:520px; height:auto; }
+  .pclegend{ display:flex; gap:20px; flex-wrap:wrap; margin-top:12px; font-size:13px; color:var(--muted); }
+  .pclegend span{ display:inline-flex; align-items:center; gap:8px; }
+  .pclegend i{ width:20px; height:0; border-top-width:3px; border-top-style:solid; }
+
+  .steps{ display:grid; gap:10px; margin-top:4px; }
+  .step{ display:grid; grid-template-columns:auto 1fr; gap:13px; align-items:start;
+    padding:14px 16px; border-radius:12px; border:1px solid var(--line); background:var(--panel); }
+  .step .n{ font-family:var(--mono); font-size:12px; font-weight:700; color:var(--violet);
+    border:1px solid var(--violetdim); width:26px; height:26px; border-radius:8px; display:flex;
+    align-items:center; justify-content:center; flex:0 0 auto; }
+  .step .t{ font-weight:700; font-size:14.5px; margin-bottom:2px; }
+  .step p{ margin:0; font-size:13px; color:var(--muted); } .step p b{ color:var(--text); }
+  .step.win{ border-color:var(--greendim); background:linear-gradient(180deg,rgba(20,40,30,.4),var(--bg2)); }
+  .step.win .n{ color:var(--green); border-color:var(--greendim); }
+  .step.win .t{ color:var(--green); }
+
+  .status{ margin-top:24px; padding:20px 22px; border-radius:16px; border:1px solid var(--line2);
+    background:var(--panel2); font-size:14px; color:var(--muted); } .status b{ color:var(--text); }
+  .status .k{ font-family:var(--mono); font-size:11px; letter-spacing:.16em; text-transform:uppercase;
+    color:var(--green); display:block; margin-bottom:9px; }
+
+  footer{ margin-top:32px; color:var(--faint); font-size:12.5px; font-family:var(--mono);
+    line-height:1.7; text-align:center; }
+
+  @media (max-width:680px){
+    .geos{ grid-template-columns:1fr; } .entrow{ grid-template-columns:1fr; text-align:center; }
+    .bhsvg{ margin:0 auto; }
+  }
+</style>
+</head>
+<body>
+<div class="stars"></div>
+
+<div class="wrap">
+  <p class="eyebrow">Чёрные дыры · энтропия, голография, парадокс информации</p>
+  <h1>Чёрные дыры хранят информацию —<br>но как?</h1>
+  <p class="lede">Оказалось, у чёрной дыры есть <b>температура</b> и <b>энтропия</b>, а её испарение
+    родило острейший парадокс физики: куда девается информация? Ответ переписал наши представления о
+    пространстве. Но сперва — обещанное: разберёмся с <b>де Ситтером и анти-де Ситтером</b>.</p>
+
+  <!-- THREE GEOMETRIES -->
+  <p class="h2 cy">Сначала ясность: три формы пространства</p>
+  <p class="sub">Разница — только в <b>кривизне</b> (её задаёт знак космологической постоянной Λ).
+    «Анти» у де Ситтера значит просто <b>противоположная кривизна</b>, ничего зловещего. Оба названы
+    в честь астронома Виллема де Ситтера.</p>
+  <div class="geos">
+    <div class="geo ours">
+      <svg width="90" height="72" viewBox="0 0 90 72" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="45" cy="36" r="27" fill="none" stroke="#ffd27d" stroke-width="2"/>
+        <ellipse cx="45" cy="36" rx="27" ry="10" fill="none" stroke="#5f5230" stroke-width="1"/>
+        <ellipse cx="45" cy="36" rx="10" ry="27" fill="none" stroke="#5f5230" stroke-width="1"/>
+        <path d="M30,26 L60,26 L45,50 Z" fill="none" stroke="#ffd27d" stroke-width="1.5" opacity="0.8"/>
+      </svg>
+      <div class="nm">де Ситтер</div>
+      <div class="k">Λ &gt; 0 · сфера · «пухлая»</div>
+      <div class="tri">△ углы &gt; 180°</div><br>
+      <span class="us">★ ЭТО НАША ВСЕЛЕННАЯ</span>
+    </div>
+    <div class="geo flat">
+      <svg width="90" height="72" viewBox="0 0 90 72" xmlns="http://www.w3.org/2000/svg">
+        <g stroke="#3a4266" stroke-width="1">
+          <line x1="18" y1="16" x2="72" y2="16"/><line x1="18" y1="36" x2="72" y2="36"/><line x1="18" y1="56" x2="72" y2="56"/>
+          <line x1="24" y1="10" x2="24" y2="62"/><line x1="45" y1="10" x2="45" y2="62"/><line x1="66" y1="10" x2="66" y2="62"/></g>
+        <path d="M30,24 L62,24 L46,50 Z" fill="none" stroke="#8a93b6" stroke-width="1.5"/>
+      </svg>
+      <div class="nm">Минковски</div>
+      <div class="k">Λ = 0 · стол · плоское</div>
+      <div class="tri">△ углы = 180°</div><br>
+      <span class="us">просто плоское</span>
+    </div>
+    <div class="geo ads">
+      <svg width="90" height="72" viewBox="0 0 90 72" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="45" cy="36" r="28" fill="none" stroke="#5bc8e6" stroke-width="2"/>
+        <circle cx="45" cy="36" r="19" fill="none" stroke="#2c4a55" stroke-width="1"/>
+        <circle cx="45" cy="36" r="10" fill="none" stroke="#2c4a55" stroke-width="1"/>
+        <path d="M34,30 Q45,40 56,30 Q48,48 45,52 Q42,48 34,30 Z" fill="none" stroke="#5bc8e6" stroke-width="1.5" opacity="0.8"/>
+      </svg>
+      <div class="nm">анти-де Ситтер</div>
+      <div class="k">Λ &lt; 0 · седло · «коробка»</div>
+      <div class="tri">△ углы &lt; 180°</div><br>
+      <span class="us">дом голографии, НЕ наш</span>
+    </div>
+  </div>
+  <div class="adsnote"><b>Почему голография любит именно анти-де Ситтер:</b> отрицательная кривизна даёт
+    ему <b>чёткую границу «на бесконечности»</b> — стенку, куда света долетает и отражается. Есть куда
+    поместить граничную теорию (CFT). У нашей, де-ситтеровской Вселенной такой удобной границы нет —
+    поэтому голография <b>для реального мира</b> так трудна и пока не построена.</div>
+
+  <!-- ENTROPY -->
+  <p class="h2 vi">С чего всё началось: энтропия чёрной дыры</p>
+  <p class="sub">Бросишь что-то в чёрную дыру — и энтропия (беспорядок) как будто исчезает из Вселенной,
+    нарушая второй закон термодинамики. Бекенштейн (1972) спас закон дерзкой догадкой.</p>
+  <div class="card entrow">
+    <div class="bhsvg">
+      <svg width="150" height="150" viewBox="0 0 150 150" xmlns="http://www.w3.org/2000/svg">
+        <defs><radialGradient id="bh" cx="50%" cy="50%" r="50%">
+          <stop offset="55%" stop-color="#06070d"/><stop offset="80%" stop-color="#2a1e4a"/>
+          <stop offset="100%" stop-color="#0a0d18"/></radialGradient></defs>
+        <circle cx="75" cy="75" r="58" fill="none" stroke="#4a3a72" stroke-width="1" opacity="0.5"/>
+        <circle cx="75" cy="75" r="48" fill="url(#bh)"/>
+        <circle cx="75" cy="75" r="48" fill="none" stroke="#b48cff" stroke-width="2.5"/>
+        <g fill="#5bc8e6">
+          <circle cx="75" cy="27" r="2"/><circle cx="109" cy="41" r="2"/><circle cx="123" cy="75" r="2"/>
+          <circle cx="109" cy="109" r="2"/><circle cx="75" cy="123" r="2"/><circle cx="41" cy="109" r="2"/>
+          <circle cx="27" cy="75" r="2"/><circle cx="41" cy="41" r="2"/>
+          <circle cx="92" cy="30" r="1.6"/><circle cx="120" cy="58" r="1.6"/><circle cx="120" cy="92" r="1.6"/>
+          <circle cx="92" cy="120" r="1.6"/><circle cx="58" cy="120" r="1.6"/><circle cx="30" cy="92" r="1.6"/>
+          <circle cx="30" cy="58" r="1.6"/><circle cx="58" cy="30" r="1.6"/></g>
+        <text x="75" y="79" fill="#8a93b6" font-family="ui-monospace,monospace" font-size="10" text-anchor="middle">биты — на</text>
+        <text x="75" y="92" fill="#8a93b6" font-family="ui-monospace,monospace" font-size="10" text-anchor="middle">поверхности</text>
+      </svg>
+    </div>
+    <div>
+      <div class="formula">S = A / 4</div>
+      <p><b>Энтропия чёрной дыры равна четверти площади её горизонта</b> (в планковских единицах).
+        Хокинг (1974) добавил: у неё есть и температура — она <b>испаряется</b>.</p>
+      <div class="shock">⚡ шок: энтропия растёт как ПЛОЩАДЬ, а не как ОБЪЁМ — у обычных тел наоборот</div>
+    </div>
+  </div>
+
+  <!-- HOLOGRAPHIC PRINCIPLE -->
+  <p class="h2 cy">Отсюда — голографический принцип</p>
+  <div class="card holo">
+    Если у самого плотного объекта во Вселенной информация измеряется <b>площадью поверхности</b>, а не
+    объёмом, — значит, максимум информации в любой области задаёт её <b>граница</b>. 'т Хоофт и Сасскинд
+    (1990-е) сделали вывод: мир как будто <b>«нарисован» на своей оболочке</b>, как объёмный образ на
+    плоской голограмме. AdS/CFT — точное воплощение этой идеи.
+    <div class="chain">энтропия ∝ площадь → информация живёт на границах → мир голографичен</div>
+  </div>
+
+  <!-- INFORMATION PARADOX -->
+  <p class="h2 vi">Парадокс: куда девается информация?</p>
+  <p class="sub">Испаряясь, чёрная дыра излучает, казалось бы, <b>абсолютно безликое</b> тепловое
+    излучение. Тогда сведения о том, что в неё упало, <b>стираются</b> — а квантовая механика это строго
+    запрещает.</p>
+  <div class="card pcwrap">
+    <svg class="pc" viewBox="0 0 620 250" xmlns="http://www.w3.org/2000/svg">
+      <line x1="56" y1="212" x2="600" y2="212" stroke="#242c49"/>
+      <line x1="56" y1="212" x2="56" y2="24" stroke="#242c49"/>
+      <!-- page time marker -->
+      <line x1="330" y1="40" x2="330" y2="212" stroke="#5b6488" stroke-width="1" stroke-dasharray="3 4"/>
+      <text x="330" y="230" fill="#5b6488" font-family="ui-monospace,monospace" font-size="10" text-anchor="middle">время Пейджа</text>
+      <!-- Hawking: rises forever -->
+      <path d="M56,212 C220,150 430,95 600,60" stroke="#ff5c72" stroke-width="2.5" stroke-dasharray="6 5" fill="none"/>
+      <text x="470" y="78" fill="#ff5c72" font-family="var(--sans)" font-size="12">Хокинг: информация теряется</text>
+      <!-- Page: rise then fall -->
+      <path d="M56,212 C200,150 300,124 330,122 C430,124 520,180 600,212" stroke="#7fe0a8" stroke-width="3" fill="none"/>
+      <text x="120" y="150" fill="#7fe0a8" font-family="var(--sans)" font-size="12">Пейдж: сохраняется</text>
+      <text x="14" y="150" fill="#5b6488" font-family="ui-monospace,monospace" font-size="10" transform="rotate(-90 14 150)">запутанность излучения</text>
+      <text x="470" y="230" fill="#5b6488" font-family="ui-monospace,monospace" font-size="10" text-anchor="middle">полное испарение →</text>
+    </svg>
+  </div>
+  <p class="pclegend"><span><i style="border-color:var(--hotdeep);border-top-style:dashed"></i>рост без конца = информация уничтожена (ОТО)</span><span><i style="border-color:var(--green)"></i>рост, потом спад к нулю = информация вернулась (квант)</span></p>
+
+  <div class="steps" style="margin-top:18px">
+    <div class="step"><div class="n">1</div><div><div class="t">Столкновение двух теорий</div>
+      <p>Гравитация (расчёт Хокинга) говорит: излучение безлико, <b>информация уничтожена</b>. Квантовая механика: информацию уничтожить <b>невозможно</b> в принципе. Кто прав?</p></div></div>
+    <div class="step"><div class="n">2</div><div><div class="t">Тест — «кривая Пейджа» (1993)</div>
+      <p>Если информация цела, запутанность излучения должна сперва расти, а потом <b>падать к нулю</b> к концу испарения. Расчёт Хокинга давал вечный рост — признак потери.</p></div></div>
+    <div class="step win"><div class="n">3</div><div><div class="t">Разгадка — «острова» (2019–2020) ✓</div>
+      <p>Аккуратный расчёт с эффектами квантовой гравитации <b>воспроизвёл кривую Пейджа</b>. Оказалось, кусок нутра чёрной дыры («остров») тайно <b>принадлежит</b> далёкому излучению — информация выходит наружу. Держится это ровно на связке <b>геометрия = запутанность</b>.</p></div></div>
+  </div>
+
+  <div class="status">
+    <span class="k">статус · консенсус сместился</span>
+    <p><b>Информация, похоже, сохраняется</b> — квантовая механика победила. Хокинг в 2004-м публично
+      признал проигрыш в знаменитом пари. Но <b>детали</b> — как именно сведения «зашиты» в излучении и
+      как всё работает для реальной, а не модельной чёрной дыры — ещё дорабатывают (спор про «файрволы»
+      2012 года был частью этой драмы). Главное: разгадка прямо указывает, что <b>пространство-время
+      эмерджентно и нелокально</b> — ровно то, о чём голография.</p>
+  </div>
+
+  <footer>
+    Диаграммы схематические; кривая Пейджа — качественная. Бекенштейн 1972 · Хокинг 1974 · парадокс 1976 · Пейдж 1993 · «острова» 2019–2020.<br>
+    Голографический принцип: 'т Хоофт, Сасскинд, 1990-е. Пари Хокинга–Прескилла: 1997, признано 2004. Тёмная тема — намеренно.
+  </footer>
+</div>
+</body>
+</html>

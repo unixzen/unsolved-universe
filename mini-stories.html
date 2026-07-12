@@ -1,0 +1,497 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Читалка: мини-рассказы о Вселенной</title>
+<style>
+  :root{
+    --bg:#0a0c14; --bg2:#0d1019; --panel:#141828; --panel2:#181d30;
+    --line:#282f4a; --line2:#333c5e; --text:#e7ecf8; --muted:#aab2cf; --faint:#6a739a;
+    --gold:#ffd889; --golddim:#5f5230; --hot:#ff8a5c; --hotdeep:#ff6b80; --hotdim:#7d3140;
+    --cold:#6dd3ea; --colddim:#2c4a55; --violet:#c19dff; --violetdim:#4a3a72; --green:#8fe6b4; --greendim:#2f5c42;
+    --read:720px; --mono:ui-monospace,"SF Mono","JetBrains Mono",Menlo,Consolas,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{ box-sizing:border-box; }
+  body{ background:var(--bg); color:var(--text); font-family:var(--sans); line-height:1.7; -webkit-font-smoothing:antialiased; margin:0; }
+  .stars{ position:fixed; inset:0; z-index:0; pointer-events:none; background-color:var(--bg);
+    background-image:radial-gradient(1px 1px at 24px 32px, rgba(255,255,255,.5), transparent),radial-gradient(1px 1px at 120px 90px, rgba(214,226,255,.4), transparent),radial-gradient(1.2px 1.2px at 200px 160px, rgba(255,255,255,.45), transparent);
+    background-repeat:repeat; background-size:260px 260px; opacity:.7; }
+  .wrap{ position:relative; z-index:1; max-width:var(--read); margin:0 auto; padding:60px 24px 90px; }
+
+  .eyebrow{ font-family:var(--mono); font-size:12px; letter-spacing:.24em; text-transform:uppercase; margin:0 0 14px;
+    background:linear-gradient(90deg,var(--gold),var(--cold),var(--violet)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  h1{ font-size:clamp(30px,6vw,50px); line-height:1.05; letter-spacing:-.02em; font-weight:800; margin:0 0 16px; text-wrap:balance; }
+  .lede{ font-size:18px; color:var(--muted); margin:0; } .lede b{ color:var(--text); }
+  .legend{ margin-top:18px; padding:14px 18px; border-radius:12px; border:1px dashed var(--line2); background:rgba(20,24,40,.6); font-size:13.5px; color:var(--muted); }
+  .legend b{ color:var(--text); } .legend .t1{ color:var(--gold); } .legend .t2{ color:var(--cold); } .legend .t3{ color:var(--green); }
+
+  .chap{ margin-top:56px; padding-top:8px; border-top:1px solid var(--line); }
+  .chap-lbl{ font-family:var(--mono); font-size:12px; letter-spacing:.16em; text-transform:uppercase; color:var(--cacc,var(--cold)); margin:0 0 4px; }
+  .chap-ttl{ font-size:15px; color:var(--faint); margin:0 0 8px; font-style:italic; }
+
+  .story{ margin-top:38px; }
+  .story h2{ font-size:24px; letter-spacing:-.015em; margin:0 0 12px; display:flex; align-items:center; gap:12px; }
+  .story h2 .em{ font-size:26px; }
+
+  .meta{ display:flex; flex-direction:column; gap:6px; margin:0 0 16px; padding:12px 15px; border-radius:10px;
+    background:rgba(20,24,40,.6); border:1px solid var(--line); border-left:3px solid var(--cacc,var(--cold)); }
+  .meta div{ font-size:13.5px; color:var(--text); line-height:1.4; }
+  .meta span{ font-family:var(--mono); font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--faint);
+    display:inline-block; width:34px; }
+  .meta .term b{ color:var(--cacc,var(--cold)); } .meta .who i{ color:var(--muted); font-style:normal; }
+
+  .fig{ margin:0 0 18px; padding:14px; border-radius:12px; border:1px solid var(--line); background:var(--panel); }
+  .fig svg{ display:block; width:100%; height:auto; max-width:540px; margin:0 auto; }
+  .fig .cap{ text-align:center; font-family:var(--mono); font-size:11px; color:var(--faint); margin-top:9px; }
+
+  .story p{ font-family:var(--sans); font-size:17px; line-height:1.78; color:#dbe2f2; margin:0 0 15px; }
+  .story p b{ color:#fff; font-weight:600; }
+  .story p.open::first-letter{ font-size:2.5em; line-height:.8; float:left; margin:5px 10px 0 0; color:var(--cacc,var(--gold)); font-weight:700; }
+  .take{ margin-top:6px; padding:14px 18px; border-radius:0 12px 12px 0; border-left:4px solid var(--cacc,var(--green));
+    background:linear-gradient(90deg,rgba(143,230,180,.08),transparent); font-size:15.5px; color:var(--text); }
+  .take b{ color:var(--cacc,var(--green)); font-family:var(--mono); font-size:12px; letter-spacing:.08em; text-transform:uppercase; display:block; margin-bottom:3px; }
+
+  .c1{ --cacc:var(--gold); } .c2{ --cacc:var(--cold); } .c3{ --cacc:var(--violet); }
+  .c4{ --cacc:var(--green); } .c5{ --cacc:var(--hotdeep); } .c6{ --cacc:var(--gold); } .c7{ --cacc:var(--violet); }
+
+  footer{ margin-top:56px; padding-top:20px; border-top:1px solid var(--line); color:var(--faint); font-size:12.5px; font-family:var(--mono); line-height:1.7; text-align:center; }
+</style>
+</head>
+<body>
+<div class="stars"></div>
+<div class="wrap">
+  <p class="eyebrow">Читалка · мини-рассказы с именами и картинками</p>
+  <h1>Расскажи по-человечески</h1>
+  <p class="lede">Тот же атлас маленькими рассказами — но теперь у каждого есть <b>точное научное название</b>,
+    <b>имена учёных</b> и <b>схема-картинка</b>. Так при чтении сразу видно, о какой из наших загадок речь.</p>
+  <div class="legend">В каждом рассказе: <b class="t1">тема</b> — как это называется в науке · <b class="t2">кто</b> — кто открыл ·
+    <b>картинка</b> — что представить · и сам рассказ с <b class="t3">🎯 главным</b> в конце.</div>
+
+  <!-- ГЛАВА 1 -->
+  <div class="chap c1"><p class="chap-lbl">Глава 1</p><p class="chap-ttl">Космос вокруг нас</p></div>
+
+  <div class="story c1"><h2><span class="em">🌌</span>Где мы живём</h2>
+    <div class="meta">
+      <div class="term"><span>тема</span> <b>Крупномасштабная структура Вселенной</b> · сверхскопление Ланиакея · Великий аттрактор</div>
+      <div class="who"><span>кто</span> <i>Вера Рубин, Брент Талли (карта Ланиакеи, 2014); Великий аттрактор — 1980-е</i></div>
+    </div>
+    <div class="fig">
+      <svg viewBox="0 0 540 150" xmlns="http://www.w3.org/2000/svg">
+        <line x1="34" y1="52" x2="452" y2="52" stroke="#333c5e" stroke-width="1.5"/>
+        <circle cx="40" cy="52" r="3" fill="#ffd889"/><text x="40" y="74" fill="#aab2cf" font-family="ui-monospace,monospace" font-size="9" text-anchor="middle">Земля</text>
+        <circle cx="140" cy="52" r="5" fill="#ffd889"/><text x="140" y="76" fill="#aab2cf" font-family="ui-monospace,monospace" font-size="9" text-anchor="middle">Солн. система</text>
+        <circle cx="240" cy="52" r="8" fill="#ffd889"/><text x="240" y="90" fill="#aab2cf" font-family="ui-monospace,monospace" font-size="9" text-anchor="middle">Млечный Путь</text>
+        <circle cx="340" cy="52" r="11" fill="#ffd889"/><text x="340" y="74" fill="#aab2cf" font-family="ui-monospace,monospace" font-size="9" text-anchor="middle">Местная группа</text>
+        <circle cx="440" cy="52" r="15" fill="none" stroke="#ffd889" stroke-width="2"/><text x="440" y="92" fill="#ffd889" font-family="ui-monospace,monospace" font-size="9" text-anchor="middle">Ланиакея</text>
+        <path d="M462,52 L502,52" stroke="#ff6b80" stroke-width="2.5"/><path d="M502,52 l-8,-4 l0,8 z" fill="#ff6b80"/>
+        <circle cx="516" cy="52" r="7" fill="#ff6b80"/><text x="516" y="30" fill="#ff6b80" font-family="ui-monospace,monospace" font-size="9" text-anchor="middle">Великий</text><text x="516" y="76" fill="#ff6b80" font-family="ui-monospace,monospace" font-size="9" text-anchor="middle">аттрактор</text>
+        <text x="472" y="44" fill="#ff6b80" font-family="ui-monospace,monospace" font-size="8">летим</text>
+        <text x="20" y="128" fill="#6a739a" font-family="ui-monospace,monospace" font-size="9">← каждая ступень в десятки раз больше предыдущей →</text>
+      </svg>
+      <div class="cap">От Земли до Великого аттрактора — «космический адрес» и куда нас тянет</div>
+    </div>
+    <p class="open">Представь, что подписываешь конверт: твой дом, улица, город, страна, материк, планета. Так вот, у Земли этот адрес продолжается дальше — в космос, и он чудовищно огромный.</p>
+    <p>Земля кружит вокруг Солнца. Солнце — лишь одна из сотен миллиардов звёзд нашей галактики, Млечного Пути. Но и галактики не одиночки: они сбиваются в группы, группы — в скопления, а те — в гигантские «острова», сверхскопления. Наш зовётся <b>Ланиакея</b> — это название в 2014 году дал астроном Брент Талли, начертив карту по движению галактик.</p>
+    <p>И вот что удивительно: все эти галактики, включая нашу, медленно стекаются в одну сторону — к колоссальному сгустку массы, который прозвали <b>Великим аттрактором</b>. Мы как капли, скользящие по огромному склону. Правда, «дна» не достигнем: сама Вселенная растягивается и уносит цель всё дальше.</p>
+    <div class="take"><b>Что запомнить</b>Мы — крошечная пылинка внутри матрёшки, где каждая кукла в десятки раз больше предыдущей.</div>
+  </div>
+
+  <div class="story c1"><h2><span class="em">🌌</span>Как всё закончится</h2>
+    <div class="meta">
+      <div class="term"><span>тема</span> <b>Тепловая смерть Вселенной</b> («Большое замерзание») · эры Вселенной</div>
+      <div class="who"><span>кто</span> <i>Фред Адамс и Грегори Лафлин («Пять возрастов Вселенной»); Стивен Хокинг</i></div>
+    </div>
+    <div class="fig">
+      <svg viewBox="0 0 540 120" xmlns="http://www.w3.org/2000/svg">
+        <defs><linearGradient id="cool" x1="0" x2="1"><stop offset="0" stop-color="#ff8a5c"/><stop offset="0.5" stop-color="#6dd3ea"/><stop offset="1" stop-color="#333c5e"/></linearGradient></defs>
+        <rect x="30" y="44" width="480" height="8" rx="4" fill="url(#cool)"/>
+        <circle cx="40" cy="48" r="5" fill="#ffd889"/><text x="40" y="74" fill="#aab2cf" font-family="ui-monospace,monospace" font-size="9" text-anchor="middle">сейчас</text><text x="40" y="86" fill="#6a739a" font-family="ui-monospace,monospace" font-size="8" text-anchor="middle">звёзды</text>
+        <text x="200" y="74" fill="#aab2cf" font-family="ui-monospace,monospace" font-size="9" text-anchor="middle">звёзды гаснут</text>
+        <text x="370" y="74" fill="#aab2cf" font-family="ui-monospace,monospace" font-size="9" text-anchor="middle">только чёрные дыры</text>
+        <circle cx="505" cy="48" r="4" fill="#333c5e" stroke="#6a739a"/><text x="505" y="74" fill="#6a739a" font-family="ui-monospace,monospace" font-size="9" text-anchor="middle">тьма</text>
+        <text x="270" y="26" fill="#6a739a" font-family="ui-monospace,monospace" font-size="9" text-anchor="middle">время →  (Вселенная остывает)</text>
+      </svg>
+      <div class="cap">Костёр Вселенной: от ярких звёзд — к вечному холоду</div>
+    </div>
+    <p class="open">Разожги костёр: сначала жаркое пламя, потом тлеющие угли, потом холодный пепел. Вселенная — это невероятно медленный костёр, и самую яркую пору она уже прошла.</p>
+    <p>Сейчас небо полно звёзд, но звёзды не вечны: они сжигают топливо и гаснут. Через много триллионов лет вспыхнет и погаснет последняя — и наступит тьма. Останутся лишь «трупы» звёзд да чёрные дыры. Астрофизики Фред Адамс и Грегори Лафлин расписали эти этапы как «Пять возрастов Вселенной».</p>
+    <p>Но и чёрные дыры, как ни странно, не навсегда: они еле заметно испаряются (это открыл Стивен Хокинг) и через немыслимые сроки исчезнут тоже. В самом конце — только холод, темнота и пустота, где больше ничего не происходит. Это состояние и называют <b>тепловой смертью</b>.</p>
+    <div class="take"><b>Что запомнить</b>Конец Вселенной — не грохот и взрыв, а тихое, бесконечно долгое угасание.</div>
+  </div>
+
+  <!-- ГЛАВА 2 -->
+  <div class="chap c2"><p class="chap-lbl">Глава 2</p><p class="chap-ttl">Странности, которые не сходятся</p></div>
+
+  <div class="story c2"><h2><span class="em">🌌</span>Ось Зла</h2>
+    <div class="meta">
+      <div class="term"><span>тема</span> <b>Аномалии реликтового излучения (CMB)</b> · «Ось Зла» · выравнивание квадруполя и октуполя</div>
+      <div class="who"><span>кто</span> <i>Кейт Лэнд и Жоао Магейжу (термин, 2005); спутники WMAP и Planck</i></div>
+    </div>
+    <div class="fig">
+      <svg viewBox="0 0 540 130" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="270" cy="62" r="48" fill="#141828" stroke="#333c5e"/>
+        <path d="M270,14 A48,48 0 0,1 305,100 Z" fill="#ff8a5c" opacity="0.2"/>
+        <path d="M270,110 A48,48 0 0,1 235,24 Z" fill="#6dd3ea" opacity="0.2"/>
+        <line x1="210" y1="90" x2="330" y2="34" stroke="#fff" stroke-width="2" stroke-dasharray="5 4"/>
+        <circle cx="210" cy="90" r="4" fill="#fff"/><circle cx="330" cy="34" r="4" fill="#fff"/>
+        <text x="270" y="126" fill="#aab2cf" font-family="ui-monospace,monospace" font-size="10" text-anchor="middle">«эхо» Большого взрыва — карта всего неба</text>
+        <text x="360" y="30" fill="#fff" font-family="ui-monospace,monospace" font-size="9">странная ось</text>
+        <text x="130" y="60" fill="#6a739a" font-family="ui-monospace,monospace" font-size="9">её быть</text><text x="130" y="72" fill="#6a739a" font-family="ui-monospace,monospace" font-size="9">не должно</text>
+      </svg>
+      <div class="cap">В древнем свете нашли направление, которого не должно существовать</div>
+    </div>
+    <p class="open">Подбрось тысячу монеток и посмотри, как они легли. Узор должен быть беспорядочным. А если бы монетки вдруг выложились в аккуратную линию, ты бы заподозрил: тут что-то не так.</p>
+    <p>У Вселенной есть «эхо» Большого взрыва — древнейший свет, что ровным фоном приходит со всех сторон (его называют <b>реликтовым излучением</b>). Учёные изучили его узор и наткнулись на странность: будто у света есть выделенное направление, ось. И она подозрительно совпадает с плоскостью нашей Солнечной системы — хотя тот свет родился за миллиарды лет до Солнца.</p>
+    <p>Название «<b>Ось Зла</b>» придумали физики Кейт Лэнд и Жоао Магейжу в 2005 году. По всем правилам Вселенная должна выглядеть одинаково, куда ни глянь. Скорее всего, это просто редкое совпадение — но пока никто не доказал.</p>
+    <div class="take"><b>Что запомнить</b>Либо нам выпала редкая случайность, либо мы упускаем что-то важное о Вселенной.</div>
+  </div>
+
+  <div class="story c2"><h2><span class="em">📏</span>Спор о скорости</h2>
+    <div class="meta">
+      <div class="term"><span>тема</span> <b>Хаббловская напряжённость</b> (Hubble tension) · постоянная Хаббла H₀</div>
+      <div class="who"><span>кто</span> <i>Эдвин Хаббл (расширение, 1929); Адам Рисс и Planck (спорящие измерения)</i></div>
+    </div>
+    <div class="fig">
+      <svg viewBox="0 0 540 120" xmlns="http://www.w3.org/2000/svg">
+        <line x1="40" y1="70" x2="500" y2="70" stroke="#333c5e"/>
+        <text x="120" y="90" fill="#6a739a" font-family="ui-monospace,monospace" font-size="9" text-anchor="middle">66</text>
+        <text x="410" y="90" fill="#6a739a" font-family="ui-monospace,monospace" font-size="9" text-anchor="middle">74</text>
+        <circle cx="150" cy="70" r="8" fill="#6dd3ea"/><text x="150" y="46" fill="#6dd3ea" font-family="ui-monospace,monospace" font-size="10" text-anchor="middle">≈ 67</text><text x="150" y="34" fill="#aab2cf" font-family="ui-monospace,monospace" font-size="8.5" text-anchor="middle">по «эху» (реликт)</text>
+        <circle cx="380" cy="70" r="8" fill="#ffd889"/><text x="380" y="46" fill="#ffd889" font-family="ui-monospace,monospace" font-size="10" text-anchor="middle">≈ 73</text><text x="380" y="34" fill="#aab2cf" font-family="ui-monospace,monospace" font-size="8.5" text-anchor="middle">по близким звёздам</text>
+        <path d="M165,102 L365,102" stroke="#ff6b80" stroke-width="1.5" stroke-dasharray="4 3"/>
+        <text x="265" y="115" fill="#ff6b80" font-family="ui-monospace,monospace" font-size="9" text-anchor="middle">не сходятся! разрыв ≈ 5σ</text>
+      </svg>
+      <div class="cap">Два способа измерить скорость расширения дают разные числа (H₀, км/с·Мпк)</div>
+    </div>
+    <p class="open">Возьми две хорошие линейки и померь ими один и тот же стол. Они обязаны дать одинаковую длину. А если одна говорит «метр», другая — «метр и десять», то беда не в столе, а в линейках или в том, как мы считаем.</p>
+    <p>Ещё в 1929 году Эдвин Хаббл открыл, что галактики разбегаются — Вселенная расширяется. Скорость этого расширения называют <b>постоянной Хаббла</b>. Учёные меряют её двумя разными путями: один смотрит на «эхо» юной Вселенной (получается ≈67), другой — на близкие взрывающиеся звёзды (получается ≈73).</p>
+    <p>И числа упрямо не сходятся — сколько ни уточняй приборы. Это расхождение так и зовут: <b>хаббловская напряжённость</b>. Значит, где-то в нашей картине мира спрятана то ли ошибка, то ли что-то новое.</p>
+    <div class="take"><b>Что запомнить</b>Два надёжных способа спорят о простой вещи — и это один из главных кризисов физики прямо сейчас.</div>
+  </div>
+
+  <!-- ГЛАВА 3 -->
+  <div class="chap c3"><p class="chap-lbl">Глава 3</p><p class="chap-ttl">Тёмная сторона — 95% Вселенной</p></div>
+
+  <div class="story c3"><h2><span class="em">🌑</span>Тёмная энергия</h2>
+    <div class="meta">
+      <div class="term"><span>тема</span> <b>Тёмная энергия</b> · ускоренное расширение · космологическая постоянная Λ</div>
+      <div class="who"><span>кто</span> <i>Перлмуттер, Шмидт, Рисс (открытие 1998, Нобель 2011); Эйнштейн (Λ)</i></div>
+    </div>
+    <div class="fig">
+      <svg viewBox="0 0 540 120" xmlns="http://www.w3.org/2000/svg">
+        <path d="M40,100 Q160,95 250,80 C340,64 430,40 500,20" stroke="#c19dff" stroke-width="3" fill="none"/>
+        <circle cx="250" cy="80" r="4" fill="#ffd889"/><text x="250" y="98" fill="#ffd889" font-family="ui-monospace,monospace" font-size="9" text-anchor="middle">разворот ~6 млрд лет назад</text>
+        <text x="110" y="88" fill="#aab2cf" font-family="ui-monospace,monospace" font-size="9">торможение</text>
+        <text x="410" y="44" fill="#c19dff" font-family="ui-monospace,monospace" font-size="9">разгон →</text>
+        <text x="20" y="60" fill="#6a739a" font-family="ui-monospace,monospace" font-size="9" transform="rotate(-90 20 60)">размер</text>
+        <text x="470" y="112" fill="#6a739a" font-family="ui-monospace,monospace" font-size="9">время →</text>
+      </svg>
+      <div class="cap">Расширение должно было тормозить — а оно разгоняется</div>
+    </div>
+    <p class="open">Подбрось мяч вверх. Он замедляется и падает — так работает притяжение. А теперь вообрази, что мяч, наоборот, летит вверх всё быстрее. Ты бы сразу спросил: кто его толкает?</p>
+    <p>Именно это в 1998 году обнаружили три астронома — Сол Перлмуттер, Брайан Шмидт и Адам Рисс (за это дали Нобелевскую премию). Гравитация должна была бы тормозить разбегание галактик, но расширение, наоборот, <b>ускоряется</b>. Что-то невидимое словно расталкивает пространство изнутри.</p>
+    <p>Это «что-то» назвали <b>тёмной энергией</b>. И поражает вот что: её около 68% всего — это самая большая часть Вселенной. Выходит, бо́льшую часть мира занимает нечто, о чём мы знаем лишь одно: оно толкает. Что это на самом деле — не понимает никто.</p>
+    <div class="take"><b>Что запомнить</b>Самая огромная составляющая Вселенной — полная загадка, и это она разгоняет разбегание галактик.</div>
+  </div>
+
+  <div class="story c3"><h2><span class="em">🌀</span>Тёмная материя</h2>
+    <div class="meta">
+      <div class="term"><span>тема</span> <b>Тёмная материя</b> · кривые вращения галактик · Скопление Пуля</div>
+      <div class="who"><span>кто</span> <i>Фриц Цвикки (1933); Вера Рубин (кривые вращения, 1970-е)</i></div>
+    </div>
+    <div class="fig">
+      <svg viewBox="0 0 540 130" xmlns="http://www.w3.org/2000/svg">
+        <line x1="50" y1="105" x2="510" y2="105" stroke="#333c5e"/><line x1="50" y1="105" x2="50" y2="20" stroke="#333c5e"/>
+        <path d="M50,100 C90,88 130,55 165,48 C300,40 420,38 500,36" stroke="#ffd889" stroke-width="3" fill="none"/>
+        <path d="M165,48 C260,72 380,90 500,98" stroke="#6dd3ea" stroke-width="2.5" stroke-dasharray="6 4" fill="none"/>
+        <text x="360" y="30" fill="#ffd889" font-family="ui-monospace,monospace" font-size="9">наблюдаем — быстро (плоско)</text>
+        <text x="360" y="112" fill="#6dd3ea" font-family="ui-monospace,monospace" font-size="9">ожидали — медленнее</text>
+        <text x="26" y="70" fill="#6a739a" font-family="ui-monospace,monospace" font-size="9" transform="rotate(-90 26 70)">скорость звёзд</text>
+        <text x="470" y="124" fill="#6a739a" font-family="ui-monospace,monospace" font-size="9">радиус →</text>
+      </svg>
+      <div class="cap">Звёзды на краю галактик несутся слишком быстро — их держит невидимая масса</div>
+    </div>
+    <p class="open">Ты не видишь ветер. Но когда листья кружатся в воздухе, ты точно знаешь: он есть. О невидимом можно узнать по тому, как оно двигает видимое.</p>
+    <p>С галактиками — та же история. В 1970-х Вера Рубин измерила, как быстро крутятся звёзды на краю галактик. По законам физики они должны замедляться и разлетаться — а они держатся и несутся быстро, будто их удерживает что-то тяжёлое, чего мы не видим. (Ещё в 1933-м на это намекал Фриц Цвикки.)</p>
+    <p>Это «что-то» назвали <b>тёмной материей</b>. Она не светится и не отражает свет — только притягивает. И её примерно в пять раз больше, чем всего обычного вещества, из которого сделаны звёзды, планеты и ты. Учёные ставят огромные подземные ловушки, чтобы её поймать, но пока — тишина.</p>
+    <div class="take"><b>Что запомнить</b>Почти всё вещество Вселенной невидимо, и мы знаем о нём только по его притяжению.</div>
+  </div>
+
+  <!-- ГЛАВА 4 -->
+  <div class="chap c4"><p class="chap-lbl">Глава 4</p><p class="chap-ttl">Кирпичики и силы</p></div>
+
+  <div class="story c4"><h2><span class="em">⚛️</span>Недостающие частицы</h2>
+    <div class="meta">
+      <div class="term"><span>тема</span> <b>Стандартная модель</b> · аксион · суперсимметрия · масса нейтрино (осцилляции)</div>
+      <div class="who"><span>кто</span> <i>Печчеи и Куинн (аксион, 1977); Кадзита и Макдональд (нейтрино, Нобель 2015)</i></div>
+    </div>
+    <div class="fig">
+      <svg viewBox="0 0 540 110" xmlns="http://www.w3.org/2000/svg">
+        <g font-family="ui-monospace,monospace" font-size="10" text-anchor="middle">
+        <rect x="60" y="34" width="110" height="46" rx="8" fill="#141828" stroke="#333c5e"/><text x="115" y="55" fill="#6dd3ea">аксион</text><text x="115" y="70" fill="#aab2cf" font-size="8.5">ищут — ?</text>
+        <rect x="215" y="34" width="110" height="46" rx="8" fill="#141828" stroke="#7d3140"/><text x="270" y="55" fill="#ff6b80">суперсимметрия</text><text x="270" y="70" fill="#aab2cf" font-size="8.5">не нашли — ✗</text>
+        <rect x="370" y="34" width="110" height="46" rx="8" fill="#141828" stroke="#2f5c42"/><text x="425" y="55" fill="#8fe6b4">нейтрино</text><text x="425" y="70" fill="#aab2cf" font-size="8.5">есть масса — ✓</text>
+        <text x="270" y="20" fill="#6a739a">пустые ячейки в «альбоме частиц»</text></g>
+      </svg>
+      <div class="cap">Три недостающие «наклейки»: одну ищут, другую не нашли, третью подтвердили</div>
+    </div>
+    <p class="open">Знаешь альбом для наклеек? У учёных почти полный: они собрали набор всех частиц мира и назвали его <b>Стандартной моделью</b>. Она отлично работает — но пара ячеек пустует, и за недостающими наклейками идёт охота.</p>
+    <p>Одна — <b>аксион</b>: лёгкая частица, которую предсказали физики Печчеи и Куинн в 1977-м; её пока не поймали, но очень ждут — вдруг это и есть тёмная материя. Другая идея — <b>суперсимметрия</b>: догадка, что у каждой частицы есть «двойник». Её искали годами на большом ускорителе — и не нашли.</p>
+    <p>А <b>нейтрино</b> — «частицы-призраки»: сквозь тебя их пролетают триллионы в секунду. Долго думали, что они невесомы. Но эксперименты (за них дали Нобель 2015 года) доказали: у нейтрино есть крохотная масса. Это стало первым твёрдым знаком, что альбом неполон.</p>
+    <div class="take"><b>Что запомнить</b>Наша коллекция частиц точно не закончена — самое интересное ещё прячется.</div>
+  </div>
+
+  <div class="story c4"><h2><span class="em">🔗</span>Великое объединение</h2>
+    <div class="meta">
+      <div class="term"><span>тема</span> <b>Великое объединение (GUT)</b> · объединение взаимодействий · распад протона</div>
+      <div class="who"><span>кто</span> <i>Джорджи и Глэшоу (теория SU(5), 1974); эксперимент Super-Kamiokande</i></div>
+    </div>
+    <div class="fig">
+      <svg viewBox="0 0 540 110" xmlns="http://www.w3.org/2000/svg">
+        <path d="M40,30 C220,50 360,60 470,64" stroke="#c19dff" stroke-width="2.5" fill="none"/>
+        <path d="M40,64 C220,64 360,64 470,64" stroke="#6dd3ea" stroke-width="2.5" fill="none"/>
+        <path d="M40,96 C220,80 360,68 470,64" stroke="#ffd889" stroke-width="2.5" fill="none"/>
+        <circle cx="470" cy="64" r="6" fill="#fff"/><text x="470" y="46" fill="#fff" font-family="ui-monospace,monospace" font-size="9" text-anchor="middle">одна сила?</text>
+        <text x="60" y="24" fill="#c19dff" font-family="ui-monospace,monospace" font-size="9">сильное</text>
+        <text x="60" y="60" fill="#6dd3ea" font-family="ui-monospace,monospace" font-size="9">слабое</text>
+        <text x="60" y="106" fill="#ffd889" font-family="ui-monospace,monospace" font-size="9">электромагн.</text>
+        <text x="300" y="100" fill="#6a739a" font-family="ui-monospace,monospace" font-size="9">рост энергии →</text>
+      </svg>
+      <div class="cap">Три силы, возможно, сходятся в одну при огромных энергиях</div>
+    </div>
+    <p class="open">Возьми фонарики трёх цветов — красный, зелёный, синий — и посвети ими в одну точку. Получится белый свет. Три разных луча оказались гранями одного.</p>
+    <p>В природе, кроме гравитации, есть ещё три силы: они держат ядра атомов, заставляют их распадаться и отвечают за электричество. На вид разные. Но в 1974 году физики Говард Джорджи и Шелдон Глэшоу предположили: при чудовищных энергиях, как в первые мгновения после Большого взрыва, эти три силы сливаются в одну. Это идея <b>Великого объединения</b>.</p>
+    <p>Проверить напрямую нельзя. Зато у идеи есть следствие: если она верна, то даже протон, кирпичик атома, должен изредка разваливаться. Поэтому в Японии в огромном баке воды (Super-Kamiokande) годами караулят хоть один такой <b>распад протона</b>. Пока не поймали.</p>
+    <div class="take"><b>Что запомнить</b>Возможно, все силы природы — это одна сила, просто одетая в разные «костюмы».</div>
+  </div>
+
+  <!-- ГЛАВА 5 -->
+  <div class="chap c5"><p class="chap-lbl">Глава 5</p><p class="chap-ttl">Самое глубокое</p></div>
+
+  <div class="story c5"><h2><span class="em">🎆</span>Три больших «почему»</h2>
+    <div class="meta">
+      <div class="term"><span>тема</span> <b>Барионная асимметрия · космическая инфляция · квантовая гравитация</b></div>
+      <div class="who"><span>кто</span> <i>Андрей Сахаров (1967); Алан Гут (инфляция, 1980)</i></div>
+    </div>
+    <div class="fig">
+      <svg viewBox="0 0 540 100" xmlns="http://www.w3.org/2000/svg">
+        <g font-family="ui-monospace,monospace" font-size="9" text-anchor="middle">
+        <rect x="40" y="28" width="140" height="44" rx="8" fill="#141828" stroke="#333c5e"/><text x="110" y="46" fill="#ffd889" font-size="16">⚖</text><text x="110" y="64" fill="#aab2cf">почему есть вещество</text>
+        <rect x="200" y="28" width="140" height="44" rx="8" fill="#141828" stroke="#333c5e"/><text x="270" y="46" fill="#6dd3ea" font-size="16">🎆</text><text x="270" y="64" fill="#aab2cf">что раздуло Вселенную</text>
+        <rect x="360" y="28" width="140" height="44" rx="8" fill="#141828" stroke="#333c5e"/><text x="430" y="46" fill="#c19dff" font-size="16">⚡</text><text x="430" y="64" fill="#aab2cf">гравитация + квант</text>
+        </g>
+      </svg>
+      <div class="cap">Три самых глубоких открытых вопроса физики</div>
+    </div>
+    <p class="open">Есть вопросы, на которые честный учёный отвечает: «Мы пока не знаем». Это край карты, за которым — неизведанное. Вот три самых глубоких.</p>
+    <p>Первый — <b>барионная асимметрия</b>: почему вообще существует вещество? В начале материи и антиматерии было почти поровну, а они при встрече уничтожают друг друга; условия для перекоса ещё в 1967-м сформулировал Андрей Сахаров. Второй — <b>инфляция</b>: физик Алан Гут в 1980-м предположил, что в первую долю секунды Вселенная мгновенно раздулась, и тогда же родились «зёрна» всех галактик.</p>
+    <p>Третий — <b>квантовая гравитация</b>: как подружить две наши лучшие теории? Одна описывает огромное (звёзды, галактики), другая — крошечное (атомы, частицы). Порознь великолепны, а вместе не уживаются никак.</p>
+    <div class="take"><b>Что запомнить</b>Прямо здесь проходит граница известного — и лучшие умы планеты стоят на ней, вглядываясь в темноту.</div>
+  </div>
+
+  <div class="story c5"><h2><span class="em">🌐</span>Пространство — не «кирпич»</h2>
+    <div class="meta">
+      <div class="term"><span>тема</span> <b>Голографический принцип · соответствие AdS/CFT</b> · эмерджентное пространство-время</div>
+      <div class="who"><span>кто</span> <i>Хуан Малдасена (AdS/CFT, 1997); 'т Хоофт и Леонард Сасскинд</i></div>
+    </div>
+    <div class="fig">
+      <svg viewBox="0 0 540 120" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="270" cy="60" r="46" fill="#181d30" stroke="#6dd3ea" stroke-width="2.5"/>
+        <circle cx="270" cy="60" r="30" fill="none" stroke="#333c5e"/><circle cx="270" cy="60" r="15" fill="none" stroke="#333c5e"/>
+        <text x="270" y="63" fill="#aab2cf" font-family="ui-monospace,monospace" font-size="8.5" text-anchor="middle">объём</text>
+        <text x="270" y="120" fill="#6dd3ea" font-family="ui-monospace,monospace" font-size="9" text-anchor="middle">граница (край) кодирует всё внутри</text>
+        <text x="90" y="40" fill="#aab2cf" font-family="ui-monospace,monospace" font-size="9">как голограмма:</text><text x="90" y="54" fill="#aab2cf" font-family="ui-monospace,monospace" font-size="9">плоскость хранит</text><text x="90" y="68" fill="#aab2cf" font-family="ui-monospace,monospace" font-size="9">объём</text>
+      </svg>
+      <div class="cap">Мир «нарисован» на своей границе — как объёмный образ на плоской плёнке</div>
+    </div>
+    <p class="open">Посмотри на экран телефона. Издалека — цельная картинка. Приблизься — и увидишь крошечные точки-пиксели. Картинка настоящая, но она не «основа»: она собрана из чего-то более мелкого.</p>
+    <p>А вдруг само пространство устроено так же? Мы привыкли считать его сценой — готовой пустой коробкой. Но в 1997 году физик Хуан Малдасена показал удивительную вещь (её называют <b>соответствием AdS/CFT</b>): теорию с гравитацией внутри объёма можно полностью описать без всякой гравитации — на его границе, где на одно измерение меньше.</p>
+    <p>Отсюда дерзкая мысль: пространство — не фундамент, а следствие. Собрано оно, похоже, из особой квантовой связи между частицами (её зовут <b>запутанностью</b>): где связь сильная — точки «рядом», где слабая — «далеко». Получается, расстояние — просто мера того, насколько всё переплетено.</p>
+    <div class="take"><b>Что запомнить</b>Возможно, привычное пространство — не кирпич мироздания, а узор, проступающий из чего-то более базового.</div>
+  </div>
+
+  <div class="story c5"><h2><span class="em">🕳️</span>Тайна чёрных дыр</h2>
+    <div class="meta">
+      <div class="term"><span>тема</span> <b>Парадокс потери информации</b> · энтропия Бекенштейна–Хокинга · кривая Пейджа</div>
+      <div class="who"><span>кто</span> <i>Стивен Хокинг, Якоб Бекенштейн, Дон Пейдж</i></div>
+    </div>
+    <div class="fig">
+      <svg viewBox="0 0 540 110" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="270" cy="55" r="30" fill="#0a0c14" stroke="#c19dff" stroke-width="2.5"/>
+        <path d="M120,40 L232,50" stroke="#8fe6b4" stroke-width="2"/><path d="M232,50 l-9,-2 l3,8 z" fill="#8fe6b4"/>
+        <text x="150" y="30" fill="#8fe6b4" font-family="ui-monospace,monospace" font-size="9">информация →</text>
+        <path d="M308,60 L420,72" stroke="#ff8a5c" stroke-width="2" stroke-dasharray="4 3"/><path d="M420,72 l-9,-1 l4,8 z" fill="#ff8a5c"/>
+        <text x="380" y="96" fill="#ff8a5c" font-family="ui-monospace,monospace" font-size="9">→ выходит наружу?</text>
+        <text x="270" y="100" fill="#aab2cf" font-family="ui-monospace,monospace" font-size="9" text-anchor="middle">чёрная дыра</text>
+      </svg>
+      <div class="cap">Что упало в чёрную дыру — стёрто навсегда или всё же выбирается обратно?</div>
+    </div>
+    <p class="open">Сожги письмо. Буквы исчезли навсегда? На первый взгляд да. Но если проследить каждую частичку дыма и каждый лучик света, то в принципе можно восстановить написанное. Природа ничего не стирает начисто — она лишь перемешивает.</p>
+    <p>И тут появляется чёрная дыра — она всасывает всё, даже свет. Стивен Хокинг и Якоб Бекенштейн выяснили, что у неё есть температура и она испаряется. Но тогда куда девается информация о том, что упало внутрь? Если она исчезает — рушится железное правило: информацию уничтожить нельзя. Это и есть <b>парадокс потери информации</b>.</p>
+    <p>Физик Дон Пейдж придумал, как проверить, кто прав. И совсем недавно учёные, кажется, нашли ответ: информация всё-таки выбирается наружу — очень хитрым, «размазанным» способом.</p>
+    <div class="take"><b>Что запомнить</b>Даже чёрная дыра, похоже, ничего не удаляет по-настоящему — Вселенная всё «помнит».</div>
+  </div>
+
+  <div class="story c5"><h2><span class="em">🔥</span>Дыры испаряются</h2>
+    <div class="meta">
+      <div class="term"><span>тема</span> <b>Излучение Хокинга</b> · испарение чёрных дыр · парадокс файрвола</div>
+      <div class="who"><span>кто</span> <i>Стивен Хокинг (1974); AMPS (файрвол, 2012); Малдасена и Сасскинд</i></div>
+    </div>
+    <div class="fig">
+      <svg viewBox="0 0 540 110" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="230" cy="55" r="34" fill="#0a0c14" stroke="#c19dff" stroke-width="2.5"/>
+        <g fill="#ff8a5c"><circle cx="290" cy="30" r="2.5"/><circle cx="305" cy="55" r="2.5"/><circle cx="292" cy="80" r="2.5"/><circle cx="330" cy="42" r="2"/><circle cx="335" cy="70" r="2"/></g>
+        <path d="M270,35 L330,20 M280,55 L345,55 M270,75 L330,90" stroke="#ff8a5c" stroke-width="1" opacity="0.5"/>
+        <text x="230" y="100" fill="#aab2cf" font-family="ui-monospace,monospace" font-size="9" text-anchor="middle">масса медленно уходит с излучением</text>
+        <text x="420" y="45" fill="#ffd889" font-family="ui-monospace,monospace" font-size="9">маленькая = горячая</text><text x="420" y="66" fill="#6dd3ea" font-family="ui-monospace,monospace" font-size="9">большая = холодная</text>
+      </svg>
+      <div class="cap">Чёрная дыра еле «светится» и за огромные сроки испаряется без следа</div>
+    </div>
+    <p class="open">Оставь лужу на солнце — и к вечеру её нет: вода испарилась. Оказывается, даже чёрная дыра, самый «прожорливый» объект во Вселенной, тоже медленно испаряется.</p>
+    <p>В 1974 году Стивен Хокинг понял, что край чёрной дыры еле-еле «светится»: у самой границы рождаются частицы, часть которых улетает, унося кусочек массы. Это и есть <b>излучение Хокинга</b>. Забавно: маленькая дыра горячая и тает быстро, а огромная — ледяная и живёт немыслимо долго.</p>
+    <p>Был даже жаркий спор (его подняли физики, чью работу зовут «AMPS», в 2012-м): что почувствует смельчак, влетающий в чёрную дыру, — спокойно минует границу или сгорит на «стене огня», <b>файрволе</b>? Сейчас большинство склоняется к тому, что граница ничем не примечательна: влетишь и не заметишь.</p>
+    <div class="take"><b>Что запомнить</b>Ничто во Вселенной не вечно — даже её чёрные «пылесосы» однажды испарятся без следа.</div>
+  </div>
+
+  <!-- ГЛАВА 6 -->
+  <div class="chap c6"><p class="chap-lbl">Глава 6</p><p class="chap-ttl">Вся Вселенная разом</p></div>
+
+  <div class="story c6"><h2><span class="em">♾️</span>Форма и энергия</h2>
+    <div class="meta">
+      <div class="term"><span>тема</span> <b>Топология Вселенной</b> · кривизна пространства · полная энергия Вселенной</div>
+      <div class="who"><span>кто</span> <i>Эдвард Трайон (Вселенная «из ничего», 1973); Алан Гут</i></div>
+    </div>
+    <div class="fig">
+      <svg viewBox="0 0 540 120" xmlns="http://www.w3.org/2000/svg">
+        <rect x="70" y="30" width="120" height="60" rx="4" fill="none" stroke="#c19dff" stroke-width="1.5"/>
+        <path d="M190,45 h14 M190,60 h14 M190,75 h14" stroke="#c19dff" stroke-width="1.5"/><path d="M56,45 h14 M56,60 h14 M56,75 h14" stroke="#c19dff" stroke-width="1.5"/>
+        <text x="130" y="106" fill="#aab2cf" font-family="ui-monospace,monospace" font-size="9" text-anchor="middle">край = другой край?</text>
+        <text x="310" y="52" fill="#ffd889" font-family="ui-monospace,monospace" font-size="14">+E</text><text x="360" y="52" fill="#aab2cf" font-family="ui-monospace,monospace" font-size="14">+</text><text x="400" y="52" fill="#c19dff" font-family="ui-monospace,monospace" font-size="14">(−E)</text><text x="452" y="52" fill="#8fe6b4" font-family="ui-monospace,monospace" font-size="14">= 0?</text>
+        <text x="310" y="72" fill="#6a739a" font-family="ui-monospace,monospace" font-size="8.5">вещество</text><text x="400" y="72" fill="#6a739a" font-family="ui-monospace,monospace" font-size="8.5">гравитация</text>
+      </svg>
+      <div class="cap">Слева — «завёрнута» ли Вселенная сама на себя; справа — вся её энергия, может, ноль</div>
+    </div>
+    <p class="open">Помнишь старые игры, где корабль улетает за правый край экрана и появляется слева? Экран вроде плоский, но «замкнут» сам на себя. Никто не знает наверняка, не устроена ли так же вся Вселенная — это вопрос её <b>топологии</b>.</p>
+    <p>Мы видим только её кусочек — тот, откуда до нас добежал свет. А какая она целиком, конечная или бесконечная, — большая загадка. Может, тянется без края; а может, «завёрнута», и, лети всё время прямо, ты вернёшься в исходную точку.</p>
+    <p>Ещё удивительнее — её энергия. Похоже, вся положительная энергия вещества почти точно уравновешивается «отрицательной» энергией гравитации, так что в сумме выходит почти ноль. Именно поэтому физик Эдвард Трайон ещё в 1973-м предположил, что Вселенную можно было «создать из ничего». А в расширяющейся Вселенной энергия вообще не обязана сохраняться.</p>
+    <div class="take"><b>Что запомнить</b>Мы до сих пор не знаем, есть ли у Вселенной «край» и сколько в ней всего энергии.</div>
+  </div>
+
+  <div class="story c6"><h2><span class="em">🫧</span>Мультивселенные</h2>
+    <div class="meta">
+      <div class="term"><span>тема</span> <b>Мультивселенная</b> · многомировая интерпретация · вечная инфляция · струнный ландшафт</div>
+      <div class="who"><span>кто</span> <i>Хью Эверетт (многомировая, 1957); Макс Тегмарк; Андрей Линде</i></div>
+    </div>
+    <div class="fig">
+      <svg viewBox="0 0 540 110" xmlns="http://www.w3.org/2000/svg">
+        <path d="M60,55 H200" stroke="#c19dff" stroke-width="2.5"/><circle cx="200" cy="55" r="4" fill="#ffd889"/>
+        <path d="M200,55 C250,55 270,30 330,28 H400" stroke="#6dd3ea" stroke-width="2"/>
+        <path d="M200,55 C250,55 270,82 330,84 H400" stroke="#8fe6b4" stroke-width="2"/>
+        <text x="120" y="46" fill="#aab2cf" font-family="ui-monospace,monospace" font-size="9">выбор</text>
+        <text x="420" y="32" fill="#6dd3ea" font-family="ui-monospace,monospace" font-size="9">вариант A</text>
+        <text x="420" y="88" fill="#8fe6b4" font-family="ui-monospace,monospace" font-size="9">вариант Б</text>
+        <text x="200" y="20" fill="#ffd889" font-family="ui-monospace,monospace" font-size="9" text-anchor="middle">мир «ветвится»</text>
+      </svg>
+      <div class="cap">Идея Эверетта: при каждом квантовом «выборе» реальность раздваивается</div>
+    </div>
+    <p class="open">Помнишь книги-игры, где на каждой развилке история раздваивается: «налево — страница 50, направо — страница 70»? Слово «<b>мультивселенная</b>» — примерно про это. Но важно: это не одна идея, а несколько совсем разных.</p>
+    <p>Первая, самая скромная: за горизонтом видимого просто продолжается пространство с теми же законами. Вторая посмелее (её связывают с «вечной инфляцией» физика Андрея Линде): может, существуют целые «пузыри»-вселенные, и в каждом свои законы. А третья — знаменитая <b>многомировая интерпретация</b> Хью Эверетта (1957): при каждом квантовом «броске монетки» мир расщепляется на варианты, и все они реальны.</p>
+    <p>Заметь разницу: первые две — про далёкие места в пространстве, а третья — про ветвление возможностей. Физик Макс Тегмарк разложил все эти «мультивселенные» по уровням.</p>
+    <div class="take"><b>Что запомнить</b>«Другие вселенные» бывают очень разного смысла — и ни одну пока не доказали.</div>
+  </div>
+
+  <!-- ГЛАВА 7 -->
+  <div class="chap c7"><p class="chap-lbl">Глава 7</p><p class="chap-ttl">Для самых любопытных</p></div>
+
+  <div class="story c7"><h2><span class="em">⚖️</span>Почему мир вообще есть</h2>
+    <div class="meta">
+      <div class="term"><span>тема</span> <b>Барионная асимметрия Вселенной</b> · лептогенез · условия Сахарова</div>
+      <div class="who"><span>кто</span> <i>Андрей Сахаров (1967); Фукугита и Янагида (лептогенез, 1986)</i></div>
+    </div>
+    <div class="fig">
+      <svg viewBox="0 0 540 100" xmlns="http://www.w3.org/2000/svg">
+        <text x="150" y="40" fill="#ffd889" font-family="ui-monospace,monospace" font-size="13" text-anchor="middle" font-weight="700">1 000 000 001</text><text x="150" y="58" fill="#aab2cf" font-family="ui-monospace,monospace" font-size="9" text-anchor="middle">частиц</text>
+        <text x="270" y="46" fill="#6a739a" font-family="ui-monospace,monospace" font-size="12" text-anchor="middle">против</text>
+        <text x="400" y="40" fill="#6dd3ea" font-family="ui-monospace,monospace" font-size="13" text-anchor="middle" font-weight="700">1 000 000 000</text><text x="400" y="58" fill="#aab2cf" font-family="ui-monospace,monospace" font-size="9" text-anchor="middle">античастиц</text>
+        <text x="270" y="86" fill="#8fe6b4" font-family="ui-monospace,monospace" font-size="10" text-anchor="middle">→ уцелела 1 частица на миллиард. Это мы.</text>
+      </svg>
+      <div class="cap">Материя победила антиматерию с ничтожным перевесом — и стала всем миром</div>
+    </div>
+    <p class="open">Представь, что у каждой частицы есть двойник-«античастица», и стоит им встретиться — оба исчезают во вспышке света. А теперь вообрази, что в начале Вселенной тех и других было ровно поровну. Они бы полностью уничтожили друг друга, и не осталось бы ничего — ни звёзд, ни планет, ни тебя.</p>
+    <p>Но мир-то есть. Значит, поровну не было: на каждый миллиард античастиц приходился миллиард и одна частица. Почти всё аннигилировало в свет, а этот крошечный излишек и стал всем веществом. Мы буквально сделаны из остатка. Условия, при которых такой перекос вообще возможен, вывел Андрей Сахаров в 1967-м.</p>
+    <p>Откуда взялся перекос? Лучшая догадка называется <b>лептогенез</b> (физики Фукугита и Янагида, 1986): виноваты распады тяжёлых родственников нейтрино, которые чуть чаще рождали материю, чем антиматерию.</p>
+    <div class="take"><b>Что запомнить</b>Нас спасла ничтожная «ошибка» — один лишний на миллиард. Будь всё поровну, мира бы не было.</div>
+  </div>
+
+  <div class="story c7"><h2><span class="em">🎻</span>Теория струн</h2>
+    <div class="meta">
+      <div class="term"><span>тема</span> <b>Теория струн</b> · «теория всего» · дополнительные измерения</div>
+      <div class="who"><span>кто</span> <i>Габриэле Венециано (истоки); Грин и Шварц; Эдвард Виттен (M-теория)</i></div>
+    </div>
+    <div class="fig">
+      <svg viewBox="0 0 540 110" xmlns="http://www.w3.org/2000/svg">
+        <path d="M40,55 Q90,25 140,55" stroke="#ffd889" stroke-width="2.5" fill="none"/><text x="90" y="80" fill="#aab2cf" font-family="ui-monospace,monospace" font-size="9" text-anchor="middle">= электрон</text>
+        <path d="M200,55 Q225,25 250,55 Q275,85 300,55" stroke="#6dd3ea" stroke-width="2.5" fill="none"/><text x="250" y="80" fill="#aab2cf" font-family="ui-monospace,monospace" font-size="9" text-anchor="middle">= фотон</text>
+        <path d="M360,55 Q378,28 396,55 Q414,82 432,55 Q450,28 468,55" stroke="#c19dff" stroke-width="2.5" fill="none"/><text x="414" y="80" fill="#c19dff" font-family="ui-monospace,monospace" font-size="9" text-anchor="middle">= гравитон</text>
+        <text x="270" y="22" fill="#6a739a" font-family="ui-monospace,monospace" font-size="9" text-anchor="middle">одна струна, разные «ноты» = разные частицы</text>
+      </svg>
+      <div class="cap">Как ноты на гитаре: разная вибрация струны — разная частица</div>
+    </div>
+    <p class="open">Тронь одну гитарную струну — и, зажимая её в разных местах, получишь целую россыпь нот. Одна струна — много звуков. А что, если весь мир устроен похоже?</p>
+    <p><b>Теория струн</b> предлагает дерзкое: в самой основе всего лежат не точки-частицы, а крошечные вибрирующие ниточки. Разные «ноты», которые они играют, — это разные частицы: одна вибрация даёт электрон, другая — частицу света. Идея выросла из работ Габриэле Венециано, а развили её Грин, Шварц и Эдвард Виттен.</p>
+    <p>Самое красивое: среди этих «нот» обязательно есть та, что отвечает за гравитацию, — а её-то и не удаётся подружить с остальной физикой. То есть гравитация выпадает из теории сама собой. Беда в том, что теория требует лишних, свёрнутых измерений пространства и пока не дала ни одного проверяемого предсказания.</p>
+    <div class="take"><b>Что запомнить</b>Возможно, всё разнообразие мира — это «музыка» одних и тех же крошечных струн. Красиво, но пока не доказано.</div>
+  </div>
+
+  <div class="story c7"><h2><span class="em">🌊</span>Круги от рождения мира</h2>
+    <div class="meta">
+      <div class="term"><span>тема</span> <b>Первичные гравитационные волны · инфляционные B-моды</b> · поляризация реликта</div>
+      <div class="who"><span>кто</span> <i>Алан Гут (инфляция); эксперименты BICEP2, Planck, LiteBIRD</i></div>
+    </div>
+    <div class="fig">
+      <svg viewBox="0 0 540 110" xmlns="http://www.w3.org/2000/svg">
+        <g fill="none" stroke-width="1.5">
+          <circle cx="150" cy="55" r="10" stroke="#333c5e"/><circle cx="150" cy="55" r="22" stroke="#6dd3ea" opacity="0.7"/><circle cx="150" cy="55" r="34" stroke="#6dd3ea" opacity="0.4"/></g>
+        <circle cx="150" cy="55" r="3" fill="#ffd889"/>
+        <text x="150" y="100" fill="#aab2cf" font-family="ui-monospace,monospace" font-size="9" text-anchor="middle">рождение Вселенной → рябь пространства</text>
+        <g stroke="#c19dff" stroke-width="2">
+          <path d="M330,40 l14,4 M362,52 l-4,14 M344,78 l-14,-4 M316,66 l4,-14"/></g>
+        <text x="410" y="50" fill="#c19dff" font-family="ui-monospace,monospace" font-size="9">закрученный</text><text x="410" y="63" fill="#c19dff" font-family="ui-monospace,monospace" font-size="9">след (B-моды)</text>
+      </svg>
+      <div class="cap">Как круги на воде от камня — учёные ищут «рябь» от первого мига Вселенной</div>
+    </div>
+    <p class="open">Брось камень в пруд — по воде разбегутся круги. Даже не видя камня, по кругам поймёшь: что-то упало. Учёные ищут такие же «круги», но от события невообразимого масштаба — от рождения Вселенной.</p>
+    <p>Если в первый миг Вселенная и правда мгновенно раздулась (это и есть <b>инфляция</b> Алана Гута), то это должно было тряхнуть само пространство и запустить по нему рябь — <b>гравитационные волны</b>. А та рябь оставила бы особый закрученный узор в древнем свете-эхе — его называют <b>B-модами</b>.</p>
+    <p>Найти этот завиток — почти то же, что увидеть «круги на воде» от начала времён, и это стало бы сильнейшим доказательством инфляции. Охота идёт прямо сейчас (телескопы BICEP, Planck, будущий LiteBIRD). Однажды уже показалось, что нашли, — но это оказалась обычная пыль нашей Галактики.</p>
+    <div class="take"><b>Что запомнить</b>Астрономы буквально ищут отпечаток первого мгновения Вселенной — одна из самых захватывающих охот в науке.</div>
+  </div>
+
+  <div class="story c7"><h2><span class="em">👁️</span>Мир «под нас»?</h2>
+    <div class="meta">
+      <div class="term"><span>тема</span> <b>Антропный принцип</b> · тонкая настройка Вселенной · проблема космологической постоянной</div>
+      <div class="who"><span>кто</span> <i>Брэндон Картер (1974); Стивен Вайнберг (предсказание Λ, 1987)</i></div>
+    </div>
+    <div class="fig">
+      <svg viewBox="0 0 540 100" xmlns="http://www.w3.org/2000/svg">
+        <defs><linearGradient id="dial" x1="0" x2="1"><stop offset="0" stop-color="#ff6b80"/><stop offset="0.46" stop-color="#8fe6b4"/><stop offset="0.54" stop-color="#8fe6b4"/><stop offset="1" stop-color="#ff6b80"/></linearGradient></defs>
+        <rect x="40" y="44" width="460" height="16" rx="8" fill="url(#dial)"/>
+        <rect x="262" y="38" width="16" height="28" rx="3" fill="none" stroke="#fff" stroke-width="2"/>
+        <circle cx="270" cy="52" r="4" fill="#fff"/>
+        <text x="270" y="30" fill="#8fe6b4" font-family="ui-monospace,monospace" font-size="9" text-anchor="middle">узкое «окно жизни»</text>
+        <text x="70" y="82" fill="#aab2cf" font-family="ui-monospace,monospace" font-size="8.5">чуть сдвинь — жизни нет</text>
+        <text x="430" y="82" fill="#aab2cf" font-family="ui-monospace,monospace" font-size="8.5">чуть сдвинь — жизни нет</text>
+      </svg>
+      <div class="cap">Константы Вселенной попали в узкое «окно», где возможна жизнь</div>
+    </div>
+    <p class="open">Есть старая шутка про лужу. Лужа просыпается в ямке и восхищается: «Какая удивительная ямка! Она идеально повторяет мою форму — будто её сделали специально под меня!» Мы-то понимаем: не ямку подогнали под лужу, а лужа растеклась по ямке.</p>
+    <p>Теперь про Вселенную. Многие её «настройки» — сила притяжения, массы частиц — будто идеально подходят для жизни. Чуть сдвинь любую — и всё развалится. Кажется, мир специально настроен под нас. Идею, как к этому относиться, сформулировал Брэндон Картер в 1974-м — это <b>антропный принцип</b>.</p>
+    <p>Но, может, всё наоборот — как с лужей. Если вселенных с разными настройками много, то в большинстве жизнь невозможна, и спросить «почему так удачно?» там просто некому. А мы можем очутиться только в подходящей. Кстати, так рассуждая, физик Стивен Вайнберг ещё в 1987-м угадал величину тёмной энергии.</p>
+    <div class="take"><b>Что запомнить</b>Очень легко перепутать причину и следствие — и решить, что всё сделано ради тебя.</div>
+  </div>
+
+  <footer>Рассказы упрощены — это «мостики» к темам, а не точная физика. Имена и даты — ключевые, но не исчерпывающие: над каждой темой работали десятки учёных.</footer>
+</div>
+</body>
+</html>

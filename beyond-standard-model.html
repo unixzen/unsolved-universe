@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Аксион, суперсимметрия, нейтрино</title>
+<style>
+  :root{
+    --bg:#06070d; --bg2:#0a0d18;
+    --panel:#111629; --panel2:#151b31;
+    --line:#242c49; --line2:#2f3960;
+    --text:#dce3f7; --muted:#8a93b6; --faint:#5b6488;
+    --gold:#ffd27d; --golddim:#5f5230;
+    --hot:#ff7a4d; --hotdeep:#ff5c72; --hotdim:#7d3140;
+    --cold:#5bc8e6; --colddim:#2c4a55;
+    --violet:#b48cff; --violetdim:#4a3a72;
+    --green:#7fe0a8; --greendim:#2f5c42;
+    --maxw:960px;
+    --mono:ui-monospace,"SF Mono","JetBrains Mono","Cascadia Code",Menlo,Consolas,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{ box-sizing:border-box; }
+  body{ background:var(--bg); color:var(--text); font-family:var(--sans);
+    line-height:1.55; -webkit-font-smoothing:antialiased; margin:0; }
+
+  .stars{ position:fixed; inset:0; z-index:0; pointer-events:none; background-color:var(--bg);
+    background-image:
+      radial-gradient(1.1px 1.1px at 24px 32px, rgba(255,255,255,.7), transparent),
+      radial-gradient(1px 1px at 96px 128px, rgba(214,226,255,.5), transparent),
+      radial-gradient(1.3px 1.3px at 160px 64px, rgba(255,255,255,.55), transparent),
+      radial-gradient(1px 1px at 56px 176px, rgba(190,205,255,.45), transparent);
+    background-repeat:repeat; background-size:230px 230px; animation:tw 10s ease-in-out infinite; }
+  .stars::after{ content:""; position:absolute; inset:0;
+    background:
+      radial-gradient(50% 40% at 18% 12%, rgba(91,200,230,.07), transparent 70%),
+      radial-gradient(50% 45% at 84% 60%, rgba(180,140,255,.09), transparent 70%); }
+  @keyframes tw{ 0%,100%{opacity:.85} 50%{opacity:1} }
+  @media (prefers-reduced-motion:reduce){ .stars{animation:none} }
+
+  .wrap{ position:relative; z-index:1; max-width:var(--maxw); margin:0 auto; padding:56px 24px 72px; }
+
+  .eyebrow{ font-family:var(--mono); font-size:12px; letter-spacing:.26em; text-transform:uppercase;
+    color:var(--cold); margin:0 0 14px; }
+  h1{ font-size:clamp(29px,5.6vw,50px); line-height:1.04; letter-spacing:-.025em; font-weight:800;
+    margin:0 0 16px; text-wrap:balance; }
+  .lede{ font-size:clamp(15px,2.2vw,18px); color:var(--muted); max-width:64ch; margin:0; }
+  .lede b{ color:var(--text); }
+
+  /* status strip */
+  .strip{ display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:28px; }
+  .st{ padding:14px 16px; border-radius:12px; border:1px solid var(--line); background:var(--panel); }
+  .st .badge{ font-family:var(--mono); font-size:10.5px; letter-spacing:.1em; padding:2px 8px;
+    border-radius:20px; display:inline-block; margin-bottom:7px; }
+  .st.hunt .badge{ color:var(--cold); background:rgba(91,200,230,.1); border:1px solid var(--colddim); }
+  .st.miss .badge{ color:var(--hotdeep); background:rgba(255,92,114,.1); border:1px solid var(--hotdim); }
+  .st.conf .badge{ color:var(--green); background:rgba(127,224,168,.1); border:1px solid var(--greendim); }
+  .st .nm{ font-weight:700; font-size:15px; } .st p{ margin:4px 0 0; font-size:12.3px; color:var(--muted); }
+
+  .sec{ margin-top:46px; }
+  .kicker{ font-family:var(--mono); font-size:12px; letter-spacing:.16em; text-transform:uppercase;
+    margin:0 0 4px; }
+  .sec h2{ font-size:26px; letter-spacing:-.02em; margin:0 0 6px; }
+  .sec .intro{ color:var(--muted); font-size:14.5px; max-width:64ch; margin:0 0 20px; }
+  .sec .intro b{ color:var(--text); }
+
+  .card{ padding:20px 22px; border-radius:16px; border:1px solid var(--line);
+    background:linear-gradient(180deg,var(--panel),var(--bg2)); }
+
+  /* axion two-for-one */
+  .two{ display:grid; grid-template-columns:1fr auto 1fr; gap:14px; align-items:center; }
+  .prob{ padding:16px 18px; border-radius:12px; border:1px solid var(--line); background:var(--panel); }
+  .prob .h{ font-weight:700; font-size:14px; margin-bottom:4px; }
+  .prob p{ margin:0; font-size:12.5px; color:var(--muted); }
+  .two .mid{ text-align:center; font-family:var(--mono); font-size:12px; color:var(--cold); }
+  .two .mid .a{ display:block; font-size:26px; margin-bottom:2px; }
+  .axhunt{ margin-top:14px; font-size:13px; color:var(--muted); } .axhunt b{ color:var(--text); }
+
+  /* susy mirror */
+  .mirror{ display:grid; grid-template-columns:1fr 44px 1fr; gap:6px 0; align-items:stretch; }
+  .mhead{ font-family:var(--mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase;
+    padding:6px 12px; color:var(--muted); }
+  .mhead.r{ color:var(--faint); text-align:right; }
+  .mcell{ padding:9px 12px; border-radius:8px; font-size:13.5px; display:flex; align-items:center; }
+  .known{ background:rgba(91,200,230,.08); border:1px solid var(--colddim); color:var(--text); }
+  .known b{ color:var(--cold); font-weight:700; }
+  .super{ background:rgba(255,92,114,.05); border:1px dashed var(--hotdim); color:var(--muted);
+    justify-content:flex-end; text-align:right; }
+  .super b{ color:var(--hotdeep); font-weight:700; }
+  .arrow{ display:flex; align-items:center; justify-content:center; color:var(--faint);
+    font-family:var(--mono); font-size:14px; }
+  .whys{ display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:16px; }
+  .why{ padding:14px 15px; border-radius:12px; border:1px solid var(--line); background:var(--panel); }
+  .why .t{ font-weight:700; font-size:13.5px; color:var(--gold); margin-bottom:5px; }
+  .why p{ margin:0; font-size:12.2px; color:var(--muted); }
+  .lhc{ margin-top:16px; padding:14px 16px; border-radius:12px; border:1px solid var(--hotdim);
+    background:rgba(255,92,114,.06); font-size:13.5px; } .lhc b{ color:var(--hotdeep); }
+
+  /* neutrino oscillation */
+  .oscwrap{ overflow-x:auto; } svg.osc{ display:block; width:100%; min-width:500px; height:auto; }
+  .osleg{ display:flex; gap:18px; flex-wrap:wrap; margin-top:12px; font-size:13px; color:var(--muted); }
+  .osleg span{ display:inline-flex; align-items:center; gap:7px; }
+  .osleg i{ width:16px; height:3px; border-radius:2px; }
+  .opens{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:16px; }
+  .open{ padding:13px 15px; border-radius:12px; border:1px solid var(--line); background:var(--panel); }
+  .open .t{ font-weight:700; font-size:13.5px; margin-bottom:3px; }
+  .open p{ margin:0; font-size:12.3px; color:var(--muted); }
+  .crack{ margin-top:16px; padding:16px 18px; border-radius:12px; border:1px solid var(--greendim);
+    background:rgba(127,224,168,.06); font-size:14px; } .crack b{ color:var(--green); }
+
+  footer{ margin-top:40px; color:var(--faint); font-size:12.5px; font-family:var(--mono);
+    line-height:1.7; text-align:center; }
+
+  @media (max-width:680px){
+    .strip,.whys,.opens{ grid-template-columns:1fr; }
+    .two{ grid-template-columns:1fr; } .two .mid .a{ transform:rotate(90deg); }
+  }
+</style>
+</head>
+<body>
+<div class="stars"></div>
+
+<div class="wrap">
+  <p class="eyebrow">За пределами Стандартной модели · три окна</p>
+  <h1>Аксион, суперсимметрия, нейтрино</h1>
+  <p class="lede">Стандартная модель блестяще описывает всё известное — но точно неполна. Вот три
+    попытки заглянуть за её край: одну частицу <b>ищут</b>, другую <b>искали и не нашли</b>, а третья —
+    <b>единственная уже подтверждённая трещина</b> в самой модели.</p>
+
+  <div class="strip">
+    <div class="st hunt"><span class="badge">ИЩУТ</span><div class="nm">Аксион</div>
+      <p>Лёгкая частица, решающая сразу две проблемы. Восходящий фаворит на тёмную материю.</p></div>
+    <div class="st miss"><span class="badge">НЕ НАЙДЕНА</span><div class="nm">Суперсимметрия</div>
+      <p>Красивая теория-двойник. Коллайдер искал 15 лет — тишина.</p></div>
+    <div class="st conf"><span class="badge">ПОДТВЕРЖДЕНА</span><div class="nm">Нейтрино</div>
+      <p>У них есть масса — а модель говорила «нет». Первая брешь.</p></div>
+  </div>
+
+  <!-- AXION -->
+  <div class="sec">
+    <p class="kicker" style="color:var(--cold)">01 · ищут</p>
+    <h2>Аксион — «два в одном»</h2>
+    <p class="intro">Придуман в 1977-м (Печчеи и Куинн) ради узкой технической проблемы. А оказался
+      ещё и отличным кандидатом в тёмную материю — <b>та же частица чинит две дыры сразу</b>. Оттого и любим.</p>
+    <div class="card">
+      <div class="two">
+        <div class="prob"><div class="h">Проблема сильного CP</div>
+          <p>Почему сильное взаимодействие не нарушает CP-симметрию, хотя «имеет право»? Тонкая настройка на ~10 знаков.</p></div>
+        <div class="mid"><span class="a">⚛</span>один<br>аксион</div>
+        <div class="prob"><div class="h">Тёмная материя</div>
+          <p>Рождённый в ранней Вселенной «холодным», он был бы невероятно многочислен — как раз то, что нужно.</p></div>
+      </div>
+      <div class="axhunt"><b>Как ловят:</b> в сильном магнитном поле аксион может превратиться в фотон.
+        Эксперименты-«гало­скопы» (ADMX) медленно сканируют частоты — ведь масса неизвестна. Пока не поймали,
+        но поле бурно растёт, а «WIMP» сдают позиции.</div>
+    </div>
+  </div>
+
+  <!-- SUSY -->
+  <div class="sec">
+    <p class="kicker" style="color:var(--hotdeep)">02 · искали и не нашли</p>
+    <h2>Суперсимметрия — зеркальный мир</h2>
+    <p class="intro">Гипотеза: у каждой частицы есть «суперпартнёр» с отличающимся на ½ спином. Она бы
+      элегантно решила сразу три задачи — но <b>ни одного суперпартнёра так и не обнаружили</b>.</p>
+    <div class="card">
+      <div class="mirror">
+        <div class="mhead">Известные частицы</div><div></div><div class="mhead r">Суперпартнёры · не найдены</div>
+        <div class="mcell known"><b>кварк</b></div><div class="arrow">→</div><div class="mcell super"><b>скварк</b></div>
+        <div class="mcell known"><b>электрон</b></div><div class="arrow">→</div><div class="mcell super"><b>сэлектрон</b></div>
+        <div class="mcell known"><b>нейтрино</b></div><div class="arrow">→</div><div class="mcell super"><b>снейтрино</b></div>
+        <div class="mcell known"><b>фотон</b></div><div class="arrow">→</div><div class="mcell super"><b>фотино</b></div>
+        <div class="mcell known"><b>глюон</b></div><div class="arrow">→</div><div class="mcell super"><b>глюино</b></div>
+        <div class="mcell known"><b>Хиггс / W / Z</b></div><div class="arrow">→</div><div class="mcell super"><b>хиггсино, вино, зино</b></div>
+      </div>
+      <div class="whys">
+        <div class="why"><div class="t">Иерархия</div><p>Партнёры гасили бы гигантские квантовые поправки к массе Хиггса — снимая «тонкую настройку».</p></div>
+        <div class="why"><div class="t">Тёмная материя</div><p>Легчайший стабильный суперпартнёр (нейтралино) — идеальный WIMP.</p></div>
+        <div class="why"><div class="t">Объединение сил</div><p>С ним три силы почти точно сходятся в одну на высоких энергиях.</p></div>
+      </div>
+      <div class="lhc"><b>Расплата:</b> Большой адронный коллайдер загнал массы суперпартнёров за ~1–2 ТэВ.
+        Чем они тяжелее, тем хуже суперсимметрия решает свою же главную задачу (иерархию) — и тем меньше в ней «естественности». Не мертва, но сильно ранена.</div>
+    </div>
+  </div>
+
+  <!-- NEUTRINO -->
+  <div class="sec">
+    <p class="kicker" style="color:var(--green)">03 · подтверждённая трещина</p>
+    <h2>Нейтрино — призраки с массой</h2>
+    <p class="intro">Почти безмассовые, почти ни с чем не взаимодействуют — сквозь тебя летят триллионы
+      каждую секунду. Их открытие, что они <b>меняют «аромат» на лету</b>, доказало: у нейтрино есть масса.</p>
+    <div class="card oscwrap">
+      <svg class="osc" viewBox="0 0 620 230" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <line x1="56" y1="196" x2="600" y2="196" stroke="#242c49"/>
+        <line x1="56" y1="196" x2="56" y2="26" stroke="#242c49"/>
+        <path d="M56,44 C170,58 210,178 310,182 C410,186 452,64 560,50 C575,48 588,49 600,51"
+          stroke="#ffd27d" stroke-width="3" fill="none"/>
+        <path d="M56,190 C170,182 214,66 312,58 C410,50 452,168 560,182 C575,184 588,183 600,182"
+          stroke="#5bc8e6" stroke-width="3" fill="none"/>
+        <path d="M56,192 C200,190 250,150 350,150 C450,150 500,180 600,190"
+          stroke="#b48cff" stroke-width="3" fill="none" opacity="0.85"/>
+        <text x="60" y="20" fill="#8a93b6" font-family="ui-monospace,monospace" font-size="10">вероятность аромата</text>
+        <text x="470" y="222" fill="#5b6488" font-family="ui-monospace,monospace" font-size="10">пройденное расстояние →</text>
+      </svg>
+      <div class="osleg">
+        <span><i style="background:#ffd27d"></i>νₑ электронное</span>
+        <span><i style="background:#5bc8e6"></i>νµ мюонное</span>
+        <span><i style="background:#b48cff"></i>ντ тау</span>
+      </div>
+      <div class="crack"><b>Почему это важно:</b> «переливаться» ароматами можно, только если у нейтрино
+        есть масса. А Стандартная модель считала их <b>строго безмассовыми</b>. Значит, осцилляции —
+        первое <b>прямое доказательство</b>, что модель неполна. Нобель 2015 (Super-K + SNO).</div>
+      <div class="opens">
+        <div class="open"><div class="t">Сколько весят?</div><p>Знаем лишь разности масс, не абсолют. Почему в ~миллион раз легче электрона — загадка.</p></div>
+        <div class="open"><div class="t">Сам себе антипод?</div><p>Майорановское нейтрино объяснило бы их лёгкость (see-saw) и перевес материи. Ищут безнейтринный β-распад.</p></div>
+        <div class="open"><div class="t">Нарушают ли CP?</div><p>Если да — намёк, почему во Вселенной материя победила антиматерию. Меряют DUNE, Hyper-K.</p></div>
+        <div class="open"><div class="t">Есть ли «стерильные»?</div><p>Четвёртый сорт, глухой даже к слабой силе? Намёки были, но новые данные их гасят.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    Таблица суперпартнёров и схема осцилляций — иллюстративные. Аксион: Печчеи–Куинн 1977, назван Вильчеком.<br>
+    Осцилляции нейтрино: Super-Kamiokande 1998, SNO 2002, Нобель 2015. Тёмная тема — намеренно.
+  </footer>
+</div>
+</body>
+</html>

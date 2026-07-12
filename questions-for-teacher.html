@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Вопросы учителю физики: 8 класс → фронтир</title>
+<style>
+  :root{
+    --bg:#06070d; --bg2:#0a0d18; --panel:#111629; --panel2:#151b31;
+    --line:#242c49; --line2:#2f3960; --text:#dce3f7; --muted:#9aa3c4; --faint:#5b6488;
+    --gold:#ffd27d; --golddim:#5f5230; --hot:#ff8a5c; --hotdeep:#ff6b80; --hotdim:#7d3140;
+    --cold:#5bc8e6; --colddim:#2c4a55; --violet:#b48cff; --violetdim:#4a3a72; --green:#7fe0a8; --greendim:#2f5c42;
+    --maxw:900px; --mono:ui-monospace,"SF Mono","JetBrains Mono",Menlo,Consolas,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{ box-sizing:border-box; }
+  body{ background:var(--bg); color:var(--text); font-family:var(--sans); line-height:1.6; -webkit-font-smoothing:antialiased; margin:0; }
+  .stars{ position:fixed; inset:0; z-index:0; pointer-events:none; background-color:var(--bg);
+    background-image:radial-gradient(1.1px 1.1px at 24px 32px, rgba(255,255,255,.6), transparent),radial-gradient(1px 1px at 96px 128px, rgba(214,226,255,.45), transparent),radial-gradient(1.2px 1.2px at 160px 64px, rgba(255,255,255,.5), transparent);
+    background-repeat:repeat; background-size:240px 240px; opacity:.7; }
+  .wrap{ position:relative; z-index:1; max-width:var(--maxw); margin:0 auto; padding:58px 24px 84px; }
+
+  .eyebrow{ font-family:var(--mono); font-size:12px; letter-spacing:.24em; text-transform:uppercase; margin:0 0 14px;
+    background:linear-gradient(90deg,var(--hot),var(--gold),var(--cold)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  h1{ font-size:clamp(29px,5.6vw,48px); line-height:1.05; letter-spacing:-.02em; font-weight:800; margin:0 0 16px; text-wrap:balance; }
+  .lede{ font-size:clamp(15px,2.2vw,18px); color:var(--muted); max-width:66ch; margin:0; } .lede b{ color:var(--text); }
+  .tip{ margin-top:20px; padding:14px 18px; border-radius:12px; border:1px dashed var(--line2); background:rgba(17,22,41,.5); font-size:13.5px; color:var(--muted); } .tip b{ color:var(--text); }
+
+  .unit{ margin-top:44px; }
+  .uhead{ display:flex; align-items:center; gap:12px; margin-bottom:6px; }
+  .uhead .em{ font-size:24px; } .uhead h2{ font-size:22px; margin:0; letter-spacing:-.01em; color:var(--uc,var(--text)); }
+  .usub{ font-family:var(--mono); font-size:12px; color:var(--faint); margin:0 0 18px; }
+  .u-heat{ --uc:var(--hot); } .u-elec{ --uc:var(--gold); } .u-em{ --uc:var(--cold); }
+
+  .q{ padding:18px 20px; border-radius:14px; border:1px solid var(--line); background:linear-gradient(180deg,var(--panel),var(--bg2)); margin-bottom:12px; }
+  .q .tag{ font-family:var(--mono); font-size:11px; letter-spacing:.04em; color:var(--uc,var(--cold)); margin-bottom:8px; text-transform:uppercase; }
+  .q .ask{ font-size:16.5px; color:var(--text); margin:0 0 11px; }
+  .q .ask b{ color:#fff; }
+  .q .link{ font-size:12.5px; color:var(--muted); font-family:var(--mono); border-top:1px solid var(--line); padding-top:9px; }
+  .q .link b{ color:var(--uc,var(--cold)); }
+
+  footer{ margin-top:46px; padding-top:20px; border-top:1px solid var(--line); color:var(--faint); font-size:12.5px; font-family:var(--mono); line-height:1.7; text-align:center; }
+</style>
+</head>
+<body>
+<div class="stars"></div>
+<div class="wrap">
+  <p class="eyebrow">Вопросы учителю физики · 8 класс → фронтир</p>
+  <h1>От школьной темы — к нерешённой загадке</h1>
+  <p class="lede">Каждый вопрос начинается с того, что проходят <b>на уроке</b>, и «дотягивается» до
+    большой <b>нерешённой проблемы</b> из нашего атласа. Это не «завал» учителя, а приглашение к разговору:
+    школьная физика — прямая дверь к переднему краю науки.</p>
+  <div class="tip">💡 <b>Как задавать:</b> начни с «мы сейчас проходим…», задай вопрос — и добавь
+    «а правда ли, что это связано с…». Хороший учитель обрадуется: такие вопросы показывают, что ты видишь
+    физику не как набор формул, а как живую картину мира.</div>
+
+  <!-- ТЕПЛОВЫЕ -->
+  <div class="unit u-heat">
+    <div class="uhead"><span class="em">🔥</span><h2>Тепловые явления</h2></div>
+    <p class="usub">внутренняя энергия · теплопередача · тепловой баланс · КПД · фазовые переходы</p>
+
+    <div class="q"><div class="tag">в классе: закон сохранения энергии</div>
+      <p class="ask">Нас учат, что энергия <b>всегда сохраняется</b> — не берётся из ниоткуда и не исчезает. Но я читал, что свет от далёких галактик по дороге к нам <b>теряет энергию</b> из-за расширения Вселенной, и она никуда не переходит. Как это уживается с законом сохранения?</p>
+      <div class="link">🔗 связано с: <b>♾️ энергия Вселенной</b> — в расширяющемся космосе энергия не обязана сохраняться</div></div>
+
+    <div class="q"><div class="tag">в классе: теплопередача, второй закон</div>
+      <p class="ask">Тепло всегда течёт от горячего к холодному, пока температуры не сравняются. Значит ли это, что <b>вся Вселенная</b> однажды станет одинаково тёплой — и в ней ничего больше не сможет происходить?</p>
+      <div class="link">🔗 связано с: <b>🌌 судьба Вселенной</b> — это и есть «тепловая смерть»</div></div>
+
+    <div class="q"><div class="tag">в классе: КПД теплового двигателя</div>
+      <p class="ask">Почему у теплового двигателя КПД <b>всегда меньше 100%</b>, даже у идеального? Это техническая недоработка или <b>фундаментальный запрет природы</b> — и связан ли он с тем, что Вселенная в целом «изнашивается»?</p>
+      <div class="link">🔗 связано с: <b>🌌 энтропия и судьба Вселенной</b></div></div>
+
+    <div class="q"><div class="tag">в классе: теплопроводность, тепловой баланс</div>
+      <p class="ask">Чтобы два тела сравнялись по температуре, они должны <b>соприкоснуться</b> и обменяться теплом. Но «эхо» Большого взрыва показывает, что противоположные края Вселенной почти одинаково тёплые — хотя они никогда не соприкасались. Как они успели «договориться»?</p>
+      <div class="link">🔗 связано с: <b>🎆 инфляция</b> — знаменитая «проблема горизонта»</div></div>
+
+    <div class="q"><div class="tag">в классе: удельная теплота парообразования, кипение</div>
+      <p class="ask">Когда вода кипит и превращается в пар — это «фазовый переход», и на него уходит много энергии. Правда ли, что <b>вся Вселенная</b> в первые мгновения проходила похожие «фазовые переходы», когда рождались частицы и разделялись силы?</p>
+      <div class="link">🔗 связано с: <b>🔗 объединение сил</b>, <b>🎆 ранняя Вселенная</b></div></div>
+  </div>
+
+  <!-- ЭЛЕКТРИЧЕСКИЕ -->
+  <div class="unit u-elec">
+    <div class="uhead"><span class="em">⚡</span><h2>Электрические явления</h2></div>
+    <p class="usub">закон Кулона · электрическое поле · ток · закон Ома · сопротивление · Джоуль–Ленц</p>
+
+    <div class="q"><div class="tag">в классе: закон Кулона</div>
+      <p class="ask">Закон Кулона (сила между зарядами) и закон всемирного тяготения выглядят почти <b>одинаково</b> — оба убывают как 1/r². Это случайное совпадение, или электричество и гравитация как-то <b>родственны</b>?</p>
+      <div class="link">🔗 связано с: <b>🔗 объединение сил</b>, <b>🎆 квантовая гравитация</b></div></div>
+
+    <div class="q"><div class="tag">в классе: электрическое поле</div>
+      <p class="ask">Вокруг заряда есть электрическое поле <b>даже в пустоте</b>. А поле — это «настоящая вещь» или просто удобный способ считать? И если у пустого пространства может быть поле и энергия — не с этим ли связана «тёмная энергия», которую называют <b>энергией самого вакуума</b>?</p>
+      <div class="link">🔗 связано с: <b>🌑 тёмная энергия</b> — возможно, это энергия пустоты</div></div>
+
+    <div class="q"><div class="tag">в классе: электрический заряд, ток</div>
+      <p class="ask">Заряд электрона и протона по величине <b>совершенно одинаков</b>, хотя это разные частицы, и заряд всегда идёт целыми «порциями». Почему природа так точно всё уравняла? (Я слышал, это связывают с идеей «Великого объединения».)</p>
+      <div class="link">🔗 связано с: <b>🔗 Великое объединение</b> — оно объясняет квантование заряда</div></div>
+
+    <div class="q"><div class="tag">в классе: положительные и отрицательные заряды</div>
+      <p class="ask">В любом теле плюсов и минусов поровну, поэтому оно нейтрально. А почему тогда во Вселенной вообще <b>есть вещество</b>, а не поровну вещества и антивещества — которые бы при встрече всё уничтожили в свет?</p>
+      <div class="link">🔗 связано с: <b>⚖️ материя против антиматерии</b>, <b>лептогенез</b></div></div>
+
+    <div class="q"><div class="tag">в классе: сопротивление, закон Джоуля–Ленца</div>
+      <p class="ask">Ток греет провод, и часть энергии «теряется» в тепло. По закону сохранения она ведь не пропадает — но почему её уже <b>не вернуть</b> обратно в ток? Куда именно она «убегает»?</p>
+      <div class="link">🔗 связано с: <b>🌌 энтропия</b> — почему у времени есть «направление»</div></div>
+  </div>
+
+  <!-- ЭЛЕКТРОМАГНИТНЫЕ -->
+  <div class="unit u-em">
+    <div class="uhead"><span class="em">🧲</span><h2>Электромагнитные явления</h2></div>
+    <p class="usub">магнитное поле · опыты Фарадея · индукция · правило Ленца · передача энергии</p>
+
+    <div class="q"><div class="tag">в классе: электричество и магнетизм</div>
+      <p class="ask">Получается, электричество и магнетизм — <b>две стороны одного</b> явления, электромагнетизма. Это ведь настоящее «объединение» двух сил в одну? И физики пытаются так же объединить <b>все</b> силы — это та же самая идея, только больше?</p>
+      <div class="link">🔗 связано с: <b>🔗 Великое объединение</b> — электромагнетизм был первым таким «слиянием»</div></div>
+
+    <div class="q"><div class="tag">в классе: опыты Фарадея, индукция</div>
+      <p class="ask">Фарадей показал: меняющееся магнитное поле рождает электрическое, и наоборот. Правда ли, что именно поэтому существует <b>свет</b> (электромагнитная волна)? И самый древний свет во Вселенной — «реликтовое излучение» — это та же волна, только очень-очень старая?</p>
+      <div class="link">🔗 связано с: <b>🌌 Ось Зла</b>, <b>🌊 B-моды</b> — всё это про древний свет</div></div>
+
+    <div class="q"><div class="tag">в классе: электромагнитные волны</div>
+      <p class="ask">Если свет — это «рябь» электромагнитного поля, то правда ли, что бывают и <b>гравитационные волны</b> — рябь самого пространства? Это похожие вещи или совсем разные?</p>
+      <div class="link">🔗 связано с: <b>🌊 гравитационные волны</b> — их ищут как след рождения Вселенной</div></div>
+
+    <div class="q"><div class="tag">в классе: магнитное поле Земли</div>
+      <p class="ask">У Земли есть магнитное поле, которое нас защищает. А есть ли магнитное поле у <b>всей галактики</b> или у Вселенной — и откуда оно вообще могло взяться в самом начале?</p>
+      <div class="link">🔗 связано с: космические магнитные поля — <b>ещё одна открытая загадка</b></div></div>
+
+    <div class="q"><div class="tag">в классе: правило Ленца</div>
+      <p class="ask">Правило Ленца говорит, что индукционный ток всегда «мешает» тому, что его вызвало. Это ведь, по сути, <b>тот же закон сохранения энергии</b>? Природа как будто «не любит» дармовую энергию — а в масштабах всей Вселенной это правило тоже нерушимо?</p>
+      <div class="link">🔗 связано с: <b>♾️ сохранение энергии</b> и почему невозможен вечный двигатель</div></div>
+  </div>
+
+  <footer>Вопросы связывают программу 8 класса с темами атласа. Часть ответов известна, часть — открытые загадки: и об этом честно стоит спросить учителя.</footer>
+</div>
+</body>
+</html>

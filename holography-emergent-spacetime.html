@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Голография и AdS/CFT</title>
+<style>
+  :root{
+    --bg:#06070d; --bg2:#0a0d18;
+    --panel:#111629; --panel2:#151b31;
+    --line:#242c49; --line2:#2f3960;
+    --text:#dce3f7; --muted:#8a93b6; --faint:#5b6488;
+    --gold:#ffd27d; --golddim:#5f5230;
+    --hot:#ff7a4d; --hotdeep:#ff5c72; --hotdim:#7d3140;
+    --cold:#5bc8e6; --colddim:#2c4a55;
+    --violet:#b48cff; --violetdim:#4a3a72;
+    --green:#7fe0a8; --greendim:#2f5c42;
+    --maxw:960px;
+    --mono:ui-monospace,"SF Mono","JetBrains Mono","Cascadia Code",Menlo,Consolas,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{ box-sizing:border-box; }
+  body{ background:var(--bg); color:var(--text); font-family:var(--sans);
+    line-height:1.55; -webkit-font-smoothing:antialiased; margin:0; }
+
+  .stars{ position:fixed; inset:0; z-index:0; pointer-events:none; background-color:var(--bg);
+    background-image:
+      radial-gradient(1.1px 1.1px at 24px 32px, rgba(255,255,255,.7), transparent),
+      radial-gradient(1px 1px at 96px 128px, rgba(214,226,255,.5), transparent),
+      radial-gradient(1.3px 1.3px at 160px 64px, rgba(255,255,255,.55), transparent),
+      radial-gradient(1px 1px at 56px 176px, rgba(190,205,255,.45), transparent);
+    background-repeat:repeat; background-size:230px 230px; animation:tw 10s ease-in-out infinite; }
+  .stars::after{ content:""; position:absolute; inset:0;
+    background:
+      radial-gradient(52% 42% at 82% 10%, rgba(91,200,230,.09), transparent 70%),
+      radial-gradient(52% 45% at 16% 60%, rgba(180,140,255,.08), transparent 70%); }
+  @keyframes tw{ 0%,100%{opacity:.85} 50%{opacity:1} }
+  @media (prefers-reduced-motion:reduce){ .stars{animation:none} }
+
+  .wrap{ position:relative; z-index:1; max-width:var(--maxw); margin:0 auto; padding:56px 24px 80px; }
+
+  .eyebrow{ font-family:var(--mono); font-size:12px; letter-spacing:.26em; text-transform:uppercase;
+    margin:0 0 14px; background:linear-gradient(90deg,var(--cold),var(--violet));
+    -webkit-background-clip:text; background-clip:text; color:transparent; }
+  h1{ font-size:clamp(28px,5.6vw,50px); line-height:1.05; letter-spacing:-.025em; font-weight:800;
+    margin:0 0 16px; text-wrap:balance; }
+  h1 .g{ background:linear-gradient(90deg,var(--cold),var(--violet)); -webkit-background-clip:text;
+    background-clip:text; color:transparent; }
+  .lede{ font-size:clamp(15px,2.2vw,18px); color:var(--muted); max-width:64ch; margin:0; }
+  .lede b{ color:var(--text); }
+
+  .h2{ font-family:var(--mono); font-size:13px; letter-spacing:.18em; text-transform:uppercase;
+    color:var(--muted); margin:46px 0 6px; }
+  .h2.cy{ color:var(--cold); } .h2.vi{ color:var(--violet); }
+  .h2 + .sub{ color:var(--muted); font-size:14.5px; margin:0 0 20px; max-width:64ch; }
+  .h2 + .sub b{ color:var(--text); }
+
+  .card{ padding:22px 24px; border-radius:16px; border:1px solid var(--line);
+    background:linear-gradient(180deg,var(--panel),var(--bg2)); }
+
+  /* ads/cft split */
+  .adscft{ display:grid; grid-template-columns:auto 1fr; gap:26px; align-items:center; }
+  .diskwrap{ flex:0 0 auto; } svg.disk{ display:block; width:230px; height:230px; }
+  .dict .row{ display:grid; grid-template-columns:1fr auto 1fr; gap:8px; align-items:center;
+    padding:9px 0; border-top:1px solid var(--line); }
+  .dict .row:first-child{ border-top:none; }
+  .dict .bulk{ font-size:13px; color:var(--violet); text-align:right; }
+  .dict .bnd{ font-size:13px; color:var(--cold); }
+  .dict .eq{ font-family:var(--mono); color:var(--faint); font-size:12px; }
+  .dict small{ color:var(--muted); }
+  .same{ margin-top:14px; padding:12px 15px; border-radius:10px; border:1px solid var(--line2);
+    background:var(--panel2); font-size:13.5px; text-align:center; } .same b{ color:var(--text); }
+
+  /* holo principle */
+  .holo{ font-size:14.5px; color:var(--muted); } .holo b{ color:var(--text); }
+  .holo .quote{ margin-top:12px; padding:14px 16px; border-left:3px solid var(--cold);
+    background:rgba(91,200,230,.05); font-size:13.5px; border-radius:0 10px 10px 0; }
+
+  /* emergence analogies */
+  .anas{ display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
+  .ana{ padding:15px 14px; border-radius:12px; border:1px solid var(--line); background:var(--panel);
+    text-align:center; }
+  .ana.hot{ border-color:var(--violetdim); background:linear-gradient(180deg,rgba(30,22,50,.5),var(--bg2)); }
+  .ana .from{ font-size:13px; font-weight:700; }
+  .ana .arw{ font-family:var(--mono); color:var(--faint); font-size:16px; margin:6px 0; }
+  .ana .to{ font-size:12.5px; color:var(--muted); }
+  .ana.hot .from{ color:var(--violet); } .ana.hot .to{ color:var(--text); }
+
+  /* glue diagram */
+  .gluewrap{ overflow-x:auto; } svg.glue{ display:block; width:100%; min-width:520px; height:auto; }
+  .keyres{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:16px; }
+  .kr{ padding:15px 17px; border-radius:12px; border:1px solid var(--line); background:var(--panel); }
+  .kr .t{ font-weight:700; font-size:14px; color:var(--violet); margin-bottom:4px; }
+  .kr .t span{ font-family:var(--mono); font-size:11px; color:var(--faint); font-weight:400; }
+  .kr p{ margin:0; font-size:12.7px; color:var(--muted); } .kr p b{ color:var(--text); }
+
+  /* the flip */
+  .flip{ display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:8px; }
+  .fb{ padding:20px 22px; border-radius:16px; }
+  .fb.old{ border:1px solid var(--line); background:var(--panel); }
+  .fb.new{ border:1px solid var(--violetdim);
+    background:linear-gradient(180deg,rgba(30,22,50,.5),var(--bg2)); }
+  .fb .lab{ font-family:var(--mono); font-size:11px; letter-spacing:.1em; text-transform:uppercase;
+    margin-bottom:8px; } .fb.old .lab{ color:var(--faint); } .fb.new .lab{ color:var(--violet); }
+  .fb p{ margin:0; font-size:14px; color:var(--muted); } .fb.new p{ color:var(--text); } .fb b{ color:#fff; }
+
+  .status{ margin-top:26px; padding:22px 24px; border-radius:16px; border:1px solid var(--line2);
+    background:var(--panel2); }
+  .status .k{ font-family:var(--mono); font-size:11px; letter-spacing:.16em; text-transform:uppercase;
+    color:var(--gold); display:block; margin-bottom:10px; }
+  .status p{ margin:0 0 10px; font-size:14px; color:var(--muted); } .status p:last-child{ margin:0; }
+  .status b{ color:var(--text); }
+
+  footer{ margin-top:32px; color:var(--faint); font-size:12.5px; font-family:var(--mono);
+    line-height:1.7; text-align:center; }
+
+  @media (max-width:680px){
+    .adscft{ grid-template-columns:1fr; } .diskwrap{ margin:0 auto; }
+    .anas{ grid-template-columns:1fr 1fr; } .keyres,.flip{ grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="stars"></div>
+
+<div class="wrap">
+  <p class="eyebrow">Голография · пространство-время как эмерджентность</p>
+  <h1>Пространство-время — <span class="g">это не фундамент,<br>а картинка</span></h1>
+  <p class="lede">Самая радикальная идея современной физики: пространство-время не «кирпич» реальности,
+    а нечто <b>вторичное</b> — оно «вырастает» из более глубокого слоя квантовой информации. Строгий
+    рабочий пример этого — соответствие <b>AdS/CFT</b>. Разберём и его, и то, как такое вообще мыслимо.</p>
+
+  <!-- ADS/CFT -->
+  <p class="h2 cy">Рабочий пример: соответствие AdS/CFT (Малдасена, 1997)</p>
+  <p class="sub">Теория <b>с гравитацией</b> в объёме пространства оказалась <b>ровно тем же самым</b>,
+    что квантовая теория <b>без гравитации</b> на его границе — где измерений на одно меньше.</p>
+  <div class="card adscft">
+    <div class="diskwrap">
+      <svg class="disk" viewBox="0 0 230 230" xmlns="http://www.w3.org/2000/svg">
+        <defs><radialGradient id="bulk" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#2a1e4a"/><stop offset="70%" stop-color="#141026"/>
+          <stop offset="100%" stop-color="#0a0d18"/></radialGradient></defs>
+        <circle cx="115" cy="115" r="98" fill="url(#bulk)"/>
+        <circle cx="115" cy="115" r="70" fill="none" stroke="#2f3960" stroke-width="1" opacity="0.6"/>
+        <circle cx="115" cy="115" r="42" fill="none" stroke="#2f3960" stroke-width="1" opacity="0.5"/>
+        <g stroke="#2f3960" stroke-width="1" opacity="0.4">
+          <line x1="115" y1="17" x2="115" y2="213"/><line x1="17" y1="115" x2="213" y2="115"/>
+          <line x1="46" y1="46" x2="184" y2="184"/><line x1="184" y1="46" x2="46" y2="184"/>
+        </g>
+        <circle cx="115" cy="115" r="98" fill="none" stroke="#5bc8e6" stroke-width="3"/>
+        <circle cx="115" cy="115" r="9" fill="#b48cff" opacity="0.85"/>
+        <text x="115" y="118" fill="#fff" font-family="ui-monospace,monospace" font-size="8" text-anchor="middle">ЧД</text>
+        <text x="115" y="128" fill="#b48cff" font-family="ui-monospace,monospace" font-size="10" text-anchor="middle" opacity="0">.</text>
+      </svg>
+      <div style="text-align:center;font-family:var(--mono);font-size:11px;margin-top:8px">
+        <span style="color:var(--cold)">━ граница (CFT)</span> &nbsp;
+        <span style="color:var(--violet)">● объём (гравитация)</span>
+      </div>
+    </div>
+    <div>
+      <div class="dict">
+        <div class="row"><div class="bulk">чёрная дыра в объёме</div><div class="eq">=</div><div class="bnd">горячая плазма на границе</div></div>
+        <div class="row"><div class="bulk">глубина / радиус объёма</div><div class="eq">=</div><div class="bnd">масштаб энергии на границе</div></div>
+        <div class="row"><div class="bulk">+1 измерение пространства</div><div class="eq">=</div><div class="bnd">«уровень увеличения» границы</div></div>
+        <div class="row"><div class="bulk">частица падает вглубь</div><div class="eq">=</div><div class="bnd">возбуждение растекается</div></div>
+      </div>
+      <div class="same">Это <b>не аналогия и не приближение</b> — это два точных описания одной физики.
+        Гравитация и лишнее измерение объёма <b>закодированы</b> на границе без всякой гравитации.</div>
+    </div>
+  </div>
+
+  <!-- HOLOGRAPHIC PRINCIPLE -->
+  <p class="h2 cy">Почему «голография»</p>
+  <div class="card holo">
+    Как плоская голограмма хранит объёмный образ, так вся физика внутри области <b>записана на её
+    границе</b> — поверхности на одно измерение меньше. Догадку высказали 'т Хоофт и Сасскинд (1990-е),
+    а натолкнула на неё <b>энтропия чёрных дыр</b>: она растёт как <b>площадь</b> горизонта, а не как
+    объём. То есть «число степеней свободы» живёт на поверхностях, а не в объёме.
+    <div class="quote">Максимум информации в области определяется не тем, сколько в неё влезет,
+      а площадью её границы. Мир как будто «нарисован» на своей оболочке.</div>
+  </div>
+
+  <!-- EMERGENCE -->
+  <p class="h2 vi">Как пространство может быть «не фундаментальным»</p>
+  <p class="sub">Ключ — понятие <b>эмерджентности</b>: свойство, которого нет у отдельных кусочков, но
+    которое появляется у их множества. Мы окружены такими примерами:</p>
+  <div class="anas">
+    <div class="ana"><div class="from">Температура</div><div class="arw">↑</div><div class="to">движение молекул<br>(у одной — нет температуры)</div></div>
+    <div class="ana"><div class="from">Текучесть</div><div class="arw">↑</div><div class="to">молекулы воды<br>(одна не «течёт»)</div></div>
+    <div class="ana"><div class="from">Картинка</div><div class="arw">↑</div><div class="to">пиксели<br>(пиксель — не образ)</div></div>
+    <div class="ana hot"><div class="from">Пространство-время</div><div class="arw">↑</div><div class="to">квантовая запутанность<br>(вот это гипотеза)</div></div>
+  </div>
+
+  <!-- ENTANGLEMENT GLUE -->
+  <p class="h2 vi">Запутанность — это «клей» пространства</p>
+  <p class="sub">Внутри AdS/CFT нашли поразительное: <b>геометрия объёма = узор запутанности на границе</b>.
+    Убираешь запутанность — пространство буквально распадается.</p>
+  <div class="card gluewrap">
+    <svg class="glue" viewBox="0 0 620 210" xmlns="http://www.w3.org/2000/svg">
+      <!-- left: entangled = connected -->
+      <text x="150" y="24" fill="#7fe0a8" font-family="var(--sans)" font-size="13" text-anchor="middle" font-weight="700">много запутанности</text>
+      <text x="150" y="42" fill="#8a93b6" font-family="ui-monospace,monospace" font-size="10" text-anchor="middle">→ пространство связно</text>
+      <ellipse cx="80" cy="120" rx="46" ry="52" fill="#141026" stroke="#4a3a72" stroke-width="1.5"/>
+      <ellipse cx="220" cy="120" rx="46" ry="52" fill="#141026" stroke="#4a3a72" stroke-width="1.5"/>
+      <path d="M118,95 C150,88 150,88 182,95 M120,120 H180 M118,145 C150,152 150,152 182,145"
+        stroke="#5bc8e6" stroke-width="2" fill="none" opacity="0.9"/>
+      <path d="M124,108 H176 M124,132 H176" stroke="#5bc8e6" stroke-width="1.5" fill="none" opacity="0.6"/>
+      <text x="150" y="190" fill="#5bc8e6" font-family="ui-monospace,monospace" font-size="10" text-anchor="middle">связаны = «рядом»</text>
+      <!-- divider -->
+      <line x1="310" y1="60" x2="310" y2="180" stroke="#242c49" stroke-dasharray="4 4"/>
+      <!-- right: unentangled = torn -->
+      <text x="470" y="24" fill="#ff5c72" font-family="var(--sans)" font-size="13" text-anchor="middle" font-weight="700">убрали запутанность</text>
+      <text x="470" y="42" fill="#8a93b6" font-family="ui-monospace,monospace" font-size="10" text-anchor="middle">→ пространство рвётся надвое</text>
+      <ellipse cx="398" cy="120" rx="44" ry="52" fill="#141026" stroke="#4a3a72" stroke-width="1.5"/>
+      <ellipse cx="542" cy="120" rx="44" ry="52" fill="#141026" stroke="#4a3a72" stroke-width="1.5"/>
+      <text x="470" y="124" fill="#ff5c72" font-family="ui-monospace,monospace" font-size="20" text-anchor="middle">╱╲</text>
+      <text x="470" y="190" fill="#5b6488" font-family="ui-monospace,monospace" font-size="10" text-anchor="middle">нет связи = нет «между»</text>
+    </svg>
+  </div>
+  <div class="keyres">
+    <div class="kr"><div class="t">Рю–Такаянаги <span>2006</span></div>
+      <p>Количество запутанности между двумя кусками границы <b>равно площади</b> поверхности в объёме. Запутанность ↔ геометрия — напрямую.</p></div>
+    <div class="kr"><div class="t">ван Раамсдонк <span>2010</span></div>
+      <p>Ослабляешь запутанность между половинами — объём <b>пережимается и рвётся</b> на два. Вывод: запутанность и есть то, что «сшивает» пространство.</p></div>
+    <div class="kr"><div class="t">ER = EPR <span>2013</span></div>
+      <p>Малдасена и Сасскинд: запутанные частицы связаны микро-червоточиной. Запутанность и «мостик в пространстве» — <b>одно и то же</b>.</p></div>
+    <div class="kr"><div class="t">«Расстояние = запутанность»</div>
+      <p>Тогда «близко» значит «сильно запутаны», «далеко» — «слабо». Пространство — просто <b>карта запутанности</b>.</p></div>
+  </div>
+
+  <!-- THE FLIP -->
+  <p class="h2 vi">Как это вообще может быть — переворот интуиции</p>
+  <div class="flip">
+    <div class="fb old"><div class="lab">привычная картина</div>
+      <p>Пространство — это <b>сцена</b>, готовый пустой контейнер. Вещи существуют <b>в нём</b>, движутся по нему. Оно есть всегда и само по себе.</p></div>
+    <div class="fb new"><div class="lab">переворот</div>
+      <p>Пространство — не сцена, а <b>результат</b>. Оно «вычисляется» из связей между более базовыми
+        сущностями, которые сами <b>не живут «в пространстве»</b>. На самом глубоком уровне нет ни «здесь»,
+        ни «там», ни расстояния — только сеть корреляций. «Место» появляется потом.</p></div>
+  </div>
+
+  <!-- STATUS -->
+  <div class="status">
+    <span class="k">честный статус · фронтир</span>
+    <p><b>Это не подтверждённая физика, а передний край.</b> Но не маргиналия — здесь работают
+      сильнейшие теоретики, и лозунг эпохи: <b>«It from qubit»</b> — «всё из кубита».</p>
+    <p><b>Главная оговорка:</b> самые твёрдые результаты доказаны в <b>анти-де-Ситтеровском</b>
+      пространстве (с отрицательной кривизной) — а наша Вселенная <b>другая</b> (расширяется, почти
+      де-ситтеровская). Перенести голографию на наш мир — открытая и трудная задача.</p>
+    <p><b>Косвенная поддержка:</b> недавнее разрешение парадокса информации в чёрных дырах («острова»,
+      2019–2020) держится ровно на связке <b>геометрия = запутанность</b>. То, что это <i>работает</i>, —
+      сильный довод, что пространство-время и правда эмерджентно.</p>
+  </div>
+
+  <footer>
+    Диск AdS/CFT и схема «клея» — схематические. Малдасена 1997 · Рю–Такаянаги 2006 · ван Раамсдонк 2010 · ER=EPR 2013.<br>
+    Голографический принцип: 'т Хоофт, Сасскинд, 1990-е; корни — в энтропии Бекенштейна–Хокинга. Тёмная тема — намеренно.
+  </footer>
+</div>
+</body>
+</html>
