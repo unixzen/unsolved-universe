@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Глоссарий: термины и сокращения</title>
+<style>
+  :root{
+    --bg:#06070d; --bg2:#0a0d18; --panel:#111629; --panel2:#151b31;
+    --line:#242c49; --line2:#2f3960; --text:#dce3f7; --muted:#9aa3c4; --faint:#5b6488;
+    --gold:#ffd27d; --golddim:#5f5230; --hot:#ff7a4d; --hotdeep:#ff5c72; --hotdim:#7d3140;
+    --cold:#5bc8e6; --colddim:#2c4a55; --violet:#b48cff; --violetdim:#4a3a72; --green:#7fe0a8; --greendim:#2f5c42;
+    --maxw:900px; --mono:ui-monospace,"SF Mono","JetBrains Mono",Menlo,Consolas,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{ box-sizing:border-box; }
+  body{ background:var(--bg); color:var(--text); font-family:var(--sans); line-height:1.6; -webkit-font-smoothing:antialiased; margin:0; }
+  .stars{ position:fixed; inset:0; z-index:0; pointer-events:none; background-color:var(--bg);
+    background-image:radial-gradient(1px 1px at 24px 32px, rgba(255,255,255,.5), transparent),radial-gradient(1px 1px at 120px 90px, rgba(214,226,255,.4), transparent),radial-gradient(1.2px 1.2px at 200px 160px, rgba(255,255,255,.45), transparent);
+    background-repeat:repeat; background-size:260px 260px; opacity:.6; }
+  .wrap{ position:relative; z-index:1; max-width:var(--maxw); margin:0 auto; padding:58px 24px 84px; }
+
+  .eyebrow{ font-family:var(--mono); font-size:12px; letter-spacing:.24em; text-transform:uppercase; margin:0 0 14px;
+    background:linear-gradient(90deg,var(--gold),var(--cold),var(--violet)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  h1{ font-size:clamp(29px,5.6vw,48px); line-height:1.05; letter-spacing:-.02em; font-weight:800; margin:0 0 16px; text-wrap:balance; }
+  .lede{ font-size:clamp(15px,2.2vw,18px); color:var(--muted); max-width:64ch; margin:0; } .lede b{ color:var(--text); }
+
+  .nav{ display:flex; flex-wrap:wrap; gap:8px; margin-top:22px; }
+  .nav a{ font-family:var(--mono); font-size:12px; text-decoration:none; color:var(--muted);
+    border:1px solid var(--line2); padding:5px 12px; border-radius:20px; }
+  .nav a:hover{ border-color:var(--cold); color:var(--text); }
+
+  /* sigma box */
+  .sigma{ margin-top:26px; padding:20px 22px; border-radius:16px; border:1px solid var(--golddim);
+    background:linear-gradient(180deg,rgba(45,38,18,.5),var(--bg2)); }
+  .sigma h2{ margin:0 0 6px; font-size:19px; color:var(--gold); }
+  .sigma p{ margin:0 0 14px; font-size:14px; color:var(--muted); } .sigma p b{ color:var(--text); }
+  .slad{ display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
+  .slad .s{ padding:12px; border-radius:10px; border:1px solid var(--line); background:var(--panel); text-align:center; }
+  .slad .s .v{ font-family:var(--mono); font-weight:800; font-size:17px; }
+  .slad .s .p{ font-family:var(--mono); font-size:12px; color:var(--gold); margin:2px 0 4px; }
+  .slad .s .n{ font-size:11.5px; color:var(--muted); }
+  .slad .s1 .v{ color:var(--faint); } .slad .s2 .v{ color:var(--cold); } .slad .s3 .v{ color:var(--gold); } .slad .s5 .v{ color:var(--green); }
+  .slad .s5{ border-color:var(--greendim); }
+
+  .sec{ margin-top:40px; }
+  .sec h2{ font-size:14px; font-family:var(--mono); letter-spacing:.14em; text-transform:uppercase; color:var(--sc,var(--cold));
+    margin:0 0 4px; padding-top:8px; }
+  .sec .sh{ color:var(--faint); font-size:13px; margin:0 0 16px; }
+  .s-unit{ --sc:var(--cold); } .s-model{ --sc:var(--violet); } .s-phen{ --sc:var(--green); } .s-exp{ --sc:var(--gold); }
+
+  .list{ border-top:1px solid var(--line); }
+  .e{ display:grid; grid-template-columns:200px 1fr; gap:14px; padding:12px 0; border-bottom:1px solid var(--line); }
+  .e .t{ font-weight:700; font-size:15px; color:var(--text); }
+  .e .t .x{ display:block; font-family:var(--mono); font-size:11px; color:var(--sc,var(--faint)); font-weight:400; margin-top:2px; }
+  .e .d{ font-size:14px; color:var(--muted); } .e .d b{ color:var(--text); }
+
+  footer{ margin-top:44px; padding-top:20px; border-top:1px solid var(--line); color:var(--faint); font-size:12.5px; font-family:var(--mono); line-height:1.7; text-align:center; }
+  @media (max-width:640px){ .slad{ grid-template-columns:1fr 1fr; } .e{ grid-template-columns:1fr; gap:3px; } }
+</style>
+</head>
+<body>
+<div class="stars"></div>
+<div class="wrap">
+  <p class="eyebrow">Глоссарий · термины и сокращения атласа</p>
+  <h1>Что все эти буквы значат</h1>
+  <p class="lede">Короткий словарь всего, что мелькает в схемах: <b>единицы, символы, модели, явления и
+    приборы</b>. Простыми словами — чтобы не спотыкаться о «ΛCDM», «5σ» или «BAO».</p>
+
+  <div class="nav">
+    <a href="#sigma">σ — «сколько сигм»</a>
+    <a href="#units">Единицы и символы</a>
+    <a href="#models">Модели и принципы</a>
+    <a href="#phen">Явления и объекты</a>
+    <a href="#exp">Телескопы и эксперименты</a>
+  </div>
+
+  <!-- SIGMA -->
+  <div class="sigma" id="sigma">
+    <h2>σ (сигма) — насколько доказано?</h2>
+    <p>Это <b>уровень значимости</b> — насколько маловероятно, что результат случаен. Чем больше сигм, тем
+      надёжнее. «5σ» — золотой стандарт: только на нём объявляют открытие (так подтверждали Хиггс и гравволны).</p>
+    <div class="slad">
+      <div class="s s1"><div class="v">1σ</div><div class="p">≈ 68%</div><div class="n">слабый намёк</div></div>
+      <div class="s s2"><div class="v">2σ</div><div class="p">≈ 95%</div><div class="n">интересно, но бывает случайно</div></div>
+      <div class="s s3"><div class="v">3σ</div><div class="p">≈ 99,7%</div><div class="n">серьёзно, но не факт</div></div>
+      <div class="s s5"><div class="v">5σ</div><div class="p">99,99994%</div><div class="n">открытие (1 ошибка на 3,5 млн)</div></div>
+    </div>
+  </div>
+
+  <!-- UNITS -->
+  <div class="sec s-unit" id="units">
+    <h2>Единицы и символы</h2>
+    <p class="sh">Чем меряют расстояния, энергии и свойства Вселенной.</p>
+    <div class="list">
+      <div class="e"><div class="t">Световой год</div><div class="d">Расстояние, которое свет проходит за год (~9,5 трлн км).</div></div>
+      <div class="e"><div class="t">Мпк<span class="x">мегапарсек</span></div><div class="d">~3,26 млн световых лет — «линейка» межгалактических масштабов.</div></div>
+      <div class="e"><div class="t">эВ<span class="x">электронвольт</span></div><div class="d">Крошечная единица энергии в мире частиц.</div></div>
+      <div class="e"><div class="t">МэВ · ГэВ · ТэВ</div><div class="d">Мега- (10⁶), гига- (10⁹), тера- (10¹²) электронвольты. Ими меряют массы частиц: протон ≈ 1 ГэВ.</div></div>
+      <div class="e"><div class="t">К<span class="x">кельвин</span></div><div class="d">Температура от абсолютного нуля. Реликтовый фон ≈ 2,7 К.</div></div>
+      <div class="e"><div class="t">км/с</div><div class="d">Километры в секунду — скорости галактик (наша группа ≈ 600 км/с).</div></div>
+      <div class="e"><div class="t">H₀<span class="x">постоянная Хаббла</span></div><div class="d">Темп расширения Вселенной сегодня (км/с на Мпк). Спор: ≈67 против ≈73.</div></div>
+      <div class="e"><div class="t">Λ<span class="x">лямбда</span></div><div class="d">Космологическая постоянная — простейший вариант тёмной энергии.</div></div>
+      <div class="e"><div class="t">z<span class="x">красное смещение</span></div><div class="d">Насколько растянулся свет по пути. Мера расстояния и «древности» источника.</div></div>
+      <div class="e"><div class="t">w</div><div class="d">«Уравнение состояния» тёмной энергии. w = −1 значит, что она постоянна.</div></div>
+      <div class="e"><div class="t">r</div><div class="d">Тензорно-скалярное отношение — сила первичных гравитационных волн (цель охоты за B-модами).</div></div>
+      <div class="e"><div class="t">ℓ<span class="x">эль, мультиполь</span></div><div class="d">«Номер» узора на карте реликта: маленькие ℓ — крупные пятна.</div></div>
+      <div class="e"><div class="t">S₈</div><div class="d">Мера «комковатости» материи — насколько сильно она сбита в сгустки.</div></div>
+      <div class="e"><div class="t">Ω<span class="x">омега</span></div><div class="d">Доля от «критической плотности». Ω ≈ 1 означает плоскую Вселенную.</div></div>
+    </div>
+  </div>
+
+  <!-- MODELS -->
+  <div class="sec s-model" id="models">
+    <h2>Модели, симметрии, принципы</h2>
+    <p class="sh">Каркасы и идеи, на которых стоит (или спотыкается) физика.</p>
+    <div class="list">
+      <div class="e"><div class="t">Стандартная модель</div><div class="d">Проверенная теория всех известных частиц и трёх сил (кроме гравитации).</div></div>
+      <div class="e"><div class="t">ΛCDM<span class="x">Lambda Cold Dark Matter</span></div><div class="d">Стандартная модель космологии: тёмная энергия (Λ) + холодная тёмная материя (CDM).</div></div>
+      <div class="e"><div class="t">Космологический принцип</div><div class="d">Допущение, что Вселенная в среднем одинакова везде и во все стороны (изотропна).</div></div>
+      <div class="e"><div class="t">CP<span class="x">Charge · Parity</span></div><div class="d">Симметрия «заряд + зеркало»: <b>C</b> меняет частицы на античастицы, <b>P</b> отражает пространство. Их нарушение — ключ к тому, почему есть вещество.</div></div>
+      <div class="e"><div class="t">T · CPT</div><div class="d"><b>T</b> — обращение времени; <b>CPT</b> — комбинация всех трёх, которая сохраняется всегда.</div></div>
+      <div class="e"><div class="t">GUT<span class="x">Grand Unified Theory</span></div><div class="d">Великое объединение — слияние трёх сил в одну при огромных энергиях.</div></div>
+      <div class="e"><div class="t">SUSY<span class="x">суперсимметрия</span></div><div class="d">Гипотеза о «частицах-двойниках» у каждой частицы. На коллайдере не найдена.</div></div>
+      <div class="e"><div class="t">MOND<span class="x">Modified Newtonian Dynamics</span></div><div class="d">Альтернатива тёмной материи: не новая масса, а изменённая гравитация. Проигрывает на больших масштабах.</div></div>
+      <div class="e"><div class="t">AdS/CFT</div><div class="d">Соответствие «Анти-де-Ситтер / конформная теория поля» — голографическая двойственность (гравитация в объёме = теория без гравитации на границе).</div></div>
+      <div class="e"><div class="t">dS / AdS</div><div class="d">Пространство <b>де Ситтера</b> (Λ&gt;0, «сфера» — наша Вселенная) / <b>анти-де-Ситтера</b> (Λ&lt;0, «седло» — дом голографии).</div></div>
+      <div class="e"><div class="t">Голографический принцип</div><div class="d">Идея, что вся информация об объёме записана на его границе — как объёмный образ на плоской плёнке.</div></div>
+      <div class="e"><div class="t">ER = EPR</div><div class="d">Гипотеза, что квантовая запутанность (EPR) и червоточина (ER) — одно и то же.</div></div>
+      <div class="e"><div class="t">see-saw<span class="x">«качели»</span></div><div class="d">Механизм, объясняющий, почему нейтрино такие лёгкие (тяжёлый партнёр «придавливает» массу).</div></div>
+      <div class="e"><div class="t">EDE<span class="x">Early Dark Energy</span></div><div class="d">Ранняя тёмная энергия — попытка починить хаббловскую напряжённость.</div></div>
+      <div class="e"><div class="t">Антропный принцип<span class="x">WAP / SAP</span></div><div class="d">Слабый / сильный. Идея, что мы видим «настроенную под жизнь» Вселенную, потому что в другой не возникли бы и не спросили.</div></div>
+    </div>
+  </div>
+
+  <!-- PHENOMENA -->
+  <div class="sec s-phen" id="phen">
+    <h2>Явления и объекты</h2>
+    <p class="sh">Что именно наблюдают и обсуждают.</p>
+    <div class="list">
+      <div class="e"><div class="t">Реликтовое излучение<span class="x">CMB</span></div><div class="d">«Cosmic Microwave Background» — свет-эхо Большого взрыва, ровный фон ≈ 2,7 К со всех сторон.</div></div>
+      <div class="e"><div class="t">BAO<span class="x">барионные акустические осцилляции</span></div><div class="d">«Звуковая линейка» ранней Вселенной, отпечатанная в распределении галактик. Её меряет DESI.</div></div>
+      <div class="e"><div class="t">BBN<span class="x">первичный нуклеосинтез</span></div><div class="d">«Big Bang Nucleosynthesis» — варка лёгких элементов в первые минуты; ограничивает долю обычной материи ~5%.</div></div>
+      <div class="e"><div class="t">Гравитационное линзирование</div><div class="d">Искривление света массой. Способ «взвесить» невидимую материю.</div></div>
+      <div class="e"><div class="t">Барион</div><div class="d">Обычная тяжёлая частица (протон, нейтрон). «Барионная материя» = привычное вещество.</div></div>
+      <div class="e"><div class="t">Аксион</div><div class="d">Гипотетическая лёгкая частица; восходящий кандидат в тёмную материю.</div></div>
+      <div class="e"><div class="t">WIMP<span class="x">Weakly Interacting Massive Particle</span></div><div class="d">Тяжёлый слабо-взаимодействующий кандидат в тёмную материю. Десятилетия поисков — пусто.</div></div>
+      <div class="e"><div class="t">MACHO<span class="x">Massive Compact Halo Object</span></div><div class="d">Тёмные <i>обычные</i> тела (карлики, старые дыры) как кандидат в тёмную материю — отвергнуты.</div></div>
+      <div class="e"><div class="t">Сверхновая типа Ia</div><div class="d">Взрыв известной яркости — «стандартная свеча» для измерения расстояний.</div></div>
+      <div class="e"><div class="t">Цефеида</div><div class="d">Пульсирующая звезда-«маячок»; ступень «лестницы расстояний».</div></div>
+      <div class="e"><div class="t">Квадруполь · октуполь</div><div class="d">Мультиполи ℓ=2 и ℓ=3 — самые крупные «узоры» на карте реликта (в них живёт «Ось Зла»).</div></div>
+      <div class="e"><div class="t">E-моды / B-моды</div><div class="d">Два типа узора поляризации реликта. Первичные B-моды — «дымящийся пистолет» инфляции.</div></div>
+      <div class="e"><div class="t">0νββ<span class="x">безнейтринный двойной β-распад</span></div><div class="d">Его поиск проверяет, является ли нейтрино своей же античастицей (майорановским).</div></div>
+      <div class="e"><div class="t">KBC-войд</div><div class="d">Гигантская местная недоплотность (Кинан–Баргер–Коуи); возможный «выход» из хаббловской напряжённости.</div></div>
+      <div class="e"><div class="t">Энтропия</div><div class="d">Мера беспорядка; всегда растёт (второй закон), что ведёт к «тепловой смерти».</div></div>
+      <div class="e"><div class="t">Запутанность</div><div class="d">Квантовая связь частиц; возможный «клей» пространства-времени.</div></div>
+      <div class="e"><div class="t">Аннигиляция</div><div class="d">Взаимное уничтожение частицы и античастицы во вспышку света.</div></div>
+      <div class="e"><div class="t">Горизонт событий</div><div class="d">Граница чёрной дыры, из-под которой не выходит даже свет.</div></div>
+      <div class="e"><div class="t">Сингулярность</div><div class="d">Точка бесконечной плотности (центр дыры, начало взрыва), где нынешние теории ломаются.</div></div>
+    </div>
+  </div>
+
+  <!-- EXPERIMENTS -->
+  <div class="sec s-exp" id="exp">
+    <h2>Телескопы и эксперименты</h2>
+    <p class="sh">Кто и чем всё это измеряет.</p>
+    <div class="list">
+      <div class="e"><div class="t">COBE<span class="x">1992</span></div><div class="d">Первый спутник, снявший карту реликтового излучения.</div></div>
+      <div class="e"><div class="t">WMAP<span class="x">NASA, 2003</span></div><div class="d">Уточнил карту реликта, впервые ясно увидел аномалии (Ось Зла, Холодное пятно).</div></div>
+      <div class="e"><div class="t">Planck<span class="x">ЕКА, 2013–2018</span></div><div class="d">Самая точная карта реликтового излучения на сегодня.</div></div>
+      <div class="e"><div class="t">DESI<span class="x">Dark Energy Spectroscopic Instrument</span></div><div class="d">3D-карта миллионов галактик; меряет тёмную энергию по BAO. В 2024–25 намекнул, что она не константа.</div></div>
+      <div class="e"><div class="t">Euclid<span class="x">ЕКА, 2023–</span></div><div class="d">Космический телескоп: тёмная энергия и тёмная материя.</div></div>
+      <div class="e"><div class="t">Rubin / LSST<span class="x">обсерватория Веры Рубин</span></div><div class="d">«Legacy Survey of Space and Time» — гигантский обзор всего неба, стартует прямо сейчас.</div></div>
+      <div class="e"><div class="t">SH0ES</div><div class="d">Программа Адама Рисса: H₀ по цефеидам и сверхновым (даёт «позднее» ≈73).</div></div>
+      <div class="e"><div class="t">TRGB</div><div class="d">Метод «вершины ветви красных гигантов» — независимая ступень расстояний (даёт промежуточное ≈70).</div></div>
+      <div class="e"><div class="t">TDCOSMO<span class="x">H0LiCOW</span></div><div class="d">H₀ по «задержкам» света в гравитационных линзах.</div></div>
+      <div class="e"><div class="t">Super-K<span class="x">Super-Kamiokande, Япония</span></div><div class="d">Гигантский бак воды: ловит нейтрино и караулит распад протона.</div></div>
+      <div class="e"><div class="t">SNO<span class="x">Sudbury Neutrino Observatory</span></div><div class="d">Доказала осцилляции нейтрино (Нобель 2015, вместе с Super-K).</div></div>
+      <div class="e"><div class="t">BICEP2 / BICEP-Keck</div><div class="d">Телескопы на Южном полюсе; охота за B-модами (2014 — ложная тревога из-за пыли).</div></div>
+      <div class="e"><div class="t">LiteBIRD<span class="x">~2030-е</span></div><div class="d">Японский спутник для поляризации реликта — главный будущий охотник за B-модами.</div></div>
+      <div class="e"><div class="t">CMB-S4 · Simons Obs.</div><div class="d">Наземные проекты нового поколения по реликтовому излучению.</div></div>
+      <div class="e"><div class="t">LIGO / Virgo</div><div class="d">Детекторы гравитационных волн (слияния чёрных дыр и нейтронных звёзд; доказали скорость гравитации = c).</div></div>
+      <div class="e"><div class="t">LHC<span class="x">Большой адронный коллайдер, ЦЕРН</span></div><div class="d">Ищет новые частицы. Нашёл Хиггс (2012); суперсимметрию — нет.</div></div>
+      <div class="e"><div class="t">JWST<span class="x">телескоп «Джеймс Уэбб»</span></div><div class="d">Перепроверил цефеиды и подтвердил «позднее» H₀ (2023–24).</div></div>
+      <div class="e"><div class="t">KATRIN</div><div class="d">Эксперимент по прямому измерению массы нейтрino (по бета-распаду трития).</div></div>
+      <div class="e"><div class="t">DUNE · Hyper-K</div><div class="d">Будущие нейтринные эксперименты: CP-нарушение нейтрино и распад протона.</div></div>
+      <div class="e"><div class="t">ADMX</div><div class="d">Эксперимент по поиску аксионов (превращение аксиона в фотон в магнитном поле).</div></div>
+      <div class="e"><div class="t">Chandra</div><div class="d">Рентгеновский телескоп; снял горячий газ в Скоплении Пуля (довод за тёмную материю).</div></div>
+    </div>
+  </div>
+
+  <footer>Определения намеренно короткие и упрощённые — чтобы «расшифровать» термин на лету, а не заменить учебник.</footer>
+</div>
+</body>
+</html>
