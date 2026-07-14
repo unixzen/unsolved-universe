@@ -1,0 +1,397 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Почитать и посмотреть — спутники к 18 схемам</title>
+<style>
+  :root{
+    --bg:#06070d; --bg2:#0a0d18;
+    --panel:#111629; --panel2:#151b31;
+    --line:#242c49; --line2:#2f3960;
+    --text:#dce3f7; --muted:#8a93b6; --faint:#5b6488;
+    --gold:#ffd27d; --golddim:#5f5230;
+    --amber:#ffb15c; --amberdim:#6a4a22;
+    --hot:#ff7a4d; --hotdeep:#ff5c72; --hotdim:#7d3140;
+    --cold:#5bc8e6; --colddim:#2c4a55;
+    --violet:#b48cff; --violetdim:#4a3a72;
+    --green:#7fe0a8; --greendim:#2f5c42;
+    --maxw:1000px;
+    --mono:ui-monospace,"SF Mono","JetBrains Mono","Cascadia Code",Menlo,Consolas,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{ box-sizing:border-box; }
+  body{ background:var(--bg); color:var(--text); font-family:var(--sans);
+    line-height:1.55; -webkit-font-smoothing:antialiased; margin:0; }
+  .stars{ position:fixed; inset:0; z-index:0; pointer-events:none; background-color:var(--bg);
+    background-image:
+      radial-gradient(1.1px 1.1px at 24px 32px, rgba(255,255,255,.7), transparent),
+      radial-gradient(1px 1px at 96px 128px, rgba(214,226,255,.5), transparent),
+      radial-gradient(1.3px 1.3px at 160px 64px, rgba(255,255,255,.55), transparent),
+      radial-gradient(1px 1px at 56px 176px, rgba(190,205,255,.45), transparent);
+    background-repeat:repeat; background-size:230px 230px; animation:tw 11s ease-in-out infinite; }
+  .stars::after{ content:""; position:absolute; inset:0;
+    background:
+      radial-gradient(50% 40% at 15% 6%, rgba(255,177,92,.07), transparent 70%),
+      radial-gradient(52% 42% at 85% 30%, rgba(180,140,255,.08), transparent 70%),
+      radial-gradient(55% 40% at 30% 75%, rgba(91,200,230,.06), transparent 70%),
+      radial-gradient(50% 40% at 80% 95%, rgba(127,224,168,.05), transparent 70%); }
+  @keyframes tw{ 0%,100%{opacity:.85} 50%{opacity:1} }
+  @media (prefers-reduced-motion:reduce){ .stars{animation:none} }
+  .wrap{ position:relative; z-index:1; max-width:var(--maxw); margin:0 auto; padding:60px 24px 84px; }
+
+  .eyebrow{ font-family:var(--mono); font-size:12px; letter-spacing:.3em; text-transform:uppercase; margin:0 0 16px;
+    background:linear-gradient(90deg,var(--amber),var(--violet),var(--cold)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  h1{ font-size:clamp(32px,6.5vw,58px); line-height:1.02; letter-spacing:-.03em; font-weight:800; margin:0 0 18px; text-wrap:balance; }
+  .lede{ font-size:clamp(15px,2.2vw,18px); color:var(--muted); max-width:66ch; margin:0; } .lede b{ color:var(--text); }
+
+  .meta{ display:flex; gap:22px; flex-wrap:wrap; margin-top:22px; font-family:var(--mono); font-size:12px; color:var(--faint); }
+  .meta b{ color:var(--text); font-size:15px; }
+
+  .disc{ margin-top:20px; padding:14px 18px; border-radius:12px; border:1px dashed var(--line2);
+    background:rgba(17,22,41,.5); font-size:13px; color:var(--muted); } .disc b{ color:var(--text); }
+  .disc .k{ display:inline-flex; align-items:center; gap:6px; margin-right:14px; white-space:nowrap; }
+
+  .filters{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:18px; }
+  .filters .fl{ font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase;
+    color:var(--faint); margin-right:4px; }
+  .fbtn{ font-family:var(--mono); font-size:12px; color:var(--muted); background:transparent;
+    border:1px solid var(--line2); padding:6px 14px; border-radius:20px; cursor:pointer;
+    transition:border-color .15s, color .15s, background .15s; }
+  .fbtn:hover{ border-color:var(--amber); color:var(--text); }
+  .fbtn.on{ color:var(--amber); border-color:var(--amber); background:rgba(255,177,92,.08); }
+
+  .chapter{ margin-top:44px; }
+  .chapter .ct{ display:flex; align-items:baseline; gap:12px; margin-bottom:16px; }
+  .chapter .cn{ font-family:var(--mono); font-size:12px; letter-spacing:.14em; }
+  .chapter h2{ font-size:20px; letter-spacing:-.015em; margin:0; }
+  .chapter .cl{ height:1px; flex:1; background:linear-gradient(90deg,var(--line2),transparent); align-self:center; }
+
+  .cards{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .card{ display:flex; gap:15px; text-decoration:none; color:inherit; padding:18px 20px; border-radius:16px;
+    border:1px solid var(--line); background:linear-gradient(180deg,var(--panel),var(--bg2));
+    transition:border-color .15s, transform .1s, box-shadow .15s; }
+  .card:hover{ border-color:var(--cacc,var(--cold)); transform:translateY(-2px); box-shadow:0 10px 30px rgba(0,0,0,.35); }
+  .card .em{ font-size:26px; flex:0 0 auto; line-height:1.15; }
+  .card .tx{ min-width:0; }
+  .card .theme{ font-family:var(--mono); font-size:11px; letter-spacing:.02em; color:var(--cacc,var(--cold));
+    margin:0 0 6px; opacity:.95; }
+  .card h3{ margin:0 0 3px; font-size:16.5px; letter-spacing:-.01em; line-height:1.2; }
+  .card .by{ font-family:var(--mono); font-size:11px; color:var(--faint); margin:0 0 8px; }
+  .card p{ margin:0; font-size:13px; color:var(--muted); }
+  .card .alt{ margin:9px 0 0; padding-top:8px; border-top:1px solid var(--line);
+    font-size:12px; color:var(--faint); } .card .alt b{ color:var(--muted); }
+  .card .go{ font-family:var(--mono); font-size:11px; color:var(--cacc,var(--cold)); margin-top:11px; }
+
+  .c1{ --cacc:var(--gold); } .c2{ --cacc:var(--cold); } .c3{ --cacc:var(--violet); }
+  .c4{ --cacc:var(--green); } .c5{ --cacc:var(--hotdeep); } .c6{ --cacc:var(--gold); } .c7{ --cacc:var(--violet); }
+
+  .close{ margin-top:50px; padding:24px 26px; border-radius:18px; border:1px solid var(--line2); background:var(--panel2); text-align:center; }
+  .close p{ margin:0; font-size:14.5px; color:var(--muted); } .close b{ color:var(--text); }
+
+  footer{ margin-top:28px; color:var(--faint); font-size:12px; font-family:var(--mono); line-height:1.7; text-align:center; }
+  footer a{ color:var(--amber); text-decoration:none; } footer a:hover{ text-decoration:underline; }
+  @media (max-width:680px){ .cards{ grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<div class="stars"></div>
+<div class="wrap">
+  <p class="eyebrow">Атлас · спутник к каждой схеме</p>
+  <h1>Почитать и посмотреть</h1>
+  <p class="lede">На каждую из <b>18 схем</b> — одна точная книга или фильм. Подбор не «про космос вообще»:
+    каждая вещь бьёт в <b>ту самую мысль</b>, ради которой сделана схема. Зацепила тема — вот что взять в руки следующим.
+    Нажми на карточку, чтобы вернуться к её схеме.</p>
+  <div class="meta"><span><b>18</b> тем</span><span><b>15</b> книг</span><span><b>3</b> фильма</span><span>+ варианты «Ещё»</span></div>
+
+  <div class="disc">
+    <span class="k">📖 книга</span><span class="k">🎬 фильм / видео</span><br>
+    Русское название — основным, в строке ниже: <b>автор · год · оригинал</b>. Где у книги есть русское издание — оно и указано.
+    Строка <b>«Ещё»</b> — второй вариант или контрточка, если хочется копнуть глубже или услышать спор.
+  </div>
+
+  <div class="filters" role="group" aria-label="Фильтр по типу">
+    <span class="fl">Показать:</span>
+    <button class="fbtn on" type="button" data-f="all">все · 18</button>
+    <button class="fbtn" type="button" data-f="book">📖 книги · 15</button>
+    <button class="fbtn" type="button" data-f="film">🎬 фильмы · 3</button>
+  </div>
+
+  <!-- CH 1 -->
+  <div class="chapter">
+    <div class="ct"><span class="cn c1" style="color:var(--gold)">ГЛАВА 1</span><h2>Космос вокруг нас</h2><span class="cl"></span></div>
+    <div class="cards">
+      <a class="card c1" href="cosmic-hierarchy.html" target="_blank" rel="noopener">
+        <span class="em">🎬</span>
+        <span class="tx">
+          <div class="theme">🌌 Где мы живём и куда нас тянет</div>
+          <h3>«Powers of Ten» (Степени десяти)</h3>
+          <div class="by">Чарльз и Рэй Имз · 1977 · фильм, 9 мин</div>
+          <p>Зум от человека до сверхскоплений и обратно к атому — ровно та иерархия масштабов, что в схеме.</p>
+          <div class="alt"><b>Ещё:</b> видеокарта «Laniakea» (Талли, Nature, 2014) — прямо про потоки к Великому аттрактору.</div>
+          <div class="go">▸ к схеме</div>
+        </span>
+      </a>
+      <a class="card c1" href="fate-of-universe.html" target="_blank" rel="noopener">
+        <span class="em">📖</span>
+        <span class="tx">
+          <div class="theme">🌌 Как всё закончится</div>
+          <h3>«Всё, чем закончится Вселенная»</h3>
+          <div class="by">Кэти Мак · 2020 · The End of Everything</div>
+          <p>Пять способов финала: тепловая смерть, Большой разрыв, сжатие, распад вакуума, отскок — без страха, но честно.</p>
+          <div class="alt"><b>Ещё:</b> Адамс и Лафлин, «Пять эпох Вселенной» — про сами эпохи до тепловой смерти.</div>
+          <div class="go">▸ к схеме</div>
+        </span>
+      </a>
+    </div>
+  </div>
+
+  <!-- CH 2 -->
+  <div class="chapter">
+    <div class="ct"><span class="cn c2" style="color:var(--cold)">ГЛАВА 2</span><h2>Трещины в стандартной картине</h2><span class="cl"></span></div>
+    <div class="cards">
+      <a class="card c2" href="axis-of-evil.html" target="_blank" rel="noopener">
+        <span class="em">📖</span>
+        <span class="tx">
+          <div class="theme">🌌 Ось Зла</div>
+          <h3>«(Не)совершенная случайность»</h3>
+          <div class="by">Леонард Млодинов · 2008 · The Drunkard's Walk</div>
+          <p>Не про космос, а про то, как мы видим узор в чистом шуме. Ровно вопрос «Оси Зла»: сигнал — или дисперсия при выборке из одной Вселенной.</p>
+          <div class="alt"><b>Ещё:</b> 🎬 «Шоу Трумана» — жуть от чувства «мир развёрнут вокруг меня».</div>
+          <div class="go">▸ к схеме</div>
+        </span>
+      </a>
+      <a class="card c2" href="hubble-tension.html" target="_blank" rel="noopener">
+        <span class="em">📖</span>
+        <span class="tx">
+          <div class="theme">📏 Хаббловская напряжённость</div>
+          <h3>«Большой взрыв»</h3>
+          <div class="by">Саймон Сингх · 2004 · Big Bang</div>
+          <p>Как вообще научились мерить расширение: цефеиды, сверхновые, лестница расстояний. Отсюда ясно, почему 67 против 73 — настоящий кризис, а не мелочь.</p>
+          <div class="go">▸ к схеме</div>
+        </span>
+      </a>
+    </div>
+  </div>
+
+  <!-- CH 3 -->
+  <div class="chapter">
+    <div class="ct"><span class="cn c3" style="color:var(--violet)">ГЛАВА 3</span><h2>Тёмный сектор — 95% Вселенной</h2><span class="cl"></span></div>
+    <div class="cards">
+      <a class="card c3" href="dark-energy-desi.html" target="_blank" rel="noopener">
+        <span class="em">📖</span>
+        <span class="tx">
+          <div class="theme">🌑 Тёмная энергия и DESI</div>
+          <h3>«Вселенная на 4 процента»</h3>
+          <div class="by">Ричард Панек · 2011 · The 4% Universe</div>
+          <p>Репортаж об открытии ускоренного расширения в 1998-м — как намерили тёмную энергию и получили за это Нобеля.</p>
+          <div class="go">▸ к схеме</div>
+        </span>
+      </a>
+      <a class="card c3" href="dark-matter.html" target="_blank" rel="noopener">
+        <span class="em">📖</span>
+        <span class="tx">
+          <div class="theme">🌀 Тёмная материя</div>
+          <h3>«Тёмная материя и динозавры»</h3>
+          <div class="by">Лиза Рэндалл · 2015 · Dark Matter and the Dinosaurs</div>
+          <p>Что она такое и как лепит структуру космоса. Человеческая линия сюжета — кривые вращения Веры Рубин, с которых всё началось.</p>
+          <div class="go">▸ к схеме</div>
+        </span>
+      </a>
+    </div>
+  </div>
+
+  <!-- CH 4 -->
+  <div class="chapter">
+    <div class="ct"><span class="cn c4" style="color:var(--green)">ГЛАВА 4</span><h2>Частицы и объединение сил</h2><span class="cl"></span></div>
+    <div class="cards">
+      <a class="card c4" href="beyond-standard-model.html" target="_blank" rel="noopener">
+        <span class="em">🎬</span>
+        <span class="tx">
+          <div class="theme">⚛️ Аксион, суперсимметрия, нейтрино</div>
+          <h3>«Particle Fever»</h3>
+          <div class="by">реж. Марк Левинсон · 2013 · документальный</div>
+          <p>Запуск БАК и охота на Хиггс: вживую снят тот самый момент «искали суперсимметрию — и не нашли».</p>
+          <div class="go">▸ к схеме</div>
+        </span>
+      </a>
+      <a class="card c4" href="grand-unification.html" target="_blank" rel="noopener">
+        <span class="em">📖</span>
+        <span class="tx">
+          <div class="theme">🔗 Великое объединение</div>
+          <h3>«Мечты об окончательной теории»</h3>
+          <div class="by">Стивен Вайнберг · 1992 · Dreams of a Final Theory</div>
+          <p>Манифест самой идеи, что три силы — одна, от одного из архитекторов Стандартной модели. Зачем строят гиганты-детекторы и ждут распада протона.</p>
+          <div class="go">▸ к схеме</div>
+        </span>
+      </a>
+    </div>
+  </div>
+
+  <!-- CH 5 -->
+  <div class="chapter">
+    <div class="ct"><span class="cn c5" style="color:var(--hotdeep)">ГЛАВА 5</span><h2>Происхождение и глубины</h2><span class="cl"></span></div>
+    <div class="cards">
+      <a class="card c5" href="origin-and-summit.html" target="_blank" rel="noopener">
+        <span class="em">📖</span>
+        <span class="tx">
+          <div class="theme">🎆 Три самых глубоких вопроса</div>
+          <h3>«Краткая история времени»</h3>
+          <div class="by">Стивен Хокинг · 1988 · A Brief History of Time</div>
+          <p>Канонический вход в «самые глубокие вопросы»: происхождение, стрела времени, гравитация против квантов.</p>
+          <div class="alt"><b>Ещё:</b> Брайан Грин, «До конца времён» — тот же размах, современнее.</div>
+          <div class="go">▸ к схеме</div>
+        </span>
+      </a>
+      <a class="card c5" href="holography-emergent-spacetime.html" target="_blank" rel="noopener">
+        <span class="em">📖</span>
+        <span class="tx">
+          <div class="theme">🌐 Голография и AdS/CFT</div>
+          <h3>«Битва при чёрной дыре»</h3>
+          <div class="by">Леонард Сасскинд · 2008 · The Black Hole War</div>
+          <p>От отца голографического принципа: как родилась идея, что объём закодирован на границе — «мир как голограмма».</p>
+          <div class="go">▸ к схеме</div>
+        </span>
+      </a>
+      <a class="card c5" href="black-hole-information.html" target="_blank" rel="noopener">
+        <span class="em">📖</span>
+        <span class="tx">
+          <div class="theme">🕳️ Парадокс информации чёрных дыр</div>
+          <h3>«Чёрные дыры и складки времени»</h3>
+          <div class="by">Кип Торн · 1994 · Black Holes and Time Warps</div>
+          <p>Лучший рассказчик о чёрных дырах: энтропия, горизонт, судьба упавшего внутрь — подготовка к кривой Пейджа и «островам».</p>
+          <div class="go">▸ к схеме</div>
+        </span>
+      </a>
+      <a class="card c5" href="firewalls-hawking.html" target="_blank" rel="noopener">
+        <span class="em">🎬</span>
+        <span class="tx">
+          <div class="theme">🔥 Файрволы и излучение Хокинга</div>
+          <h3>«Интерстеллар»</h3>
+          <div class="by">Кристофер Нолан · 2014 · консультант Кип Торн</div>
+          <p>Гаргантюа, горизонт, замедление времени. Ставит вопрос файрвола: сгоришь на горизонте — или пройдёшь его без всякой драмы?</p>
+          <div class="go">▸ к схеме</div>
+        </span>
+      </a>
+    </div>
+  </div>
+
+  <!-- CH 6 -->
+  <div class="chapter">
+    <div class="ct"><span class="cn c6" style="color:var(--gold)">ГЛАВА 6</span><h2>Вселенная целиком</h2><span class="cl"></span></div>
+    <div class="cards">
+      <a class="card c6" href="shape-energy-universe.html" target="_blank" rel="noopener">
+        <span class="em">📖</span>
+        <span class="tx">
+          <div class="theme">♾️ Форма и энергия Вселенной</div>
+          <h3>«Как Вселенная обрела свои пятна»</h3>
+          <div class="by">Дженна Левин · 2002 · How the Universe Got Its Spots</div>
+          <p>Книга-дневник ровно про этот вопрос: конечна ли Вселенная, какова её форма и топология. Наука, написанная как литература.</p>
+          <div class="go">▸ к схеме</div>
+        </span>
+      </a>
+      <a class="card c6" href="multiverse.html" target="_blank" rel="noopener">
+        <span class="em">📖</span>
+        <span class="tx">
+          <div class="theme">🫧 Мультивселенные</div>
+          <h3>«Скрытая реальность»</h3>
+          <div class="by">Брайан Грин · 2011 · The Hidden Reality</div>
+          <p>Книга построена как каталог самих типов мультивселенной — раскладывает их по полочкам.</p>
+          <div class="alt"><b>Ещё:</b> Шон Кэрролл, «Something Deeply Hidden» — за место многомировой Эверетта.</div>
+          <div class="go">▸ к схеме</div>
+        </span>
+      </a>
+    </div>
+  </div>
+
+  <!-- CH 7 -->
+  <div class="chapter">
+    <div class="ct"><span class="cn c7" style="color:var(--violet)">ГЛАВА 7</span><h2>Глубокие погружения</h2><span class="cl"></span></div>
+    <div class="cards">
+      <a class="card c7" href="leptogenesis.html" target="_blank" rel="noopener">
+        <span class="em">📖</span>
+        <span class="tx">
+          <div class="theme">⚖️ Лептогенез</div>
+          <h3>«Антивещество»</h3>
+          <div class="by">Фрэнк Клоуз · 2009 · Antimatter</div>
+          <p>Почему после Большого взрыва вещество уцелело, а не всё аннигилировало в свет.</p>
+          <div class="alt"><b>Ещё:</b> Куинн и Нир, «The Mystery of the Missing Antimatter» — точнее про бариогенез.</div>
+          <div class="go">▸ к схеме</div>
+        </span>
+      </a>
+      <a class="card c7" href="string-theory.html" target="_blank" rel="noopener">
+        <span class="em">📖</span>
+        <span class="tx">
+          <div class="theme">🎻 Теория струн</div>
+          <h3>«Элегантная Вселенная»</h3>
+          <div class="by">Брайан Грин · 1999 · The Elegant Universe</div>
+          <p>Классика о струнах и лишних измерениях (есть и одноимённый фильм NOVA/PBS).</p>
+          <div class="alt"><b>Ещё:</b> Ли Смолин, «Неприятности с физикой» — контрточка про ландшафт 10⁵⁰⁰ и «а наука ли это».</div>
+          <div class="go">▸ к схеме</div>
+        </span>
+      </a>
+      <a class="card c7" href="inflation-bmodes.html" target="_blank" rel="noopener">
+        <span class="em">📖</span>
+        <span class="tx">
+          <div class="theme">🌊 Инфляционные B-моды</div>
+          <h3>«Инфляционная Вселенная»</h3>
+          <div class="by">Алан Гут · 1997 · The Inflationary Universe</div>
+          <p>Автор инфляции — о том, как родилась идея и что стало бы её «дымящимся пистолетом».</p>
+          <div class="alt"><b>Ещё:</b> история BICEP2 (2014) — громкое «открытие» B-мод, оказавшееся пылью.</div>
+          <div class="go">▸ к схеме</div>
+        </span>
+      </a>
+      <a class="card c7" href="anthropic-principle.html" target="_blank" rel="noopener">
+        <span class="em">📖</span>
+        <span class="tx">
+          <div class="theme">👁️ Антропный принцип</div>
+          <h3>«Всего шесть чисел»</h3>
+          <div class="by">Мартин Рис · 1999 · Just Six Numbers</div>
+          <p>Шесть тонко настроенных констант, без которых нет жизни, и развилка «замысел или отбор в мультивселенной».</p>
+          <div class="alt"><b>Ещё:</b> Пол Дэвис, «The Goldilocks Enigma» (рус. «Космический джекпот»).</div>
+          <div class="go">▸ к схеме</div>
+        </span>
+      </a>
+    </div>
+  </div>
+
+  <div class="close">
+    <p>Одна нить — от «куда нас тянет прямо сейчас» до тонкой настройки под жизнь. Схемы дают карту,
+    <b>эти книги и фильмы — дорогу вглубь</b>. Бери любую, с которой сильнее ёкнуло. 🌌</p>
+  </div>
+
+  <footer>
+    Карточки ведут к соседним схемам (открываются в новой вкладке).<br>
+    ▸ Вернуться к оглавлению: <a href="atlas-hub.html">atlas-hub.html</a>
+  </footer>
+</div>
+<script>
+(function(){
+  var cards = [].slice.call(document.querySelectorAll('.card'));
+  var chapters = [].slice.call(document.querySelectorAll('.chapter'));
+  var btns = [].slice.call(document.querySelectorAll('.fbtn'));
+  // тип берём из иконки карточки: 🎬 — фильм, иначе книга
+  cards.forEach(function(c){
+    var em = c.querySelector('.em');
+    c.setAttribute('data-type', em && em.textContent.indexOf('🎬') > -1 ? 'film' : 'book');
+  });
+  function apply(f){
+    cards.forEach(function(c){
+      c.style.display = (f === 'all' || c.getAttribute('data-type') === f) ? '' : 'none';
+    });
+    chapters.forEach(function(ch){ // главу без видимых карточек прячем целиком
+      var any = (f === 'all') || ch.querySelector('.card[data-type="' + f + '"]');
+      ch.style.display = any ? '' : 'none';
+    });
+    btns.forEach(function(b){
+      b.classList.toggle('on', b.getAttribute('data-f') === f);
+      b.setAttribute('aria-pressed', b.getAttribute('data-f') === f ? 'true' : 'false');
+    });
+  }
+  btns.forEach(function(b){
+    b.addEventListener('click', function(){ apply(b.getAttribute('data-f')); });
+  });
+})();
+</script>
+</body>
+</html>
