@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Холодное пятно</title>
+<style>
+  :root{
+    --bg:#06070d; --bg2:#0a0d18;
+    --panel:#111629; --panel2:#151b31;
+    --line:#242c49; --line2:#2f3960;
+    --text:#dce3f7; --muted:#8a93b6; --faint:#5b6488;
+    --gold:#ffd27d; --golddim:#5f5230;
+    --hot:#ff7a4d; --hotdeep:#ff5c72; --hotdim:#7d3140;
+    --cold:#5bc8e6; --colddim:#2c4a55;
+    --violet:#b48cff; --violetdim:#4a3a72;
+    --green:#7fe0a8; --greendim:#2f5c42;
+    --maxw:960px;
+    --mono:ui-monospace,"SF Mono","JetBrains Mono","Cascadia Code",Menlo,Consolas,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{ box-sizing:border-box; }
+  body{ background:var(--bg); color:var(--text); font-family:var(--sans);
+    line-height:1.55; -webkit-font-smoothing:antialiased; margin:0; }
+
+  .stars{ position:fixed; inset:0; z-index:0; pointer-events:none; background-color:var(--bg);
+    background-image:
+      radial-gradient(1.1px 1.1px at 24px 32px, rgba(255,255,255,.7), transparent),
+      radial-gradient(1px 1px at 96px 128px, rgba(214,226,255,.5), transparent),
+      radial-gradient(1.3px 1.3px at 160px 64px, rgba(255,255,255,.55), transparent),
+      radial-gradient(1px 1px at 56px 176px, rgba(190,205,255,.45), transparent);
+    background-repeat:repeat; background-size:230px 230px; animation:tw 10s ease-in-out infinite; }
+  .stars::after{ content:""; position:absolute; inset:0;
+    background:
+      radial-gradient(55% 40% at 22% 10%, rgba(91,200,230,.09), transparent 70%),
+      radial-gradient(50% 45% at 80% 55%, rgba(180,140,255,.06), transparent 70%); }
+  @keyframes tw{ 0%,100%{opacity:.85} 50%{opacity:1} }
+  @media (prefers-reduced-motion:reduce){ .stars{animation:none} }
+
+  .wrap{ position:relative; z-index:1; max-width:var(--maxw); margin:0 auto; padding:56px 24px 72px; }
+
+  .eyebrow{ font-family:var(--mono); font-size:12px; letter-spacing:.28em; text-transform:uppercase;
+    color:var(--cold); margin:0 0 14px; }
+  h1{ font-size:clamp(30px,6vw,54px); line-height:1.03; letter-spacing:-.025em; font-weight:800;
+    margin:0 0 16px; text-wrap:balance; }
+  h1 .q{ color:var(--cold); }
+  .lede{ font-size:clamp(15px,2.2vw,18px); color:var(--muted); max-width:64ch; margin:0; }
+  .lede b{ color:var(--text); }
+
+  .primer{ margin-top:26px; padding:16px 20px; border-radius:12px; border:1px solid var(--line);
+    background:var(--panel); color:var(--muted); font-size:14px; }
+  .primer b{ color:var(--text); }
+  .primer .lab{ font-family:var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--gold); display:block; margin-bottom:6px; }
+  .primer a{ color:var(--gold); text-decoration:none; border-bottom:1px dotted var(--golddim); }
+  .primer a:hover{ border-bottom-style:solid; }
+
+  .h2{ font-family:var(--mono); font-size:13px; letter-spacing:.18em; text-transform:uppercase;
+    color:var(--muted); margin:44px 0 6px; }
+  .h2.hot{ color:var(--hotdeep); } .h2.cold{ color:var(--cold); }
+  .h2 + .sub{ color:var(--muted); font-size:14.5px; margin:0 0 22px; max-width:66ch; }
+  .h2 + .sub b{ color:var(--text); }
+
+  .skycard{ padding:20px; border-radius:16px; border:1px solid var(--colddim);
+    background:linear-gradient(180deg,rgba(20,40,52,.35),var(--bg2)); overflow-x:auto; }
+  .skycard svg{ display:block; width:100%; min-width:520px; height:auto; }
+
+  .stats{ display:flex; gap:14px; flex-wrap:wrap; margin-top:16px; }
+  .stat{ flex:1; min-width:150px; padding:14px 18px; border-radius:12px; border:1px solid var(--line);
+    background:var(--panel); }
+  .stat .n{ font-family:var(--mono); font-size:22px; font-weight:800; letter-spacing:-.02em; }
+  .stat .l{ font-size:12px; color:var(--muted); margin-top:2px; }
+  .stat.a .n{ color:var(--cold); } .stat.b .n{ color:var(--violet); }
+  .stat.c .n{ color:var(--gold); } .stat.d .n{ color:var(--hotdeep); }
+
+  .anoms{ display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px; }
+  .anom{ padding:14px 16px; border-radius:12px; border:1px solid var(--line); background:var(--panel); }
+  .anom .t{ font-weight:700; font-size:14.5px; margin-bottom:3px; }
+  .anom p{ margin:0; font-size:13px; color:var(--muted); }
+
+  .voidcard{ padding:20px 20px 8px; border-radius:16px; border:1px solid var(--line);
+    background:linear-gradient(180deg,var(--panel),var(--bg2)); overflow-x:auto; }
+  .voidcard svg{ display:block; width:100%; min-width:520px; height:auto; }
+  ul.isw{ margin:14px 0 0; padding:0; list-style:none; display:grid; gap:10px; }
+  ul.isw li{ padding-left:24px; position:relative; font-size:14px; color:var(--text); }
+  ul.isw li::before{ content:"→"; position:absolute; left:0; color:var(--cold); font-family:var(--mono); }
+  ul.isw li b{ color:#fff; }
+  .catch{ margin-top:16px; padding:15px 17px; border-radius:12px; border:1px solid var(--golddim);
+    background:rgba(255,210,125,.06); font-size:13.5px; color:var(--muted); }
+  .catch b{ color:var(--gold); }
+
+  .exps{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; }
+  .exp{ padding:20px 20px; border-radius:16px; border:1px solid var(--line);
+    background:linear-gradient(180deg,var(--panel),var(--bg2)); }
+  .exp .flag{ font-family:var(--mono); font-size:10.5px; letter-spacing:.12em; text-transform:uppercase;
+    padding:3px 9px; border-radius:20px; display:inline-block; margin-bottom:11px; }
+  .exp h3{ margin:0 0 8px; font-size:17px; letter-spacing:-.01em; }
+  .exp p{ margin:0; font-size:13.5px; color:var(--muted); }
+  .exp p b{ color:var(--text); }
+  .exp a{ color:var(--violet); text-decoration:none; border-bottom:1px dotted var(--violetdim); }
+  .exp a:hover{ border-bottom-style:solid; }
+  .e1{ border-color:var(--greendim); } .e1 .flag{ color:var(--green);
+    background:rgba(127,224,168,.09); border:1px solid var(--greendim); }
+  .e2 .flag{ color:var(--gold); background:rgba(255,210,125,.09); border:1px solid var(--golddim); }
+  .e3{ border-color:var(--violetdim); } .e3 .flag{ color:var(--violet);
+    background:rgba(180,140,255,.09); border:1px solid var(--violetdim); }
+
+  .panel{ margin-top:26px; padding:24px 26px; border-radius:16px; border:1px solid var(--line2);
+    background:linear-gradient(180deg,var(--panel2),var(--bg2)); }
+  .panel .k{ font-family:var(--mono); font-size:11px; letter-spacing:.16em; text-transform:uppercase;
+    color:var(--cold); border:1px solid var(--colddim); background:rgba(91,200,230,.08);
+    padding:3px 10px; border-radius:20px; display:inline-block; margin-bottom:13px; }
+  .panel h3{ margin:0 0 12px; font-size:20px; letter-spacing:-.01em; }
+  ul.pts{ margin:0; padding:0; list-style:none; display:grid; gap:11px; }
+  ul.pts li{ padding-left:24px; position:relative; font-size:14.5px; color:var(--text); }
+  ul.pts li::before{ content:"→"; position:absolute; left:0; color:var(--cold); font-family:var(--mono); }
+  ul.pts li b{ color:#fff; }
+  .verdict{ margin-top:18px; padding:16px 18px; border-radius:12px; border:1px solid var(--colddim);
+    background:rgba(91,200,230,.07); font-size:14.5px; }
+  .verdict b{ color:var(--cold); }
+
+  footer{ margin-top:36px; color:var(--faint); font-size:12.5px; font-family:var(--mono);
+    line-height:1.7; text-align:center; }
+
+  @media (max-width:720px){ .exps{ grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<div class="stars"></div>
+
+<div class="wrap">
+  <p class="eyebrow">Аномалия реликтового излучения · открытая проблема</p>
+  <h1><span class="q">Холодное пятно</span>: слишком большое,<br>чтобы быть случайным?</h1>
+  <p class="lede">В южном небе, в созвездии Эридана, на карте реликтового излучения темнеет область —
+    <b>холоднее и крупнее</b>, чем спокойно позволяет теория. Шанс, что такое пятно нарисовалось само, —
+    порядка <b>1–2%</b>. А почти точно на луче зрения висит один из крупнейших известных «пузырей пустоты» —
+    и всё равно объясняет лишь малую часть.</p>
+
+  <div class="primer">
+    <span class="lab">на всякий случай — что за карта</span>
+    Реликтовое излучение — микроволновый фон с температурой <b>2,725 K</b>, отпущенный на волю через
+    ~380 000 лет после Большого взрыва. Его пятнышки чуть теплее и холоднее среднего (разница ~1 часть
+    на 100 000) — отпечаток первичных колебаний плотности, из которых выросли галактики. Подробный разбор
+    фона и его крупных узоров — в родственной схеме <a href="axis-of-evil.html">«Ось Зла»</a>.
+  </div>
+
+  <!-- SKY MAP -->
+  <p class="h2 cold">Шаг 1 · что нашли</p>
+  <p class="sub">В 2004 году, прогоняя карту WMAP через «увеличительные стёкла» разных размеров
+    (вейвлеты), испанская группа наткнулась на выброс: <b>одно пятно выбивалось из общей статистики</b>.
+    Карта ниже — схема, не настоящие данные.</p>
+
+  <div class="skycard">
+    <svg viewBox="0 0 620 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="310" cy="150" rx="290" ry="140" fill="#0b1020" stroke="#2f3960"/>
+      <!-- ordinary blobs -->
+      <circle cx="120" cy="86" r="14" fill="rgba(255,122,77,.16)"/>
+      <circle cx="182" cy="62" r="10" fill="rgba(91,200,230,.16)"/>
+      <circle cx="252" cy="72" r="16" fill="rgba(255,122,77,.14)"/>
+      <circle cx="332" cy="56" r="12" fill="rgba(91,200,230,.15)"/>
+      <circle cx="412" cy="76" r="15" fill="rgba(255,122,77,.15)"/>
+      <circle cx="482" cy="96" r="11" fill="rgba(91,200,230,.16)"/>
+      <circle cx="522" cy="142" r="14" fill="rgba(255,122,77,.13)"/>
+      <circle cx="92"  cy="142" r="12" fill="rgba(91,200,230,.15)"/>
+      <circle cx="152" cy="172" r="15" fill="rgba(255,122,77,.14)"/>
+      <circle cx="222" cy="122" r="11" fill="rgba(91,200,230,.15)"/>
+      <circle cx="302" cy="142" r="18" fill="rgba(255,122,77,.12)"/>
+      <circle cx="382" cy="122" r="10" fill="rgba(91,200,230,.16)"/>
+      <circle cx="452" cy="162" r="13" fill="rgba(255,122,77,.14)"/>
+      <circle cx="252" cy="202" r="12" fill="rgba(91,200,230,.15)"/>
+      <circle cx="322" cy="222" r="14" fill="rgba(255,122,77,.13)"/>
+      <circle cx="162" cy="222" r="10" fill="rgba(91,200,230,.15)"/>
+      <circle cx="520" cy="200" r="10" fill="rgba(91,200,230,.14)"/>
+      <circle cx="368" cy="238" r="9"  fill="rgba(255,122,77,.13)"/>
+      <circle cx="102" cy="190" r="9"  fill="rgba(255,122,77,.13)"/>
+      <circle cx="556" cy="122" r="9"  fill="rgba(91,200,230,.15)"/>
+      <!-- the cold spot -->
+      <circle cx="430" cy="213" r="18" fill="rgba(43,150,185,.55)"/>
+      <circle cx="430" cy="213" r="9"  fill="rgba(24,104,136,.85)"/>
+      <circle cx="430" cy="213" r="30" stroke="#5bc8e6" stroke-dasharray="4 4"/>
+      <line x1="455" y1="232" x2="500" y2="254" stroke="#5bc8e6" opacity=".7"/>
+      <text x="504" y="258" fill="#5bc8e6" font-family="ui-monospace,monospace" font-size="10">Холодное пятно</text>
+      <text x="504" y="272" fill="#5b6488" font-family="ui-monospace,monospace" font-size="9">созвездие Эридана</text>
+      <text x="310" y="292" fill="#5b6488" font-family="ui-monospace,monospace" font-size="9" text-anchor="middle">карта неба (схема) · обычные пятна — и одно слишком большое и холодное</text>
+    </svg>
+  </div>
+
+  <div class="stats">
+    <div class="stat a"><div class="n">~10°</div><div class="l">поперечник — примерно 20 дисков Луны</div></div>
+    <div class="stat b"><div class="n">−70 мкК</div><div class="l">холоднее среднего; в сердцевине — до −140</div></div>
+    <div class="stat c"><div class="n">~1–2%</div><div class="l">шанс получить такое пятно случайно</div></div>
+    <div class="stat d"><div class="n">2004</div><div class="l">найдено в данных WMAP; Planck подтвердил</div></div>
+  </div>
+
+  <!-- WHY ODD -->
+  <p class="h2">Шаг 2 · почему это странно</p>
+  <p class="sub">Холодных пятен на карте много — на то они и случайные флуктуации. Подозрительно другое.</p>
+  <div class="anoms">
+    <div class="anom"><div class="t">Сочетание размера и глубины</div>
+      <p>Просто холодное или просто большое — обычное дело. Такое большое <b>и</b> глубокое разом случайный узор почти не рождает.</p></div>
+    <div class="anom"><div class="t">Странный профиль</div>
+      <p>Холодная сердцевина окружена чуть <b>тёплым кольцом</b>. Для случайной флуктуации — необычно; именно профиль питает экзотические версии.</p></div>
+    <div class="anom"><div class="t">Найдено задним числом</div>
+      <p>Искали «что-нибудь странное» по всей карте — при таком поиске где-то обязательно «повезёт». Значимость из-за этого размывается.</p></div>
+    <div class="anom"><div class="t">Это не глюк прибора</div>
+      <p>WMAP и Planck — разная техника, разные помехи — видят пятно одинаково. Реальность самой отметины не оспаривается.</p></div>
+  </div>
+
+  <!-- SUPERVOID -->
+  <p class="h2 hot">Главный подозреваемый · супервойд Эридана</p>
+  <p class="sub">В 2015 году на луче зрения к пятну нашли <b>супервойд</b> — область пониженной плотности
+    поперечником ~1,8 млрд световых лет, одну из крупнейших известных структур. Она может «остужать»
+    пролетающий свет — это эффект Сакса–Вольфа.</p>
+
+  <div class="voidcard">
+    <svg viewBox="0 0 620 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="ph" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="#ffd27d"/><stop offset="1" stop-color="#ff5c72"/>
+        </linearGradient>
+      </defs>
+      <circle cx="310" cy="100" r="72" stroke="#5b6488" stroke-dasharray="6 6" fill="rgba(17,22,41,.5)"/>
+      <line x1="30" y1="100" x2="576" y2="100" stroke="url(#ph)" stroke-width="2.5"/>
+      <path d="M576,100 l-10,-5 l0,10 z" fill="#ff5c72"/>
+      <circle cx="30" cy="100" r="4" fill="#ffd27d"/>
+      <text x="30" y="84" fill="#ffd27d" font-family="ui-monospace,monospace" font-size="10">фотон реликта</text>
+      <text x="310" y="100" fill="#8a93b6" font-family="ui-monospace,monospace" font-size="10" text-anchor="middle" dy="-24">супервойд · ~1,8 млрд св. лет</text>
+      <text x="238" y="128" fill="#8a93b6" font-family="ui-monospace,monospace" font-size="9">влетел →</text>
+      <text x="330" y="128" fill="#8a93b6" font-family="ui-monospace,monospace" font-size="9">← выбрался</text>
+      <text x="470" y="84" fill="#ff5c72" font-family="ui-monospace,monospace" font-size="10">−ΔE · чуть «холоднее»</text>
+      <text x="310" y="190" fill="#5b6488" font-family="ui-monospace,monospace" font-size="9" text-anchor="middle">пока фотон летит сквозь войд (сотни млн лет), тёмная энергия успевает изменить его «рельеф»</text>
+    </svg>
+    <ul class="isw">
+      <li><b>Войд — это «холм»</b> гравитационного рельефа: влетая, фотон взбирается на него и теряет энергию.</li>
+      <li><b>Пока фотон внутри</b>, ускоренное расширение «подтачивает» холм — тот становится ниже.</li>
+      <li><b>Скатываясь с осевшего холма</b>, фотон возвращает меньше, чем потратил на подъём, — и выходит чуть «холоднее». На карте остаётся прохладный след.</li>
+    </ul>
+    <div class="catch">⚖️ <b>Улика не сходится:</b> в стандартной ΛCDM даже такой войд даёт лишь
+      <b>~10–20 мкК</b> охлаждения — в несколько раз меньше наблюдаемого. Данные обзора DES (2022) намекают,
+      что следы войдов вообще сильнее предсказанных — но это спорный результат; будь он верен, вопросы
+      появились бы не только к пятну.</div>
+  </div>
+
+  <!-- EXPLANATIONS -->
+  <p class="h2">Три версии — почему так</p>
+  <p class="sub">Само пятно есть в данных — спорят о том, <b>насколько оно удивительно</b> и что его сделало.</p>
+  <div class="exps">
+    <div class="exp e1">
+      <span class="flag">ведущая · «скучная»</span>
+      <h3>Редкая, но допустимая случайность</h3>
+      <p>1–2% — неприятно мало, но не невозможно; а с поправкой «искали по всему небу» — и вовсе
+        терпимо. Большинство склоняется сюда: <b>просто не повезло</b>, супервойд лишь добавил глубины.</p>
+    </div>
+    <div class="exp e2">
+      <span class="flag">работает частично</span>
+      <h3>Супервойд + эффект Сакса–Вольфа</h3>
+      <p>Войд реален и что-то даёт. Но чтобы объяснить пятно <b>целиком</b>, нужен либо войд ещё крупнее,
+        либо нестандартная гравитация или тёмная энергия — а это уже отдельная революция.</p>
+    </div>
+    <div class="exp e3">
+      <span class="flag">заманчивая · маловероятная</span>
+      <h3>Новая физика</h3>
+      <p><b>Космическая текстура</b> — «узел», оставшийся от фазовых переходов ранней Вселенной, — или
+        даже след столкновения с другим <a href="multiverse.html">«пузырём» мультивселенной</a>.
+        Убедительных подтверждений Planck не нашёл, но профиль пятна такие модели описывают хорошо.</p>
+    </div>
+  </div>
+
+  <!-- RESOLVE -->
+  <div class="panel">
+    <span class="k">почему до сих пор не решено · и как решат</span>
+    <h3>Нужен способ отличить «раннее» пятно от «позднего»</h3>
+    <ul class="pts">
+      <li><b>Поляризация — решающий тест.</b> Поздний эффект войда почти не трогает поляризацию реликта,
+        а первичная флуктуация несёт свой поляризационный узор. Увидеть его в области пятна — задача
+        миссий уровня LiteBIRD и CMB-S4.</li>
+      <li><b>Прощупать войд глубже.</b> Обзоры красных смещений (DESI и следующие) уточняют форму и глубину
+        супервойда Эридана — от этого напрямую зависит его вклад.</li>
+      <li><b>Стек по тысячам войдов.</b> Если средний след войдов систематически сильнее ΛCDM, история
+        перестаёт быть локальной странностью и становится проблемой роста структуры.</li>
+    </ul>
+    <div class="verdict"><b>Честный итог:</b> скорее всего — редкая флуктуация, которой супервойд добавил
+      немного глубины. Но профиль странный, арифметика войда не сходится, а экзотика не исключена — поэтому
+      Холодное пятно остаётся открытой загадкой, а не закрытым делом.</div>
+  </div>
+
+  <footer>
+    Найдено в данных WMAP: Vielva и др., 2004; Cruz и др., 2005. Супервойд Эридана: Szapudi и др., 2015.<br>
+    Следы войдов в DES: Kovács и др., 2022. Текстура: Cruz, Turok и др., 2007. Карта и кривые — схемы; цифры округлены, статусы — на 2026 год.
+  </footer>
+</div>
+</body>
+</html>
