@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Космические магнитные поля</title>
+<style>
+  :root{
+    --bg:#06070d; --bg2:#0a0d18;
+    --panel:#111629; --panel2:#151b31;
+    --line:#242c49; --line2:#2f3960;
+    --text:#dce3f7; --muted:#8a93b6; --faint:#5b6488;
+    --gold:#ffd27d; --golddim:#5f5230;
+    --hot:#ff7a4d; --hotdeep:#ff5c72; --hotdim:#7d3140;
+    --cold:#5bc8e6; --colddim:#2c4a55;
+    --violet:#b48cff; --violetdim:#4a3a72;
+    --green:#7fe0a8; --greendim:#2f5c42;
+    --maxw:960px;
+    --mono:ui-monospace,"SF Mono","JetBrains Mono","Cascadia Code",Menlo,Consolas,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{ box-sizing:border-box; }
+  body{ background:var(--bg); color:var(--text); font-family:var(--sans);
+    line-height:1.55; -webkit-font-smoothing:antialiased; margin:0; }
+
+  .stars{ position:fixed; inset:0; z-index:0; pointer-events:none; background-color:var(--bg);
+    background-image:
+      radial-gradient(1.1px 1.1px at 24px 32px, rgba(255,255,255,.7), transparent),
+      radial-gradient(1px 1px at 96px 128px, rgba(214,226,255,.5), transparent),
+      radial-gradient(1.3px 1.3px at 160px 64px, rgba(255,255,255,.55), transparent),
+      radial-gradient(1px 1px at 56px 176px, rgba(190,205,255,.45), transparent);
+    background-repeat:repeat; background-size:230px 230px; animation:tw 10s ease-in-out infinite; }
+  .stars::after{ content:""; position:absolute; inset:0;
+    background:
+      radial-gradient(55% 40% at 18% 10%, rgba(91,200,230,.09), transparent 70%),
+      radial-gradient(50% 45% at 82% 55%, rgba(127,224,168,.06), transparent 70%); }
+  @keyframes tw{ 0%,100%{opacity:.85} 50%{opacity:1} }
+  @media (prefers-reduced-motion:reduce){ .stars{animation:none} }
+
+  .wrap{ position:relative; z-index:1; max-width:var(--maxw); margin:0 auto; padding:56px 24px 72px; }
+
+  .eyebrow{ font-family:var(--mono); font-size:12px; letter-spacing:.28em; text-transform:uppercase;
+    color:var(--cold); margin:0 0 14px; }
+  h1{ font-size:clamp(30px,6vw,54px); line-height:1.03; letter-spacing:-.025em; font-weight:800;
+    margin:0 0 16px; text-wrap:balance; }
+  h1 .q{ color:var(--cold); }
+  .lede{ font-size:clamp(15px,2.2vw,18px); color:var(--muted); max-width:64ch; margin:0; }
+  .lede b{ color:var(--text); }
+
+  .primer{ margin-top:26px; padding:16px 20px; border-radius:12px; border:1px solid var(--line);
+    background:var(--panel); color:var(--muted); font-size:14px; }
+  .primer b{ color:var(--text); }
+  .primer .lab{ font-family:var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--gold); display:block; margin-bottom:6px; }
+
+  .h2{ font-family:var(--mono); font-size:13px; letter-spacing:.18em; text-transform:uppercase;
+    color:var(--muted); margin:44px 0 6px; }
+  .h2.co{ color:var(--cold); } .h2.hot{ color:var(--hotdeep); }
+  .h2 + .sub{ color:var(--muted); font-size:14.5px; margin:0 0 22px; max-width:66ch; }
+  .h2 + .sub b{ color:var(--text); }
+
+  /* field ladder */
+  .lad{ display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:12px; }
+  .lv{ padding:15px 16px; border-radius:14px; border:1px solid var(--line);
+    background:linear-gradient(180deg,var(--panel),var(--bg2)); }
+  .lv .n{ font-family:var(--mono); font-size:17px; font-weight:800; color:var(--cold); }
+  .lv .t{ font-weight:700; font-size:14px; margin:4px 0 3px; }
+  .lv p{ margin:0; font-size:12.3px; color:var(--muted); }
+  .lv.voidb{ border-color:var(--colddim); background:linear-gradient(180deg,rgba(20,40,52,.4),var(--bg2)); }
+  .lv.voidb .n{ color:var(--hotdeep); }
+
+  .figcard{ padding:20px; border-radius:16px; border:1px solid var(--colddim);
+    background:linear-gradient(180deg,rgba(20,40,52,.32),var(--bg2)); overflow-x:auto; }
+  .figcard svg{ display:block; width:100%; min-width:520px; height:auto; }
+
+  .catch{ margin-top:16px; padding:15px 17px; border-radius:12px; border:1px solid var(--golddim);
+    background:rgba(255,210,125,.06); font-size:13.5px; color:var(--muted); }
+  .catch b{ color:var(--gold); }
+
+  .exps{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; }
+  .exp{ padding:20px 20px; border-radius:16px; border:1px solid var(--line);
+    background:linear-gradient(180deg,var(--panel),var(--bg2)); }
+  .exp .flag{ font-family:var(--mono); font-size:10.5px; letter-spacing:.12em; text-transform:uppercase;
+    padding:3px 9px; border-radius:20px; display:inline-block; margin-bottom:11px; }
+  .exp h3{ margin:0 0 8px; font-size:17px; letter-spacing:-.01em; }
+  .exp p{ margin:0; font-size:13.5px; color:var(--muted); }
+  .exp p b{ color:var(--text); }
+  .exp a{ color:var(--cold); text-decoration:none; border-bottom:1px dotted var(--colddim); }
+  .exp a:hover{ border-bottom-style:solid; }
+  .x1 .flag{ color:var(--green); background:rgba(127,224,168,.09); border:1px solid var(--greendim); }
+  .x2 .flag{ color:var(--violet); background:rgba(180,140,255,.09); border:1px solid var(--violetdim); }
+  .x3 .flag{ color:var(--gold); background:rgba(255,210,125,.09); border:1px solid var(--golddim); }
+
+  .panel{ margin-top:26px; padding:24px 26px; border-radius:16px; border:1px solid var(--line2);
+    background:linear-gradient(180deg,var(--panel2),var(--bg2)); }
+  .panel .k{ font-family:var(--mono); font-size:11px; letter-spacing:.16em; text-transform:uppercase;
+    color:var(--cold); border:1px solid var(--colddim); background:rgba(91,200,230,.08);
+    padding:3px 10px; border-radius:20px; display:inline-block; margin-bottom:13px; }
+  .panel h3{ margin:0 0 12px; font-size:20px; letter-spacing:-.01em; }
+  ul.pts{ margin:0; padding:0; list-style:none; display:grid; gap:11px; }
+  ul.pts li{ padding-left:24px; position:relative; font-size:14.5px; color:var(--text); }
+  ul.pts li::before{ content:"→"; position:absolute; left:0; color:var(--cold); font-family:var(--mono); }
+  ul.pts li b{ color:#fff; }
+  ul.pts a{ color:var(--cold); text-decoration:none; border-bottom:1px dotted var(--colddim); }
+  ul.pts a:hover{ border-bottom-style:solid; }
+  .verdict{ margin-top:18px; padding:16px 18px; border-radius:12px; border:1px solid var(--colddim);
+    background:rgba(91,200,230,.07); font-size:14.5px; }
+  .verdict b{ color:var(--cold); }
+
+  footer{ margin-top:36px; color:var(--faint); font-size:12.5px; font-family:var(--mono);
+    line-height:1.7; text-align:center; }
+
+  @media (max-width:720px){ .exps{ grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<div class="stars"></div>
+
+<div class="wrap">
+  <p class="eyebrow">Астрофизика · открытая проблема</p>
+  <h1><span class="q">Магнитные поля космоса</span>:<br>сила без свидетельства о рождении</h1>
+  <p class="lede">Магнитное поле есть у Земли, у Солнца, у всей Галактики и у скоплений галактик —
+    и, похоже, даже у <b>пустоты между ними</b>. Беда в том, что физика умеет объяснять, как поля
+    <b>усиливать</b>, но не знает, откуда взялась <b>первая «искра»</b>. У самой вездесущей силы
+    неба нет свидетельства о рождении.</p>
+
+  <div class="primer">
+    <span class="lab">на всякий случай — чем меряют</span>
+    Поле меряют в <b>гауссах</b>: у Земли — примерно 0,5 Гс, у сувенирного магнита на холодильнике —
+    около 100 Гс. Поле Млечного Пути в сотню тысяч раз слабее земного (~10⁻⁵ Гс) — но оно
+    <b>упорядочено на тысячи световых лет</b>: крошечная сила, зато согласованная на гигантских
+    масштабах. В этом и загвоздка.
+  </div>
+
+  <!-- LADDER -->
+  <p class="h2 co">Шаг 1 · поле находится везде, куда ни посмотри</p>
+  <p class="sub">Каждую ступень открывали заново и с удивлением. Последняя — самая странная:
+    поля нашлись там, где им, казалось бы, неоткуда взяться.</p>
+
+  <div class="lad">
+    <div class="lv"><div class="n">~0,5 Гс</div><div class="t">Земля</div>
+      <p>Первый «космический» магнит: Уильям Гильберт, трактат «О магните», 1600 год.</p></div>
+    <div class="lv"><div class="n">~1000 Гс</div><div class="t">Пятна Солнца</div>
+      <p>Первое поле вне Земли: Джордж Хейл по расщеплению линий, 1908.</p></div>
+    <div class="lv"><div class="n">~10⁻⁵ Гс</div><div class="t">Млечный Путь</div>
+      <p>Выдало себя поляризацией света звёзд: Хилтнер и Холл, 1949.</p></div>
+    <div class="lv"><div class="n">~10⁻⁶ Гс</div><div class="t">Скопления галактик</div>
+      <p>Радиогало и фарадеевское вращение: поле живёт и между галактиками.</p></div>
+    <div class="lv voidb"><div class="n">≥10⁻¹⁶ Гс</div><div class="t">Войды (!)</div>
+      <p>Нижний предел по гамма-лучам блазаров: Неронов и Вовк, 2010. Поле есть даже в пустоте.</p></div>
+  </div>
+
+  <!-- CHICKEN AND EGG -->
+  <p class="h2">Шаг 2 · проблема курицы и яйца</p>
+  <p class="sub">Как галактика держит поле, известно: работает <b>динамо</b> — вращение и турбулентность
+    плазмы наматывают и усиливают поле (идея восходит к Лармору, 1919; теория — Паркер, 1955).
+    Но у динамо есть врождённое ограничение.</p>
+
+  <div class="figcard">
+    <svg viewBox="0 0 620 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <line x1="50" y1="160" x2="590" y2="160" stroke="#242c49"/>
+      <line x1="50" y1="160" x2="50" y2="24" stroke="#242c49"/>
+      <path d="M60,152 C180,146 300,120 380,80 C440,50 500,38 570,34" stroke="#5bc8e6" stroke-width="3" fill="none"/>
+      <circle cx="60" cy="152" r="5" fill="#ffd27d" stroke="#06070d" stroke-width="1.5"/>
+      <text x="72" y="140" fill="#ffd27d" font-family="ui-monospace,monospace" font-size="10">затравка ~10⁻²⁰…10⁻¹⁰ Гс — откуда?</text>
+      <text x="410" y="120" fill="#5bc8e6" font-family="ui-monospace,monospace" font-size="10">динамо: каждый оборот усиливает</text>
+      <text x="560" y="26" fill="#5bc8e6" font-family="ui-monospace,monospace" font-size="10" text-anchor="end">сегодня: ~10⁻⁵ Гс</text>
+      <text x="320" y="186" fill="#5b6488" font-family="ui-monospace,monospace" font-size="9" text-anchor="middle">миллиарды лет →</text>
+      <text x="30" y="92" fill="#5b6488" font-family="ui-monospace,monospace" font-size="10" transform="rotate(-90 30 92)">поле (лог)</text>
+    </svg>
+  </div>
+
+  <div class="catch">⚖️ <b>Ограничение динамо:</b> это умножитель, а не источник — ноль, умноженный на что
+    угодно, остаётся нулём. Значит, до всякого динамо во Вселенной уже должно было существовать хоть
+    какое-то <b>затравочное поле</b>. Его происхождение — и есть открытая проблема
+    (её называют «магнетогенезом»).</div>
+
+  <!-- VOID CLUE -->
+  <p class="h2 hot">Улика из пустоты</p>
+  <p class="sub">Гамма-лучи далёких блазаров по дороге к нам должны рождать вторичное свечение — а оно
+    <b>не приходит</b>. Самое простое объяснение: слабое магнитное поле в войдах отклоняет заряженные
+    частицы каскада и «размазывает» свечение. Если так, поле пронизывает даже пустоты, куда галактики
+    почти ничего «не надышали», — сильный намёк, что затравка <b>старше галактик</b>.</p>
+
+  <!-- EXPLANATIONS -->
+  <p class="h2">Три версии — откуда первая «искра»</p>
+  <p class="sub">Для галактик хватило бы крошечной затравки — динамо доделает остальное.
+    Спор о том, где она чиркнула.</p>
+  <div class="exps">
+    <div class="exp x1">
+      <span class="flag">ведущая для галактик</span>
+      <h3>Батарея Бирмана + выдохи</h3>
+      <p>В закрученной неоднородной плазме электроны и ионы разделяются — и сами рождают слабое поле
+        (батарея Бирмана, 1950): затравка ~10⁻²⁰ Гс из ничего, честной физикой. Дальше динамо, а ветра
+        и джеты галактик «выдыхают» поля наружу. Слабое место: дотянутся ли выдохи до глубины войдов.</p>
+    </div>
+    <div class="exp x2">
+      <span class="flag">громкая · реликтовая</span>
+      <h3>Родом из инфляции</h3>
+      <p>Поле растянулось из квантовых флуктуаций при <a href="origin-and-summit.html">инфляции</a> — тогда
+        оно с рождения пронизывает всё, включая войды. Проблема: у электромагнетизма для этого «неудобная»
+        симметрия, её надо нарушать новой физикой (Тёрнер и Уидроу, 1988).</p>
+    </div>
+    <div class="exp x3">
+      <span class="flag">тоже реликтовая</span>
+      <h3>Фазовые переходы</h3>
+      <p>«Вскипание» вакуума в первые мгновения — электрослабый или кварковый переход — могло оставить
+        клубки полей. Красиво связывается со <a href="leptogenesis.html">рождением вещества</a>: спиральность
+        поля хранила бы след той же асимметрии. Но масштаб таких полей мал — нужен «обратный каскад».</p>
+    </div>
+  </div>
+
+  <!-- RESOLVE -->
+  <div class="panel">
+    <span class="k">почему до сих пор не решено · и как решат</span>
+    <h3>Нужна карта полей там, где нет галактик</h3>
+    <ul class="pts">
+      <li><b>Фарадеевская решётка всего неба.</b> Радиотелескоп SKA промерит вращение поляризации у миллионов
+        источников — впервые появится настоящая 3D-карта магнитной Вселенной, от галактик до нитей паутины.</li>
+      <li><b>Гамма-гало блазаров.</b> Черенковская решётка CTA либо увидит предсказанные «размазанные» гало
+        и измерит войдовые поля, либо загонит их в узкую вилку. Это прямой тест улики 2010 года.</li>
+      <li><b>Потолок из реликта.</b> Слишком сильные первичные поля исказили бы реликтовое излучение —
+        Planck уже поставил верхний предел (порядка миллиардной доли гаусса). Затравка живёт в вилке
+        между 10⁻¹⁶ и 10⁻⁹ Гс.</li>
+      <li><b>Спиральность как подпись.</b> У реликтового поля из фазового перехода была бы «закрученность»,
+        которую ищут в данных гамма-телескопов, — отпечаток физики первых мгновений.</li>
+    </ul>
+    <div class="verdict"><b>Честный итог:</b> как поле раскрутилось до нынешнего — понятно (динамо);
+      непонятно, кто его «чиркнул» и почему оно есть даже в пустоте. Если войдовые поля подтвердятся
+      как реликтовые — это будет привет из первой секунды Вселенной, записанный прямо в небе.</div>
+  </div>
+
+  <footer>
+    «О магните»: Гильберт, 1600 · поле пятен Солнца: Хейл, 1908 · динамо: Лармор 1919, Паркер 1955 · батарея: Бирман, 1950<br>
+    поле Галактики: Хилтнер и Холл, 1949 · инфляционный магнетогенез: Тёрнер и Уидроу, 1988 · предел войдов: Неронов и Вовк, 2010 · верхний предел: Planck, 2015.<br>
+    Величины округлены до порядков; кривая роста схематична. Тёмная тема — намеренно.
+  </footer>
+</div>
+</body>
+</html>
