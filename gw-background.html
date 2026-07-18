@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Гул гравитационных волн</title>
+<style>
+  :root{
+    --bg:#06070d; --bg2:#0a0d18;
+    --panel:#111629; --panel2:#151b31;
+    --line:#242c49; --line2:#2f3960;
+    --text:#dce3f7; --muted:#8a93b6; --faint:#5b6488;
+    --gold:#ffd27d; --golddim:#5f5230;
+    --hot:#ff7a4d; --hotdeep:#ff5c72; --hotdim:#7d3140;
+    --cold:#5bc8e6; --colddim:#2c4a55;
+    --violet:#b48cff; --violetdim:#4a3a72;
+    --green:#7fe0a8; --greendim:#2f5c42;
+    --maxw:960px;
+    --mono:ui-monospace,"SF Mono","JetBrains Mono","Cascadia Code",Menlo,Consolas,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{ box-sizing:border-box; }
+  body{ background:var(--bg); color:var(--text); font-family:var(--sans);
+    line-height:1.55; -webkit-font-smoothing:antialiased; margin:0; }
+
+  .stars{ position:fixed; inset:0; z-index:0; pointer-events:none; background-color:var(--bg);
+    background-image:
+      radial-gradient(1.1px 1.1px at 24px 32px, rgba(255,255,255,.7), transparent),
+      radial-gradient(1px 1px at 96px 128px, rgba(214,226,255,.5), transparent),
+      radial-gradient(1.3px 1.3px at 160px 64px, rgba(255,255,255,.55), transparent),
+      radial-gradient(1px 1px at 56px 176px, rgba(190,205,255,.45), transparent);
+    background-repeat:repeat; background-size:230px 230px; animation:tw 10s ease-in-out infinite; }
+  .stars::after{ content:""; position:absolute; inset:0;
+    background:
+      radial-gradient(55% 40% at 22% 10%, rgba(91,200,230,.08), transparent 70%),
+      radial-gradient(50% 45% at 80% 55%, rgba(180,140,255,.07), transparent 70%); }
+  @keyframes tw{ 0%,100%{opacity:.85} 50%{opacity:1} }
+  @media (prefers-reduced-motion:reduce){ .stars{animation:none} }
+
+  .wrap{ position:relative; z-index:1; max-width:var(--maxw); margin:0 auto; padding:56px 24px 72px; }
+
+  .eyebrow{ font-family:var(--mono); font-size:12px; letter-spacing:.28em; text-transform:uppercase;
+    color:var(--cold); margin:0 0 14px; }
+  h1{ font-size:clamp(30px,6vw,54px); line-height:1.03; letter-spacing:-.025em; font-weight:800;
+    margin:0 0 16px; text-wrap:balance; }
+  h1 .q{ color:var(--cold); }
+  .lede{ font-size:clamp(15px,2.2vw,18px); color:var(--muted); max-width:64ch; margin:0; }
+  .lede b{ color:var(--text); }
+
+  .primer{ margin-top:26px; padding:16px 20px; border-radius:12px; border:1px solid var(--line);
+    background:var(--panel); color:var(--muted); font-size:14px; }
+  .primer b{ color:var(--text); }
+  .primer .lab{ font-family:var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--gold); display:block; margin-bottom:6px; }
+
+  .h2{ font-family:var(--mono); font-size:13px; letter-spacing:.18em; text-transform:uppercase;
+    color:var(--muted); margin:44px 0 6px; }
+  .h2.co{ color:var(--cold); } .h2.hot{ color:var(--hotdeep); }
+  .h2 + .sub{ color:var(--muted); font-size:14.5px; margin:0 0 22px; max-width:66ch; }
+  .h2 + .sub b{ color:var(--text); }
+
+  .figcard{ padding:20px; border-radius:16px; border:1px solid var(--colddim);
+    background:linear-gradient(180deg,rgba(20,40,52,.32),var(--bg2)); overflow-x:auto; }
+  .figcard svg{ display:block; width:100%; min-width:520px; height:auto; }
+
+  .stats{ display:flex; gap:14px; flex-wrap:wrap; margin-top:16px; }
+  .stat{ flex:1; min-width:150px; padding:14px 18px; border-radius:12px; border:1px solid var(--line);
+    background:var(--panel); }
+  .stat .n{ font-family:var(--mono); font-size:20px; font-weight:800; letter-spacing:-.02em; }
+  .stat .l{ font-size:12px; color:var(--muted); margin-top:2px; }
+  .stat.a .n{ color:var(--cold); } .stat.b .n{ color:var(--gold); }
+  .stat.c .n{ color:var(--violet); } .stat.d .n{ color:var(--green); }
+
+  .exps{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; }
+  .exp{ padding:20px 20px; border-radius:16px; border:1px solid var(--line);
+    background:linear-gradient(180deg,var(--panel),var(--bg2)); }
+  .exp .flag{ font-family:var(--mono); font-size:10.5px; letter-spacing:.12em; text-transform:uppercase;
+    padding:3px 9px; border-radius:20px; display:inline-block; margin-bottom:11px; }
+  .exp h3{ margin:0 0 8px; font-size:17px; letter-spacing:-.01em; }
+  .exp p{ margin:0; font-size:13.5px; color:var(--muted); }
+  .exp p b{ color:var(--text); }
+  .exp a{ color:var(--cold); text-decoration:none; border-bottom:1px dotted var(--colddim); }
+  .exp a:hover{ border-bottom-style:solid; }
+  .x1 .flag{ color:var(--green); background:rgba(127,224,168,.09); border:1px solid var(--greendim); }
+  .x2 .flag{ color:var(--violet); background:rgba(180,140,255,.09); border:1px solid var(--violetdim); }
+  .x3 .flag{ color:var(--gold); background:rgba(255,210,125,.09); border:1px solid var(--golddim); }
+
+  .panel{ margin-top:26px; padding:24px 26px; border-radius:16px; border:1px solid var(--line2);
+    background:linear-gradient(180deg,var(--panel2),var(--bg2)); }
+  .panel .k{ font-family:var(--mono); font-size:11px; letter-spacing:.16em; text-transform:uppercase;
+    color:var(--cold); border:1px solid var(--colddim); background:rgba(91,200,230,.08);
+    padding:3px 10px; border-radius:20px; display:inline-block; margin-bottom:13px; }
+  .panel h3{ margin:0 0 12px; font-size:20px; letter-spacing:-.01em; }
+  ul.pts{ margin:0; padding:0; list-style:none; display:grid; gap:11px; }
+  ul.pts li{ padding-left:24px; position:relative; font-size:14.5px; color:var(--text); }
+  ul.pts li::before{ content:"→"; position:absolute; left:0; color:var(--cold); font-family:var(--mono); }
+  ul.pts li b{ color:#fff; }
+  ul.pts a{ color:var(--cold); text-decoration:none; border-bottom:1px dotted var(--colddim); }
+  ul.pts a:hover{ border-bottom-style:solid; }
+  .verdict{ margin-top:18px; padding:16px 18px; border-radius:12px; border:1px solid var(--colddim);
+    background:rgba(91,200,230,.07); font-size:14.5px; }
+  .verdict b{ color:var(--cold); }
+
+  footer{ margin-top:36px; color:var(--faint); font-size:12.5px; font-family:var(--mono);
+    line-height:1.7; text-align:center; }
+
+  @media (max-width:720px){ .exps{ grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<div class="stars"></div>
+
+<div class="wrap">
+  <p class="eyebrow">Гравитационные волны · загадка источника</p>
+  <h1><span class="q">Гул Вселенной</span>: фон<br>гравитационных волн</h1>
+  <p class="lede">В июне 2023 года несколько коллабораций разом объявили: пространство-время
+    <b>постоянно дрожит</b> — Вселенную заполняет фон гравитационных волн длиной в световые годы.
+    Антенной размером с Галактику послужили пульсары. Осталась «мелочь»: понять, <b>что гудит</b>.</p>
+
+  <div class="primer">
+    <span class="lab">на всякий случай — что за волны</span>
+    Гравитационные волны — рябь самого пространства-времени, предсказанная Эйнштейном в 1916 году.
+    Детекторы LIGO ловят с 2015-го <b>короткие всплески</b> от слияний чёрных дыр звёздных масс.
+    Здесь речь о другом: о <b>непрерывном гуле</b> со всех сторон сразу — как шум прибоя вместо
+    отдельных волн, — на периодах в <b>годы и десятилетия</b>.
+  </div>
+
+  <!-- HOW -->
+  <p class="h2 co">Шаг 1 · антенна размером с галактику</p>
+  <p class="sub">Миллисекундные пульсары — мёртвые звёзды-маяки, тикающие стабильнее атомных часов.
+    Гравитационная волна, проходя между пульсаром и Землёй, чуть растягивает и сжимает расстояние —
+    тики приходят то раньше, то позже. Одна «сбитая» задержка — шум; но фон ГВ сбивает часы
+    <b>согласованно по всему небу</b>.</p>
+
+  <div class="figcard">
+    <svg viewBox="0 0 620 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="310" cy="110" r="6" fill="#ffd27d"/>
+      <text x="310" y="132" fill="#ffd27d" font-family="ui-monospace,monospace" font-size="9" text-anchor="middle">Земля</text>
+      <g stroke="#2f3960">
+        <line x1="310" y1="110" x2="120" y2="40"/><line x1="310" y1="110" x2="80" y2="150"/>
+        <line x1="310" y1="110" x2="240" y2="26"/><line x1="310" y1="110" x2="420" y2="30"/>
+        <line x1="310" y1="110" x2="540" y2="70"/><line x1="310" y1="110" x2="520" y2="170"/>
+        <line x1="310" y1="110" x2="380" y2="196"/><line x1="310" y1="110" x2="180" y2="190"/>
+      </g>
+      <g fill="#5bc8e6">
+        <circle cx="120" cy="40" r="4"/><circle cx="80" cy="150" r="4"/><circle cx="240" cy="26" r="4"/>
+        <circle cx="420" cy="30" r="4"/><circle cx="540" cy="70" r="4"/><circle cx="520" cy="170" r="4"/>
+        <circle cx="380" cy="196" r="4"/><circle cx="180" cy="190" r="4"/>
+      </g>
+      <text x="120" y="28" fill="#5bc8e6" font-family="ui-monospace,monospace" font-size="9" text-anchor="middle">пульсары-часы</text>
+      <path d="M40,208 q20,-8 40,0 t40,0 t40,0 t40,0 t40,0 t40,0 t40,0 t40,0 t40,0 t40,0 t40,0 t40,0 t40,0 t40,0" stroke="#b48cff" stroke-width="1.5" opacity=".8"/>
+      <text x="574" y="196" fill="#b48cff" font-family="ui-monospace,monospace" font-size="9" text-anchor="end">фон ГВ · длина волны — световые годы</text>
+      <text x="490" y="120" fill="#8a93b6" font-family="ui-monospace,monospace" font-size="9">пары часов сбиваются</text>
+      <text x="490" y="133" fill="#8a93b6" font-family="ui-monospace,monospace" font-size="9">согласованно — по узору</text>
+      <text x="490" y="146" fill="#8a93b6" font-family="ui-monospace,monospace" font-size="9">Хеллингса–Даунса (1983)</text>
+    </svg>
+  </div>
+
+  <div class="stats">
+    <div class="stat a"><div class="n">июнь 2023</div><div class="l">NANOGrav (15 лет данных) + EPTA, PPTA, CPTA — одновременно</div></div>
+    <div class="stat b"><div class="n">~3–4σ</div><div class="l">значимость фирменной корреляции Хеллингса–Даунса</div></div>
+    <div class="stat c"><div class="n">годы</div><div class="l">периоды волн; частоты — наногерцы (отсюда имя NANOGrav)</div></div>
+    <div class="stat d"><div class="n">68</div><div class="l">пульсаров в антенне NANOGrav; дальше — сотни (SKA)</div></div>
+  </div>
+
+  <!-- WHO HUMS -->
+  <p class="h2 hot">Шаг 2 · так кто гудит? три подозреваемых</p>
+  <p class="sub">Сам фон сомнений почти не вызывает. Интрига в источнике — и все варианты интересные.</p>
+  <div class="exps">
+    <div class="exp x1">
+      <span class="flag">ведущая · но с занозой</span>
+      <h3>Пары сверхмассивных дыр</h3>
+      <p>При слияниях галактик их центральные дыры образуют пары и миллионами лет «гудят» по спирали.
+        Сумма по всей Вселенной — как раз такой фон. Заноза: сигнал вышел <b>чуть громче ожидаемого</b>,
+        и есть «проблема последнего парсека» — как парам вообще сблизиться до слияния
+        (Бегельман, Блэндфорд и Рис, 1980). Тут же рядом — <a href="early-giants.html">слишком ранние гиганты</a>.</p>
+    </div>
+    <div class="exp x2">
+      <span class="flag">экзотика · окно в ГУТ</span>
+      <h3>Космические струны и фазовые переходы</h3>
+      <p>Гул могли оставить <b>дефекты ранней Вселенной</b>: колеблющиеся космические струны или
+        «вскипание» вакуума при фазовом переходе. Подтверждение стало бы первым приветом с энергий
+        <a href="grand-unification.html">Великого объединения</a>.</p>
+    </div>
+    <div class="exp x3">
+      <span class="flag">вряд ли здесь</span>
+      <h3>Реликтовые волны инфляции</h3>
+      <p>Первичные гравитационные волны существуют и на этих частотах, но по стандартной инфляции они
+        <b>слишком слабы</b> для пульсарного гула. Их главный охотничий участок — узор в поляризации
+        реликта: <a href="inflation-bmodes.html">B-моды</a>.</p>
+    </div>
+  </div>
+
+  <!-- RESOLVE -->
+  <div class="panel">
+    <span class="k">почему до сих пор не решено · и как решат</span>
+    <h3>У каждого подозреваемого — свой почерк</h3>
+    <ul class="pts">
+      <li><b>Форма спектра.</b> Пары дыр дают один наклон «громкость от частоты», струны и переходы — другой.
+        Пока точности не хватает; каждый год данных сужает вилку.</li>
+      <li><b>Пятнистость неба.</b> Фон от дыр должен быть <b>неровным</b>: ближайшие пары торчат из него
+        «горячими точками», и рано или поздно одну услышат отдельно. Космологический фон — гладкий.</li>
+      <li><b>Больше часов.</b> Радиотелескоп SKA доведёт антенну до сотен пульсаров — значимость и спектр
+        станут железными.</li>
+      <li><b>Другая частота.</b> Космический детектор LISA (2030-е) услышит миллигерцы — там сливающиеся
+        сверхмассивные пары видны поштучно, и история «последнего парсека» закроется с другого конца.</li>
+    </ul>
+    <div class="verdict"><b>Честный итог:</b> само открытие фона — свершившийся факт и новое окно в космос.
+      Ставка большинства — на пары сверхмассивных дыр; но если гул окажется голосом струн или фазового
+      перехода, это будет крупнейшее открытие в физике за десятилетия.</div>
+  </div>
+
+  <footer>
+    ГВ предсказаны: Эйнштейн, 1916 · первое прямое детектирование всплеска: LIGO, 2015 (Нобель 2017)<br>
+    корреляция: Хеллингс и Даунс, 1983 · «последний парсек»: Бегельман, Блэндфорд, Рис, 1980 · фон: NANOGrav/EPTA/PPTA/CPTA, июнь 2023.<br>
+    Схема антенны условна; значимости — на 2026 год.
+  </footer>
+</div>
+</body>
+</html>

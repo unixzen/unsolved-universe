@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Стрела времени</title>
+<style>
+  :root{
+    --bg:#06070d; --bg2:#0a0d18;
+    --panel:#111629; --panel2:#151b31;
+    --line:#242c49; --line2:#2f3960;
+    --text:#dce3f7; --muted:#8a93b6; --faint:#5b6488;
+    --gold:#ffd27d; --golddim:#5f5230;
+    --hot:#ff7a4d; --hotdeep:#ff5c72; --hotdim:#7d3140;
+    --cold:#5bc8e6; --colddim:#2c4a55;
+    --violet:#b48cff; --violetdim:#4a3a72;
+    --green:#7fe0a8; --greendim:#2f5c42;
+    --maxw:960px;
+    --mono:ui-monospace,"SF Mono","JetBrains Mono","Cascadia Code",Menlo,Consolas,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{ box-sizing:border-box; }
+  body{ background:var(--bg); color:var(--text); font-family:var(--sans);
+    line-height:1.55; -webkit-font-smoothing:antialiased; margin:0; }
+
+  .stars{ position:fixed; inset:0; z-index:0; pointer-events:none; background-color:var(--bg);
+    background-image:
+      radial-gradient(1.1px 1.1px at 24px 32px, rgba(255,255,255,.7), transparent),
+      radial-gradient(1px 1px at 96px 128px, rgba(214,226,255,.5), transparent),
+      radial-gradient(1.3px 1.3px at 160px 64px, rgba(255,255,255,.55), transparent),
+      radial-gradient(1px 1px at 56px 176px, rgba(190,205,255,.45), transparent);
+    background-repeat:repeat; background-size:230px 230px; animation:tw 10s ease-in-out infinite; }
+  .stars::after{ content:""; position:absolute; inset:0;
+    background:
+      radial-gradient(55% 40% at 20% 10%, rgba(255,210,125,.08), transparent 70%),
+      radial-gradient(50% 45% at 82% 55%, rgba(255,92,114,.07), transparent 70%); }
+  @keyframes tw{ 0%,100%{opacity:.85} 50%{opacity:1} }
+  @media (prefers-reduced-motion:reduce){ .stars{animation:none} }
+
+  .wrap{ position:relative; z-index:1; max-width:var(--maxw); margin:0 auto; padding:56px 24px 72px; }
+
+  .eyebrow{ font-family:var(--mono); font-size:12px; letter-spacing:.28em; text-transform:uppercase;
+    color:var(--gold); margin:0 0 14px; }
+  h1{ font-size:clamp(30px,6vw,54px); line-height:1.03; letter-spacing:-.025em; font-weight:800;
+    margin:0 0 16px; text-wrap:balance; }
+  h1 .q{ color:var(--gold); }
+  .lede{ font-size:clamp(15px,2.2vw,18px); color:var(--muted); max-width:64ch; margin:0; }
+  .lede b{ color:var(--text); }
+
+  .primer{ margin-top:26px; padding:16px 20px; border-radius:12px; border:1px solid var(--line);
+    background:var(--panel); color:var(--muted); font-size:14px; }
+  .primer b{ color:var(--text); }
+  .primer .lab{ font-family:var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--gold); display:block; margin-bottom:6px; }
+
+  .h2{ font-family:var(--mono); font-size:13px; letter-spacing:.18em; text-transform:uppercase;
+    color:var(--muted); margin:44px 0 6px; }
+  .h2.au{ color:var(--gold); } .h2.hot{ color:var(--hotdeep); }
+  .h2 + .sub{ color:var(--muted); font-size:14.5px; margin:0 0 22px; max-width:66ch; }
+  .h2 + .sub b{ color:var(--text); }
+
+  .figcard{ padding:20px; border-radius:16px; border:1px solid var(--golddim);
+    background:linear-gradient(180deg,rgba(60,50,20,.28),var(--bg2)); overflow-x:auto; }
+  .figcard svg{ display:block; width:100%; min-width:520px; height:auto; }
+
+  .bignum{ margin-top:16px; padding:20px 22px; border-radius:14px; border:1px solid var(--hotdim);
+    background:rgba(255,92,114,.06); text-align:center; }
+  .bignum .n{ font-family:var(--mono); font-size:clamp(20px,4vw,32px); font-weight:800; color:var(--hotdeep); }
+  .bignum .l{ font-size:13.5px; color:var(--muted); margin-top:6px; }
+  .bignum .l b{ color:var(--text); }
+
+  .anoms{ display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px; }
+  .anom{ padding:14px 16px; border-radius:12px; border:1px solid var(--line); background:var(--panel); }
+  .anom .t{ font-weight:700; font-size:14.5px; margin-bottom:3px; }
+  .anom p{ margin:0; font-size:13px; color:var(--muted); }
+
+  .exps{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  .exp{ padding:20px 20px; border-radius:16px; border:1px solid var(--line);
+    background:linear-gradient(180deg,var(--panel),var(--bg2)); }
+  .exp .flag{ font-family:var(--mono); font-size:10.5px; letter-spacing:.12em; text-transform:uppercase;
+    padding:3px 9px; border-radius:20px; display:inline-block; margin-bottom:11px; }
+  .exp h3{ margin:0 0 8px; font-size:17px; letter-spacing:-.01em; }
+  .exp p{ margin:0; font-size:13.5px; color:var(--muted); }
+  .exp p b{ color:var(--text); }
+  .exp a{ color:var(--gold); text-decoration:none; border-bottom:1px dotted var(--golddim); }
+  .exp a:hover{ border-bottom-style:solid; }
+  .x1 .flag{ color:var(--cold); background:rgba(91,200,230,.09); border:1px solid var(--colddim); }
+  .x2 .flag{ color:var(--violet); background:rgba(180,140,255,.09); border:1px solid var(--violetdim); }
+  .x3 .flag{ color:var(--green); background:rgba(127,224,168,.09); border:1px solid var(--greendim); }
+  .x4 .flag{ color:var(--hotdeep); background:rgba(255,92,114,.09); border:1px solid var(--hotdim); }
+
+  .panel{ margin-top:26px; padding:24px 26px; border-radius:16px; border:1px solid var(--line2);
+    background:linear-gradient(180deg,var(--panel2),var(--bg2)); }
+  .panel .k{ font-family:var(--mono); font-size:11px; letter-spacing:.16em; text-transform:uppercase;
+    color:var(--gold); border:1px solid var(--golddim); background:rgba(255,210,125,.08);
+    padding:3px 10px; border-radius:20px; display:inline-block; margin-bottom:13px; }
+  .panel h3{ margin:0 0 12px; font-size:20px; letter-spacing:-.01em; }
+  ul.pts{ margin:0; padding:0; list-style:none; display:grid; gap:11px; }
+  ul.pts li{ padding-left:24px; position:relative; font-size:14.5px; color:var(--text); }
+  ul.pts li::before{ content:"→"; position:absolute; left:0; color:var(--gold); font-family:var(--mono); }
+  ul.pts li b{ color:#fff; }
+  ul.pts a{ color:var(--gold); text-decoration:none; border-bottom:1px dotted var(--golddim); }
+  ul.pts a:hover{ border-bottom-style:solid; }
+  .verdict{ margin-top:18px; padding:16px 18px; border-radius:12px; border:1px solid var(--golddim);
+    background:rgba(255,210,125,.07); font-size:14.5px; }
+  .verdict b{ color:var(--gold); }
+
+  footer{ margin-top:36px; color:var(--faint); font-size:12.5px; font-family:var(--mono);
+    line-height:1.7; text-align:center; }
+
+  @media (max-width:720px){ .exps{ grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<div class="stars"></div>
+
+<div class="wrap">
+  <p class="eyebrow">Происхождение · открытая проблема</p>
+  <h1><span class="q">Стрела времени</span>: почему<br>вчера не похоже на завтра</h1>
+  <p class="lede">Фундаментальные законы физики (почти) <b>не различают прошлое и будущее</b> — фильм
+    про атомы можно крутить задом наперёд, и он не нарушит ни одного уравнения. А наш мир различает:
+    яйца разбиваются и не собираются, мы помним вчера и не помним завтра. Откуда у времени
+    <b>направление</b> — вопрос, на который до сих пор нет полного ответа.</p>
+
+  <div class="primer">
+    <span class="lab">на всякий случай — что такое энтропия</span>
+    Энтропия — это <b>счёт беспорядка</b>: сколькими способами можно переставить детали системы, не меняя
+    её общий вид. У разбитой чашки таких способов неизмеримо больше, чем у целой, поэтому «вперёд» энтропия
+    растёт — это <b>второе начало термодинамики</b>. Формула S = k·log W выбита на надгробии её автора —
+    Людвига Больцмана.
+  </div>
+
+  <!-- REVERSIBLE LAWS -->
+  <p class="h2 au">Шаг 1 · законы обратимы, а мир — нет</p>
+  <p class="sub">Сам термин «стрела времени» ввёл астрофизик Артур Эддингтон в 1927 году. Парадокс
+    заметили ещё раньше: если каждое столкновение атомов обратимо, откуда необратимость целого?</p>
+
+  <div class="figcard">
+    <svg viewBox="0 0 620 190" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="30" y="24" width="260" height="120" rx="12" fill="#0b1020" stroke="#2f3960"/>
+      <circle cx="110" cy="84" r="16" stroke="#ffd27d" fill="none"/>
+      <circle cx="168" cy="60" r="5" fill="#5bc8e6"/>
+      <ellipse cx="110" cy="84" rx="56" ry="20" stroke="#5b6488" stroke-dasharray="3 4" fill="none"/>
+      <text x="160" y="132" fill="#8a93b6" font-family="ui-monospace,monospace" font-size="10" text-anchor="middle">планета на орбите</text>
+      <text x="160" y="166" fill="#7fe0a8" font-family="ui-monospace,monospace" font-size="10" text-anchor="middle">фильм наоборот — не отличить ✓</text>
+      <rect x="330" y="24" width="260" height="120" rx="12" fill="#0b1020" stroke="#2f3960"/>
+      <path d="M420,60 l-6,26 M436,54 l2,30 M452,62 l8,22" stroke="#ff7a4d" stroke-width="2"/>
+      <path d="M398,96 q40,18 84,2" stroke="#ff7a4d" stroke-width="2" fill="none"/>
+      <circle cx="404" cy="104" r="3" fill="#ff7a4d"/><circle cx="452" cy="110" r="3" fill="#ff7a4d"/>
+      <circle cx="488" cy="100" r="3" fill="#ff7a4d"/><circle cx="470" cy="112" r="2.5" fill="#ff7a4d"/>
+      <text x="460" y="132" fill="#8a93b6" font-family="ui-monospace,monospace" font-size="10" text-anchor="middle">чашка разбивается</text>
+      <text x="460" y="166" fill="#ff5c72" font-family="ui-monospace,monospace" font-size="10" text-anchor="middle">фильм наоборот — абсурд ✗</text>
+    </svg>
+  </div>
+
+  <!-- BOLTZMANN -->
+  <p class="h2">Шаг 2 · ответ Больцмана — и его ловушка</p>
+  <p class="sub">Больцман показал (H-теорема, 1872): рост энтропии — <b>статистика</b>. Беспорядочных
+    состояний неизмеримо больше, чем упорядоченных, поэтому система почти наверняка движется к беспорядку.
+    Лошмидт возразил (1876): но статистика симметрична и <b>назад во времени</b>!</p>
+  <div class="anoms">
+    <div class="anom"><div class="t">Симметричная логика</div>
+      <p>Если сегодня порядок средний, то самый вероятный сценарий — беспорядок был больше <b>и вчера,
+      и завтра</b>. Прошлое с низкой энтропией статистикой не объяснить.</p></div>
+    <div class="anom"><div class="t">«Больцмановский мозг»</div>
+      <p>Доведённая до предела ловушка: случайной флуктуации проще собрать один мозг с ложной памятью,
+      чем целую упорядоченную Вселенную. Раз мы не он — что-то в рассуждении не так.</p></div>
+    <div class="anom"><div class="t">Гипотеза прошлого</div>
+      <p>Единственный известный выход: <b>постулировать</b>, что Вселенная началась в состоянии
+      сверхнизкой энтропии (термин Дэвида Альберта, 2000). Стрела времени — память об этом старте.</p></div>
+  </div>
+
+  <!-- PENROSE -->
+  <p class="h2 hot">Шаг 3 · насколько особым был старт</p>
+  <p class="sub">Тут прячется подвох: ранняя Вселенная — это <b>ровный горячий газ</b>. Разве это порядок?
+    Да: когда правит <b>гравитация</b>, всё наоборот — ровное состояние как раз маловероятно, а «естественно»
+    материи сбиваться в комки и чёрные дыры. Ровный старт — колоссальная упорядоченность.</p>
+
+  <div class="figcard">
+    <svg viewBox="0 0 620 170" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="30" y="24" width="250" height="100" rx="12" fill="#0b1020" stroke="#2f3960"/>
+      <g fill="#ffd27d" opacity=".7">
+        <circle cx="60" cy="50" r="2"/><circle cx="95" cy="44" r="2"/><circle cx="130" cy="52" r="2"/>
+        <circle cx="165" cy="46" r="2"/><circle cx="200" cy="50" r="2"/><circle cx="235" cy="45" r="2"/>
+        <circle cx="75" cy="75" r="2"/><circle cx="112" cy="70" r="2"/><circle cx="148" cy="76" r="2"/>
+        <circle cx="184" cy="72" r="2"/><circle cx="220" cy="76" r="2"/><circle cx="252" cy="70" r="2"/>
+        <circle cx="60" cy="100" r="2"/><circle cx="95" cy="96" r="2"/><circle cx="130" cy="102" r="2"/>
+        <circle cx="165" cy="98" r="2"/><circle cx="200" cy="100" r="2"/><circle cx="235" cy="96" r="2"/>
+      </g>
+      <text x="155" y="144" fill="#8a93b6" font-family="ui-monospace,monospace" font-size="10" text-anchor="middle">ровный газ = НИЗКАЯ энтропия</text>
+      <path d="M295,74 L330,74" stroke="#ff5c72" stroke-width="2"/><path d="M330,74 l-8,-4 l0,8 z" fill="#ff5c72"/>
+      <rect x="345" y="24" width="250" height="100" rx="12" fill="#0b1020" stroke="#2f3960"/>
+      <circle cx="410" cy="60" r="14" fill="rgba(255,210,125,.25)"/>
+      <circle cx="480" cy="90" r="18" fill="rgba(255,210,125,.2)"/>
+      <circle cx="545" cy="52" r="9" fill="rgba(255,210,125,.28)"/>
+      <circle cx="452" cy="52" r="7" fill="#06070d" stroke="#ff5c72"/>
+      <circle cx="530" cy="96" r="9" fill="#06070d" stroke="#ff5c72"/>
+      <text x="470" y="144" fill="#8a93b6" font-family="ui-monospace,monospace" font-size="10" text-anchor="middle">комки и чёрные дыры = ВЫСОКАЯ</text>
+      <text x="312" y="52" fill="#ff5c72" font-family="ui-monospace,monospace" font-size="9" text-anchor="middle">время</text>
+    </svg>
+  </div>
+
+  <div class="bignum">
+    <div class="n">1 из 10^10¹²³</div>
+    <div class="l">оценка Роджера Пенроуза (1979): вероятность «наугад» получить столь упорядоченное начало.
+      Это, возможно, <b>самое маленькое число, когда-либо всерьёз написанное в физике</b>.</div>
+  </div>
+
+  <!-- EXPLANATIONS -->
+  <p class="h2">Четыре версии — откуда взялся упорядоченный старт</p>
+  <p class="sub">Это вопрос о начальных условиях Вселенной — поэтому он сцеплен с инфляцией,
+    мультивселенной и квантовой гравитацией.</p>
+  <div class="exps">
+    <div class="exp x1">
+      <span class="flag">популярная · спорная</span>
+      <h3>Инфляция всё разгладила</h3>
+      <p>Раздувание растягивает любой хаос в ровное состояние — стрела времени «заводится» сама.
+        Возражение Пенроуза: чтобы инфляция <b>началась</b>, нужно состояние ещё более особое —
+        проблема сдвигается, а не решается.</p>
+    </div>
+    <div class="exp x2">
+      <span class="flag">радикальная</span>
+      <h3>Мы — флуктуация в вечности</h3>
+      <p>В вечной Вселенной низкоэнтропийные области возникают как редчайшие флуктуации (идея восходит
+        к Больцману, 1895) или рождаются как «вселенные-дети» с собственными стрелами времени
+        (Кэрролл и Чен, 2004; тут рядом <a href="multiverse.html">мультивселенные</a>).</p>
+    </div>
+    <div class="exp x3">
+      <span class="flag">циклическая</span>
+      <h3>Конец — это новое начало</h3>
+      <p>В конформной циклической космологии Пенроуза (2005) остывшая пустая Вселенная «забывает масштаб»
+        и становится ровным стартом следующего эона — низкая энтропия наследуется. Красиво;
+        следов в реликте не нашли.</p>
+    </div>
+    <div class="exp x4">
+      <span class="flag">честный минимум</span>
+      <h3>Просто начальное условие</h3>
+      <p>Может, «почему старт был ровным» — не закон, а <b>факт</b>, как расположение планет: физика
+        описывает эволюцию, а начальные условия задаются один раз. Многим этого мало —
+        слишком уж особый факт.</p>
+    </div>
+  </div>
+
+  <!-- RESOLVE -->
+  <div class="panel">
+    <span class="k">почему это всё связывает · и где искать ответ</span>
+    <h3>Одна стрела — много отражений</h3>
+    <ul class="pts">
+      <li><b>Чёрные дыры — чемпионы энтропии.</b> По формуле Бекенштейна–Хокинга (1972–1975) энтропия дыры
+        растёт с площадью горизонта; почти вся энтропия сегодняшней Вселенной — в сверхмассивных дырах.
+        Отсюда мост к <a href="black-hole-information.html">парадоксу информации</a>.</li>
+      <li><b>Тепловая смерть — конец стрелы.</b> Когда энтропия дорастёт до максимума, «вперёд» и «назад»
+        перестанут различаться — см. <a href="fate-of-universe.html">судьбу Вселенной</a>.</li>
+      <li><b>Квантовое измерение тоже необратимо.</b> Связана ли термодинамическая стрела с квантовой —
+        часть <a href="measurement-problem.html">проблемы измерения</a>.</li>
+      <li><b>Решение придёт сверху.</b> Объяснить начальное условие Большого взрыва может только теория
+        самого начала — <a href="origin-and-summit.html">квантовая гравитация</a>.</li>
+    </ul>
+    <div class="verdict"><b>Честный итог:</b> сам механизм «энтропия растёт, потому что состояний беспорядка
+      больше» понят со времён Больцмана. Не понято главное — почему Вселенной было <b>с чего</b> расти:
+      кто и как «взвёл пружину» в начале. Это не отдельный закон, а нераскрытая часть тайны Большого взрыва.</div>
+  </div>
+
+  <footer>
+    H-теорема: Больцман, 1872 · возражение об обратимости: Лошмидт, 1876 · термин «стрела времени»: Эддингтон, 1927<br>
+    энтропия чёрных дыр: Бекенштейн 1972, Хокинг 1975 · оценка 10^10¹²³: Пенроуз, 1979 · «гипотеза прошлого»: Альберт, 2000 · вселенные-дети: Кэрролл и Чен, 2004.<br>
+    Схемы иллюстративны. Тёмная тема — намеренно.
+  </footer>
+</div>
+</body>
+</html>

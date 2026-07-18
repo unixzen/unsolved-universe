@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Слишком ранние гиганты</title>
+<style>
+  :root{
+    --bg:#06070d; --bg2:#0a0d18;
+    --panel:#111629; --panel2:#151b31;
+    --line:#242c49; --line2:#2f3960;
+    --text:#dce3f7; --muted:#8a93b6; --faint:#5b6488;
+    --gold:#ffd27d; --golddim:#5f5230;
+    --hot:#ff7a4d; --hotdeep:#ff5c72; --hotdim:#7d3140;
+    --cold:#5bc8e6; --colddim:#2c4a55;
+    --violet:#b48cff; --violetdim:#4a3a72;
+    --green:#7fe0a8; --greendim:#2f5c42;
+    --maxw:960px;
+    --mono:ui-monospace,"SF Mono","JetBrains Mono","Cascadia Code",Menlo,Consolas,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{ box-sizing:border-box; }
+  body{ background:var(--bg); color:var(--text); font-family:var(--sans);
+    line-height:1.55; -webkit-font-smoothing:antialiased; margin:0; }
+
+  .stars{ position:fixed; inset:0; z-index:0; pointer-events:none; background-color:var(--bg);
+    background-image:
+      radial-gradient(1.1px 1.1px at 24px 32px, rgba(255,255,255,.7), transparent),
+      radial-gradient(1px 1px at 96px 128px, rgba(214,226,255,.5), transparent),
+      radial-gradient(1.3px 1.3px at 160px 64px, rgba(255,255,255,.55), transparent),
+      radial-gradient(1px 1px at 56px 176px, rgba(190,205,255,.45), transparent);
+    background-repeat:repeat; background-size:230px 230px; animation:tw 10s ease-in-out infinite; }
+  .stars::after{ content:""; position:absolute; inset:0;
+    background:
+      radial-gradient(55% 40% at 20% 8%, rgba(255,122,77,.09), transparent 70%),
+      radial-gradient(50% 45% at 82% 50%, rgba(255,210,125,.07), transparent 70%); }
+  @keyframes tw{ 0%,100%{opacity:.85} 50%{opacity:1} }
+  @media (prefers-reduced-motion:reduce){ .stars{animation:none} }
+
+  .wrap{ position:relative; z-index:1; max-width:var(--maxw); margin:0 auto; padding:56px 24px 72px; }
+
+  .eyebrow{ font-family:var(--mono); font-size:12px; letter-spacing:.28em; text-transform:uppercase;
+    color:var(--hot); margin:0 0 14px; }
+  h1{ font-size:clamp(30px,6vw,54px); line-height:1.03; letter-spacing:-.025em; font-weight:800;
+    margin:0 0 16px; text-wrap:balance; }
+  h1 .q{ color:var(--hot); }
+  .lede{ font-size:clamp(15px,2.2vw,18px); color:var(--muted); max-width:64ch; margin:0; }
+  .lede b{ color:var(--text); }
+
+  .primer{ margin-top:26px; padding:16px 20px; border-radius:12px; border:1px solid var(--line);
+    background:var(--panel); color:var(--muted); font-size:14px; }
+  .primer b{ color:var(--text); }
+  .primer .lab{ font-family:var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--gold); display:block; margin-bottom:6px; }
+
+  .h2{ font-family:var(--mono); font-size:13px; letter-spacing:.18em; text-transform:uppercase;
+    color:var(--muted); margin:44px 0 6px; }
+  .h2.ho{ color:var(--hot); } .h2.hot{ color:var(--hotdeep); }
+  .h2 + .sub{ color:var(--muted); font-size:14.5px; margin:0 0 22px; max-width:66ch; }
+  .h2 + .sub b{ color:var(--text); }
+
+  .figcard{ padding:20px; border-radius:16px; border:1px solid var(--hotdim);
+    background:linear-gradient(180deg,rgba(55,25,20,.3),var(--bg2)); overflow-x:auto; }
+  .figcard svg{ display:block; width:100%; min-width:520px; height:auto; }
+
+  .stats{ display:flex; gap:14px; flex-wrap:wrap; margin-top:16px; }
+  .stat{ flex:1; min-width:150px; padding:14px 18px; border-radius:12px; border:1px solid var(--line);
+    background:var(--panel); }
+  .stat .n{ font-family:var(--mono); font-size:20px; font-weight:800; letter-spacing:-.02em; }
+  .stat .l{ font-size:12px; color:var(--muted); margin-top:2px; }
+  .stat.a .n{ color:var(--hot); } .stat.b .n{ color:var(--gold); }
+  .stat.c .n{ color:var(--cold); } .stat.d .n{ color:var(--hotdeep); }
+
+  .anoms{ display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px; }
+  .anom{ padding:14px 16px; border-radius:12px; border:1px solid var(--line); background:var(--panel); }
+  .anom .t{ font-weight:700; font-size:14.5px; margin-bottom:3px; }
+  .anom p{ margin:0; font-size:13px; color:var(--muted); }
+
+  .exps{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  .exp{ padding:20px 20px; border-radius:16px; border:1px solid var(--line);
+    background:linear-gradient(180deg,var(--panel),var(--bg2)); }
+  .exp .flag{ font-family:var(--mono); font-size:10.5px; letter-spacing:.12em; text-transform:uppercase;
+    padding:3px 9px; border-radius:20px; display:inline-block; margin-bottom:11px; }
+  .exp h3{ margin:0 0 8px; font-size:17px; letter-spacing:-.01em; }
+  .exp p{ margin:0; font-size:13.5px; color:var(--muted); }
+  .exp p b{ color:var(--text); }
+  .exp a{ color:var(--hot); text-decoration:none; border-bottom:1px dotted var(--hotdim); }
+  .exp a:hover{ border-bottom-style:solid; }
+  .x1 .flag{ color:var(--green); background:rgba(127,224,168,.09); border:1px solid var(--greendim); }
+  .x2 .flag{ color:var(--gold); background:rgba(255,210,125,.09); border:1px solid var(--golddim); }
+  .x3 .flag{ color:var(--cold); background:rgba(91,200,230,.09); border:1px solid var(--colddim); }
+  .x4 .flag{ color:var(--violet); background:rgba(180,140,255,.09); border:1px solid var(--violetdim); }
+
+  .panel{ margin-top:26px; padding:24px 26px; border-radius:16px; border:1px solid var(--line2);
+    background:linear-gradient(180deg,var(--panel2),var(--bg2)); }
+  .panel .k{ font-family:var(--mono); font-size:11px; letter-spacing:.16em; text-transform:uppercase;
+    color:var(--hot); border:1px solid var(--hotdim); background:rgba(255,122,77,.08);
+    padding:3px 10px; border-radius:20px; display:inline-block; margin-bottom:13px; }
+  .panel h3{ margin:0 0 12px; font-size:20px; letter-spacing:-.01em; }
+  ul.pts{ margin:0; padding:0; list-style:none; display:grid; gap:11px; }
+  ul.pts li{ padding-left:24px; position:relative; font-size:14.5px; color:var(--text); }
+  ul.pts li::before{ content:"→"; position:absolute; left:0; color:var(--hot); font-family:var(--mono); }
+  ul.pts li b{ color:#fff; }
+  ul.pts a{ color:var(--hot); text-decoration:none; border-bottom:1px dotted var(--hotdim); }
+  ul.pts a:hover{ border-bottom-style:solid; }
+  .verdict{ margin-top:18px; padding:16px 18px; border-radius:12px; border:1px solid var(--hotdim);
+    background:rgba(255,122,77,.07); font-size:14.5px; }
+  .verdict b{ color:var(--hot); }
+
+  footer{ margin-top:36px; color:var(--faint); font-size:12.5px; font-family:var(--mono);
+    line-height:1.7; text-align:center; }
+
+  @media (max-width:720px){ .exps{ grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<div class="stars"></div>
+
+<div class="wrap">
+  <p class="eyebrow">Ранняя Вселенная · наблюдательная загадка</p>
+  <h1><span class="q">Слишком ранние гиганты</span>:<br>Уэбб против календаря</h1>
+  <p class="lede">Телескоп «Джеймс Уэбб» (запущен 25 декабря 2021) заглянул в первые сотни миллионов лет
+    после Большого взрыва — и нашёл там больше «взрослого», чем позволял план: яркие массивные галактики
+    и чёрные дыры на <b>миллиарды солнечных масс</b>, которым по всем прикидкам
+    <b>не хватало времени вырасти</b>.</p>
+
+  <div class="primer">
+    <span class="lab">на всякий случай — как телескоп смотрит в прошлое</span>
+    Свет идёт к нам миллиарды лет, поэтому далёкие объекты мы видим <b>молодыми</b>. Расширение Вселенной
+    растягивает их свет в красную сторону — по величине этого сдвига (<b>z</b>) считывается эпоха:
+    z ≈ 7 — Вселенной ~750 млн лет, z ≈ 10 — меньше 500 млн. «Уэбб» видит именно этот инфракрасный,
+    растянутый свет — потому он и открыл эпоху первых галактик.
+  </div>
+
+  <!-- WHAT FOUND -->
+  <p class="h2 ho">Шаг 1 · что нашли</p>
+  <p class="sub">Проблема пришла с двух сторон сразу: <b>галактики</b>, которые слишком быстро набрали
+    звёзды, и <b>сверхмассивные чёрные дыры</b>, которые слишком быстро набрали массу.</p>
+
+  <div class="figcard">
+    <svg viewBox="0 0 620 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <line x1="40" y1="120" x2="590" y2="120" stroke="#242c49"/>
+      <circle cx="55" cy="120" r="5" fill="#ffd27d"/>
+      <text x="55" y="142" fill="#8a93b6" font-family="ui-monospace,monospace" font-size="9" text-anchor="middle">Большой</text>
+      <text x="55" y="154" fill="#8a93b6" font-family="ui-monospace,monospace" font-size="9" text-anchor="middle">взрыв</text>
+      <line x1="120" y1="112" x2="120" y2="128" stroke="#5b6488"/>
+      <text x="120" y="142" fill="#5b6488" font-family="ui-monospace,monospace" font-size="9" text-anchor="middle">380 тыс. лет</text>
+      <text x="120" y="154" fill="#5b6488" font-family="ui-monospace,monospace" font-size="9" text-anchor="middle">реликт</text>
+      <rect x="170" y="112" width="150" height="16" fill="rgba(255,122,77,.15)"/>
+      <text x="245" y="106" fill="#ff7a4d" font-family="ui-monospace,monospace" font-size="9" text-anchor="middle">← здесь «Уэбб» нашёл гигантов →</text>
+      <line x1="200" y1="112" x2="200" y2="128" stroke="#ff7a4d"/>
+      <text x="200" y="142" fill="#ff7a4d" font-family="ui-monospace,monospace" font-size="9" text-anchor="middle">~470 млн</text>
+      <text x="200" y="154" fill="#ff7a4d" font-family="ui-monospace,monospace" font-size="9" text-anchor="middle">дыра UHZ1</text>
+      <line x1="300" y1="112" x2="300" y2="128" stroke="#ffd27d"/>
+      <text x="300" y="142" fill="#ffd27d" font-family="ui-monospace,monospace" font-size="9" text-anchor="middle">~700 млн</text>
+      <text x="300" y="154" fill="#ffd27d" font-family="ui-monospace,monospace" font-size="9" text-anchor="middle">квазар J0313</text>
+      <line x1="590" y1="112" x2="590" y2="128" stroke="#5b6488"/>
+      <text x="585" y="142" fill="#8a93b6" font-family="ui-monospace,monospace" font-size="9" text-anchor="end">сегодня · 13,8 млрд лет</text>
+      <text x="315" y="34" fill="#dce3f7" font-family="ui-monospace,monospace" font-size="10" text-anchor="middle">чтобы вырастить дыру в миллиард солнц из «семени» в 100 солнц,</text>
+      <text x="315" y="50" fill="#dce3f7" font-family="ui-monospace,monospace" font-size="10" text-anchor="middle">надо есть на пределе всю историю без перерывов — а времени в обрез</text>
+      <path d="M315,60 L245,104" stroke="#5b6488" stroke-dasharray="3 4"/>
+    </svg>
+  </div>
+
+  <div class="stats">
+    <div class="stat a"><div class="n">z ≈ 10,1</div><div class="l">дыра UHZ1: уже ~10⁷–10⁸ M☉ через ~470 млн лет (Богдан и др., 2023)</div></div>
+    <div class="stat b"><div class="n">1,6·10⁹ M☉</div><div class="l">квазар J0313−1806 при возрасте Вселенной ~670 млн лет (2021)</div></div>
+    <div class="stat c"><div class="n">2022–23</div><div class="l">«невозможно массивные» кандидаты-галактики (Лаббе и др., Nature)</div></div>
+    <div class="stat d"><div class="n">?</div><div class="l">«маленькие красные точки» — новый класс компактных объектов, открытый Уэббом</div></div>
+  </div>
+
+  <!-- WHY PROBLEM -->
+  <p class="h2">Шаг 2 · почему это проблема</p>
+  <div class="anoms">
+    <div class="anom"><div class="t">Дырам не хватает времени</div>
+      <p>Аккреция саморегулируется: излучение расталкивает падающий газ (<b>предел Эддингтона</b>).
+      Даже жуя на пределе без пауз, семя от первой звезды не успевает дорасти до миллиарда солнц.</p></div>
+    <div class="anom"><div class="t">Галактики поторопились</div>
+      <p>Часть ранних галактик выглядела настолько массивной, что звёзд в них было бы больше,
+      чем ΛCDM успевает собрать газа в их гало.</p></div>
+    <div class="anom"><div class="t">Дыры «тяжелее положенного»</div>
+      <p>У некоторых ранних объектов масса дыры сопоставима с массой звёзд всей галактики —
+      сегодня дыры в сотни раз легче своих галактик. Ранние дыры будто стартовали первыми.</p></div>
+  </div>
+
+  <!-- EXPLANATIONS -->
+  <p class="h2">Четыре версии — как вырастить гиганта до рассвета</p>
+  <p class="sub">Честная оговорка: часть «невозможного» уже рассосалась — спектры показали, что многие
+    сверхъяркие кандидаты — это вспышки звездообразования или свет активного ядра, а не гигантская масса
+    звёзд. Но ранние миллиардные дыры от этого не исчезли.</p>
+  <div class="exps">
+    <div class="exp x1">
+      <span class="flag">часть ответа · скучная</span>
+      <h3>Свет обманывал</h3>
+      <p>Молодые вспышки звездообразования и активные ядра делают галактику <b>ярче её массы</b>; пыль и
+        необычные звёзды путают оценки. Спектроскопия Уэбба уже «сдула» многих рекордсменов — но не всех.</p>
+    </div>
+    <div class="exp x2">
+      <span class="flag">ведущая для дыр</span>
+      <h3>Тяжёлые семена: прямой коллапс</h3>
+      <p>Гигантское газовое облако схлопывается в дыру на <b>10⁴–10⁵ M☉</b> сразу, минуя звезду (идея
+        восходит к Мартину Рису, 1978). Стартуя с тонны, а не с килограмма, миллиард к z≈7 набрать можно.
+        UHZ1 с её «переростком»-дырой ложится сюда идеально.</p>
+    </div>
+    <div class="exp x3">
+      <span class="flag">тоже работает</span>
+      <h3>Обжорство сверх предела</h3>
+      <p>Предел Эддингтона — не абсолютный запрет: при плотном притоке газ может литься <b>быстрее</b>
+        (сверхэддингтоновская аккреция) короткими эпизодами. Плюс слияния дыр в плотных ранних скоплениях.</p>
+    </div>
+    <div class="exp x4">
+      <span class="flag">экзотика</span>
+      <h3>Дыры старше звёзд</h3>
+      <p><b>Первичные чёрные дыры</b> — родившиеся прямо в Большом взрыве — стали бы готовыми семенами
+        (и кандидатом в <a href="dark-matter.html">тёмную материю</a>). А «слишком быстрый» рост структуры
+        пытались лечить и ранней тёмной энергией — той же, что зовут на помощь
+        <a href="hubble-tension.html">хаббловской напряжённости</a>.</p>
+    </div>
+  </div>
+
+  <!-- RESOLVE -->
+  <div class="panel">
+    <span class="k">почему до сих пор не решено · и как решат</span>
+    <h3>Нужно застать дыры за рождением</h3>
+    <ul class="pts">
+      <li><b>Спектры вместо фотометрии.</b> Уэбб продолжает пересчитывать массы ранних галактик по спектрам —
+        граница между «невозможным» и «объяснимым» уточняется каждый год.</li>
+      <li><b>Рентген на пределе.</b> Chandra и будущие рентгеновские обсерватории ищут аккрецирующие дыры
+        всё раньше: чем раньше дыра «уже большая», тем тяжелее должно быть семя.</li>
+      <li><b>Решающий свидетель — LISA (2030-е).</b> Космический детектор услышит <b>слияния самих семян</b>
+        на любых z: лёгкие семена от звёзд и тяжёлые от прямого коллапса дают разный «звук».</li>
+      <li><b>Сигнал 21 см.</b> Радиокарта тёмных веков покажет, когда газ начал светиться и коллапсировать —
+        независимая проверка всей хронологии рассвета.</li>
+    </ul>
+    <div class="verdict"><b>Честный итог:</b> ΛCDM пока не сломана — «невозможные галактики» по большей
+      части объяснились. А вот <b>инкубатор первых сверхмассивных дыр неизвестен по-настоящему</b>:
+      это самая горячая наблюдательная загадка 2020-х, и у неё скоро появятся решающие свидетели.</div>
+  </div>
+
+  <footer>
+    JWST запущен 25.12.2021, первые данные — июль 2022 · «невозможные галактики»: Лаббе и др., 2023 · UHZ1: Богдан и др., 2023 (Chandra+JWST)<br>
+    квазар J0313−1806: Ван и др., 2021 · прямой коллапс: Рис, 1978; Бегельман и др., 2006 · предел Эддингтона: 1926.<br>
+    Шкала времени схематична; массы — порядковые оценки на 2026 год.
+  </footer>
+</div>
+</body>
+</html>
